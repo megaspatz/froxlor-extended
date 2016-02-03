@@ -408,7 +408,7 @@ if (isset($userinfo['loginname'])
  */
 $navigation = "";
 if (AREA == 'admin' || AREA == 'customer') {
-	if (hasUpdates($version)) {
+	if (hasUpdates($version.$branding)) {
 		/*
 		 * if froxlor-files have been updated
 		 * but not yet configured by the admin
@@ -516,6 +516,7 @@ if (isset($_POST['action'])) {
 	$action = $_POST['action'];
 } elseif(isset($_GET['action'])) {
 	$action = $_GET['action'];
+
 } else {
 	$action = '';
 	// clear request data
@@ -530,6 +531,14 @@ if (isset($_POST['page'])) {
 	$page = $_GET['page'];
 } else {
 	$page = '';
+}
+
+if (isset($_POST['process'])) {
+	$process = $_POST['process'];
+} elseif(isset($_GET['process'])) {
+	$process = $_GET['process'];
+} else {
+	$process = '';
 }
 
 if ($page == '') {

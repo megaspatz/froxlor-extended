@@ -140,6 +140,11 @@ $lng['emails']['from'] = 'Von';
 $lng['emails']['to'] = 'Nach';
 $lng['emails']['forwarders'] = 'Weiterleitungen';
 $lng['emails']['forwarder_add'] = 'Weiterleitung hinzufügen';
+$lng['emails']['processing'] = 'Annehmen, Abweisen, Löschen';
+$lng['emails']['accept'] = 'Annehmen';
+$lng['emails']['reject'] = 'Ablehnen';
+$lng['emails']['discard'] = 'Löschen';
+
 
 /**
  * FTP

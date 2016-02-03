@@ -38,7 +38,7 @@ if ($page == 'overview') {
 			'm.destination' => $lng['emails']['forwarders']
 		);
 		$paging = new paging($userinfo, TABLE_MAIL_VIRTUAL, $fields);
-		$result_stmt = Database::prepare('SELECT `m`.`id`, `m`.`domainid`, `m`.`email`, `m`.`email_full`, `m`.`iscatchall`, `u`.`quota`, `m`.`destination`, `m`.`popaccountid`, `d`.`domain`, `u`.`mboxsize` FROM `' . TABLE_MAIL_VIRTUAL . '` `m`
+		$result_stmt = Database::prepare('SELECT `m`.`id`, `m`.`domainid`, `m`.`email`, `m`.`email_full`, `m`.`iscatchall`, `u`.`quota`, `m`.`destination`, `m`.`popaccountid`, `m`.`action`, `d`.`domain`, `u`.`mboxsize` FROM `' . TABLE_MAIL_VIRTUAL . '` `m`
 			LEFT JOIN `' . TABLE_PANEL_DOMAINS . '` `d` ON (`m`.`domainid` = `d`.`id`)
 			LEFT JOIN `' . TABLE_MAIL_USERS . '` `u` ON (`m`.`popaccountid` = `u`.`id`)
 			WHERE `m`.`customerid`= :customerid ' . $paging->getSqlWhere(true) . " " . $paging->getSqlOrderBy() . " " . $paging->getSqlLimit()
@@ -301,7 +301,7 @@ if ($page == 'overview') {
 			standard_error('allresourcesused');
 		}
 	} elseif ($action == 'edit' && $id != 0) {
-		$stmt = Database::prepare("SELECT `v`.`id`, `v`.`email`, `v`.`email_full`, `v`.`iscatchall`, `v`.`destination`, `v`.`customerid`, `v`.`popaccountid`, `u`.`quota`
+		$stmt = Database::prepare("SELECT `v`.`id`, `v`.`email`, `v`.`email_full`, `v`.`iscatchall`, `v`.`destination`, `v`.`customerid`, `v`.`action`, `v`.`popaccountid`, `u`.`quota`
 			FROM `" . TABLE_MAIL_VIRTUAL . "` `v`
 			LEFT JOIN `" . TABLE_MAIL_USERS . "` `u`
 			ON(`v`.`popaccountid` = `u`.`id`)
@@ -345,9 +345,49 @@ if ($page == 'overview') {
 
 			eval("echo \"" . getTemplate("email/emails_edit") . "\";");
 		}
+        } elseif ($action == 'processing' && $id != 0) {
+                
+                $proc = '';
+                switch($process)
+                {
+                    case 'reject';
+                        $proc = 'REJECT';
+                        break;
+                    case 'discard';
+                        $proc='DISCARD';
+                        break;
+                    default ;
+                        $proc = '';
+                        break;
+                }
+            
+		
+			$stmt = Database::prepare("SELECT `id`, `email`, `email_full`, `iscatchall`, `destination`, `customerid`, `popaccountid`, `action` FROM `" . TABLE_MAIL_VIRTUAL . "`
+				WHERE `customerid`= :cid
+				AND `id`= :id"
+			);
+			$result = Database::pexecute_first($stmt, array("cid" => $userinfo['customerid'], "id" => $id));
+
+			if (isset($result['email']) && $result['email'] != '') {
+					$stmt = Database::prepare("UPDATE `" . TABLE_MAIL_VIRTUAL . "`
+						SET `action` = :proc 
+						WHERE `customerid`= :cid 
+						AND `id`= :id"
+					);
+					$params = array(
+						"cid" => $userinfo['customerid'],
+                                                "proc" => $proc,
+						"id" => $id
+					);
+					Database::pexecute($stmt, $params);
+				}
+
+				redirectTo($filename, array('page' => $page, 'action' => 'edit', 'id' => $id, 's' => $s));
+			
+
 	} elseif ($action == 'togglecatchall' && $id != 0) {
 		if (Settings::Get('catchall.catchall_enabled') == '1') {
-			$stmt = Database::prepare("SELECT `id`, `email`, `email_full`, `iscatchall`, `destination`, `customerid`, `popaccountid` FROM `" . TABLE_MAIL_VIRTUAL . "`
+			$stmt = Database::prepare("SELECT `id`, `email`, `email_full`, `iscatchall`, `destination`, `customerid`, `popaccountid`, `action`, FROM `" . TABLE_MAIL_VIRTUAL . "`
 				WHERE `customerid`= :cid
 				AND `id`= :id"
 			);

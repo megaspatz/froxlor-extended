@@ -22,4 +22,4 @@ $version = '0.9.34.2';
 $dbversion = '2';
 
 // Distribution branding-tag (used for Debian etc.)
-$branding = '+shsh-1';
+$branding = '+shsh-2';

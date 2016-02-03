@@ -69,13 +69,13 @@ if ($action == 'login') {
 			}
 		}
 
-		if (hasUpdates($version) && $is_admin == false) {
+		if (hasUpdates($version.$branding) && $is_admin == false) {
 			redirectTo('index.php');
 			exit;
 		}
 
 		if ($is_admin) {
-			if (hasUpdates($version)) {
+			if (hasUpdates($version.$branding)) {
 				$stmt = Database::prepare("SELECT `loginname` AS `admin` FROM `" . TABLE_PANEL_ADMINS . "`
 					WHERE `loginname`= :loginname
 					AND `change_serversettings` = '1'"
@@ -222,7 +222,7 @@ if ($action == 'login') {
 			$qryparams['s'] = $s;
 
 			if ($userinfo['adminsession'] == '1') {
-				if (hasUpdates($version)) {
+				if (hasUpdates($version.$branding)) {
 					redirectTo('admin_updates.php', array('s' => $s));
 				} else {
 					if (isset($_POST['script']) && $_POST['script'] != "") {
@@ -283,7 +283,7 @@ if ($action == 'login') {
 		}
 
 		$update_in_progress = '';
-		if (hasUpdates($version)) {
+		if (hasUpdates($version.$branding)) {
 			$update_in_progress = $lng['update']['updateinprogress_onlyadmincanlogin'];
 		}
 		

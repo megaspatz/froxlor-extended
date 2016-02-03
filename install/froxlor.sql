@@ -71,6 +71,7 @@ CREATE TABLE `mail_virtual` (
   `customerid` int(11) NOT NULL default '0',
   `popaccountid` int(11) NOT NULL default '0',
   `iscatchall` tinyint(1) unsigned NOT NULL default '0',
+  `action` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `email` (`email`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -540,7 +541,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_numeric', '0'),
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
-	('panel', 'version', '0.9.34.2+shsh-1');
+	('panel', 'version', '0.9.34.2+shsh-2');
 
 
 DROP TABLE IF EXISTS `panel_tasks`;

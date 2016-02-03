@@ -57,7 +57,12 @@ return array(
 						'label' => $lng['emails']['forwarders'].' ('.$forwarders_count.')',
 						'type' => 'label',
 						'value' => $forwarders.' <a href="'.$filename.'?page=forwarders&amp;action=add&amp;id='.$result['id'].'&amp;s='.$s.'">'.$lng['emails']['forwarder_add'].'</a>'
-					)
+					),
+                                        'mail_processing' => array(
+                                                'label' => $lng['emails']['processing'],
+                                                'type'  => 'label',
+                                                'value' => ($result['action'] == '' ? $lng['emails']['accept'] : $lng['emails'][strtolower($result['action'])]) . ' [<a href="'.$filename.'?page='.$page.'&amp;action=processing&amp;process=accept&amp;id='.$result['id'].'&amp;s='.$s.'">' . $lng['emails']['accept'] .'</a>]' . ' [<a href="'.$filename.'?page='.$page.'&amp;action=processing&amp;process=reject&amp;id='.$result['id'].'&amp;s='.$s.'">' . $lng['emails']['reject'] .'</a>]'. ' [<a href="'.$filename.'?page='.$page.'&amp;action=processing&amp;process=discard&amp;id='.$result['id'].'&amp;s='.$s.'">' . $lng['emails']['discard'] .'</a>]'
+                                        )
 				)
 			)
 		)

@@ -141,6 +141,10 @@ $lng['emails']['from'] = 'Source';
 $lng['emails']['to'] = 'Destination';
 $lng['emails']['forwarders'] = 'Forwarders';
 $lng['emails']['forwarder_add'] = 'Create forwarder';
+$lng['emails']['processing'] = 'Accept, Reject or Discard';
+$lng['emails']['accept'] = 'Accept';
+$lng['emails']['reject'] = 'Reject';
+$lng['emails']['discard'] = 'Discard';
 
 /**
  * FTP
