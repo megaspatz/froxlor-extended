@@ -1875,7 +1875,17 @@ if (isFroxlorVersion('0.9.27')) {
 
 	showUpdateStep("Updating from 0.9.27 to 0.9.28-svn1");
 	lastStepStatus(0);
-
+        
+        //SHSH Only
+        showUpdateStep("Remove unused languages (SHSH only)");
+        Database::query("delete from panel_languages where file like 'lng/modules/%'");
+        lastStepStatus(0);
+        
+        //SHSH Only
+        showUpdateStep("drop view view_emaildomains (SHSH only)");
+        Database::query("drop view view_emaildomains");
+        lastStepStatus(0);
+        
 	// Get AliasconfigDir setting if available
 	$handle = Database::query("SELECT `value` FROM `panel_settings` WHERE `settinggroup` = 'phpfpm' AND `varname` = 'aliasconfigdir';");
 
@@ -2025,7 +2035,12 @@ if (isFroxlorVersion('0.9.28-svn3')) {
 	Database::pexecute($upd_stmt, array('theme' => $classic_theme_replacement));
 
 	lastStepStatus(0);
-
+        
+        // SHSH-Only
+        showUpdateStep('Drop view mail_discard (SHSH-Only)');
+        Database::query('drop view mail_discard');
+        lastStepStatus(0);
+        
 	showUpdateStep('Altering Froxlor database and tables to use UTF-8. This may take a while..', true);
 
 	Database::query('ALTER DATABASE `' . Database::getDbName() . '` CHARACTER SET utf8 COLLATE utf8_general_ci');
@@ -3026,7 +3041,7 @@ if (isFroxlorVersion('0.9.34.2')) {
     showUpdateStep("Updating from 0.9.34.2 to 0.9.35-dev1");
     lastStepStatus(0);
     showUpdateStep("Adding Let's Encrypt - certificate fields");
-    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` ADD `expirationdate` DATETIME NULL AFTER `ssl_cert_chainfile`;");
+#    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` ADD `expirationdate` DATETIME NULL AFTER `ssl_cert_chainfile`;");
     Database::query("ALTER TABLE `".TABLE_PANEL_CUSTOMERS."` ADD `lepublickey` MEDIUMTEXT DEFAULT NULL AFTER `custom_notes_show`");
     Database::query("ALTER TABLE `".TABLE_PANEL_CUSTOMERS."` ADD `leprivatekey` MEDIUMTEXT DEFAULT NULL AFTER `lepublickey`;");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `letsencrypt` TINYINT(1) NOT NULL DEFAULT '0' AFTER `ismainbutsubto`;");
@@ -3067,14 +3082,28 @@ if (isFroxlorVersion('0.9.35-dev2')) {
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `termination_date` date NOT NULL AFTER `registration_date`");
     lastStepStatus(0);
 
-    updateToVersion('0.9.35-dev3');
+    updateToVersion('0.9.35-dev3'); 
 }
 
 if (isFroxlorVersion('0.9.35-dev3')) {
     
     showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
+    Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50)");
+    
+    // SHSH Only
+    showUpdateStep("Modifying SHSH-Workaound Mail-Reject-Workarround");
+    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'REJECT' where destination = 'r-e-j-e-c-t@shsh.de'");
+    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'DISCARD' where destination = 'd-e-v-n-u-l-l@shsh.de'");
+    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set destination = '' where  destination = 'd-e-v-n-u-l-l@shsh.de' or destination = 'r-e-j-e-c-t@shsh.de'");
     lastStepStatus(0);
-
+    
+    // SHSH Only
+    showUpdateStep("Set Theme tou Sparkle for al Customers an Admins");
+    Database::query("UPDATE `" . TABLE_PANEL_ADMINS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
+    Database::query("UPDATE `" . TABLE_PANEL_CUSTOMERS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
+    Settings::Set('panel.default_theme', 'Sparkle');
+    lastStepStatus(0);
+    
     updateToVersion('0.9.35-dev4');
 }
