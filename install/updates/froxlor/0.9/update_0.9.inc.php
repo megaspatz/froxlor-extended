@@ -3090,31 +3090,21 @@ if (isFroxlorVersion('0.9.35-dev3')) {
     showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
     Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50)");
+    lastStepStatus(0);
     
     // SHSH Only
-    showUpdateStep("Modifying SHSH-Workaound Mail-Reject-Workarround");
+    showUpdateStep("Remove SHSH-Workaound Mail-Reject-Workarround");
     Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'REJECT' where destination = 'r-e-j-e-c-t@shsh.de'");
     Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'DISCARD' where destination = 'd-e-v-n-u-l-l@shsh.de'");
     Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set destination = '' where  destination = 'd-e-v-n-u-l-l@shsh.de' or destination = 'r-e-j-e-c-t@shsh.de'");
     lastStepStatus(0);
     
     // SHSH Only
-    showUpdateStep("Set Theme tou Sparkle for al Customers an Admins");
+    showUpdateStep("Set Ttheme to Sparkle for all customers and admins");
     Database::query("UPDATE `" . TABLE_PANEL_ADMINS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
     Database::query("UPDATE `" . TABLE_PANEL_CUSTOMERS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
     Settings::Set('panel.default_theme', 'Sparkle');
-    lastStepStatus(0);
-    
-   
-    showUpdateStep("Adding column 'action' to " . TABLE_MAIL_VIRTUAL);
-    Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50) NOT NULL default ''");
-    lastStepStatus(0);
-    
-    // SHSH Only
-    showUpdateStep("Modifying SHSH-Workaound Mail-Reject-Workarround (SHSH-Only)");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'REJECT' where destination = 'r-e-j-e-c-t@shsh.de'");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'DISCARD' where destination = 'd-e-v-n-u-l-l@shsh.de'");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set destination = '' where  destination = 'd-e-v-n-u-l-l@shsh.de' or destination = 'r-e-j-e-c-t@shsh.de'");
+ 
     lastStepStatus(0);
     
     updateToVersion('0.9.35-dev4');
