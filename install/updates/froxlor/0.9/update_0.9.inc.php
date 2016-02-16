@@ -3076,12 +3076,7 @@ if (isFroxlorVersion('0.9.35-dev3')) {
     Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50) NOT NULL default ''");
     lastStepStatus(0);
     
-    // SHSH Only
-    showUpdateStep("Modifying SHSH-Workaound Mail-Reject-Workarround (SHSH-Only)");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'REJECT' where destination = 'r-e-j-e-c-t@shsh.de'");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'DISCARD' where destination = 'd-e-v-n-u-l-l@shsh.de'");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set destination = '' where  destination = 'd-e-v-n-u-l-l@shsh.de' or destination = 'r-e-j-e-c-t@shsh.de'");
-    lastStepStatus(0);
+    
     
     updateToVersion('0.9.35-dev4');
 }
