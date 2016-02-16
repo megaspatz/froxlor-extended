@@ -6,3 +6,5 @@ install/update.log
 .settings/
 *.diff
 *~
+shsh-docs/
+shsh-docs/*
