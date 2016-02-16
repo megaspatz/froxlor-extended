@@ -8,7 +8,7 @@
 		<if (Settings::Get('admin.show_version_login') == '1' && $filename == 'index.php') || ($filename != 'index.php' && Settings::Get('admin.show_version_footer') == '1')>
 			{$version}{$branding}
 		</if>
-		&copy; 2009-{$current_year} by <a href="http://www.froxlor.org/" rel="external">the Froxlor Team</a>, 2016-{$current_year} by Stefan Heid<br />
+                        &copy; 2009-{$current_year} by <a href="http://www.froxlor.org/" rel="external">the Froxlor Team</a>, 2016-{$current_year} by <a href="https://github.com/megaspatz" rel="external">Stefan Heid</a><br />
 	</span>
 	<if $lng['translator'] != ''>
 		<br /><span>{$lng['panel']['translator']}: {$lng['translator']}
