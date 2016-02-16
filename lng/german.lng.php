@@ -1600,5 +1600,12 @@ $lng['serversettings']['letsencryptstate']['description'] = "Bundesland, welches
 $lng['domains']['termination_date'] = 'K&uuml;ndigungsdatum';
 $lng['domains']['termination_date_overview'] = 'gek&uuml;ndigt zum ';
 
+
+// Mail Proocessing
+$lng['emails']['processing'] = 'Annehmen, Ablehnen oder L&ouml;schen';
+$lng['emails']['processing_desc'] = 'Annehmen - E-Mails werden angenommen und in das entsprechende Postfach zugestellt<br>Ablehnen - der Annahme der E-Mails wird verweigert<br>L&ouml;schen - E-Mails werden angenommen und anschlie&szlig;end gel&ouml;scht.';
+$lng['emails']['accept'] = 'Annehmen';
+$lng['emails']['reject'] = 'Ablehnen';
+$lng['emails']['discard'] = 'L&ouml;schen';
 // Authcode
 $lng['domains']['authcode_desc'] = 'AuthCode oft auch AuthInfo genannt';
