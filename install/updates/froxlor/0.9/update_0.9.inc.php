@@ -3100,7 +3100,7 @@ if (isFroxlorVersion('0.9.35-dev3')) {
     lastStepStatus(0);
     
     // SHSH Only
-    showUpdateStep("Set Ttheme to Sparkle for all customers and admins");
+    showUpdateStep("Set theme to Sparkle for all customers and admins");
     Database::query("UPDATE `" . TABLE_PANEL_ADMINS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
     Database::query("UPDATE `" . TABLE_PANEL_CUSTOMERS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
     Settings::Set('panel.default_theme', 'Sparkle');

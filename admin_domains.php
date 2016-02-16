@@ -586,8 +586,13 @@ if ($page == 'domains'
 				}
 
 				// We can't enable let's encrypt for wildcard - domains
-				if ($serveraliasoption == '0') {
-					$letsencrypt = 0;
+				if ($serveraliasoption == '0' && $letsencrypt == '1') {
+				    standard_error('nowildcardwithletsencrypt');
+				}
+
+				// Temporarily deactivate ssl_redirect until Let's Encrypt certificate was generated
+				if ($ssl_redirect > 0 && $letsencrypt == 1) {
+					$ssl_redirect = 2;
 				}
 
 				if (!preg_match('/^https?\:\/\//', $documentroot)) {
@@ -1377,8 +1382,13 @@ if ($page == 'domains'
 				}
 
 				// We can't enable let's encrypt for wildcard domains
-				if ($serveraliasoption == '0') {
-					$letsencrypt = '0';
+				if ($serveraliasoption == '0' && $letsencrypt == '1') {
+					standard_error('nowildcardwithletsencrypt');
+				}
+
+				// Temporarily deactivate ssl_redirect until Let's Encrypt certificate was generated
+				if ($ssl_redirect > 0 && $letsencrypt == 1 && $result['letsencrypt'] != $letsencrypt) {
+					$ssl_redirect = 2;
 				}
 
 				if (!preg_match('/^https?\:\/\//', $documentroot)) {
@@ -1938,6 +1948,11 @@ if ($page == 'domains'
 				} elseif ($result['wwwserveralias'] == '1') {
 					$_value = '1';
 				}
+
+				// Fudge the result for ssl_redirect to hide the Let's Encrypt steps
+				$result['temporary_ssl_redirect'] = $result['ssl_redirect'];
+				$result['ssl_redirect'] = ($result['ssl_redirect'] == 0 ? 0 : 1);
+				
 				$serveraliasoptions .= makeoption($lng['domains']['serveraliasoption_wildcard'], '0', $_value, true, true);
 				$serveraliasoptions .= makeoption($lng['domains']['serveraliasoption_www'], '1', $_value, true, true);
 				$serveraliasoptions .= makeoption($lng['domains']['serveraliasoption_none'], '2', $_value, true, true);

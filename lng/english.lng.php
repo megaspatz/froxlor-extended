@@ -1932,6 +1932,7 @@ $lng['admin']['letsencrypt']['description'] = 'Get a free certificate from <a hr
 $lng['customer']['letsencrypt']['title'] = 'Use Let\'s Encrypt';
 $lng['customer']['letsencrypt']['description'] = 'Get a free certificate from <a href="https://letsencrypt.org">Let\'s Encrypt</a>. The certificate will be created and renewed automatically.<br><string class="red">ATTENTION:"</strong>This feature is still in beta.';
 $lng['error']['sslredirectonlypossiblewithsslipport'] = 'Using Let\'s Encrypt is only possible when the domain has at least one ssl-enabled IP/port combination assigned.';
+$lng['error']['nowildcardwithletsencrypt'] = 'Let\'s Encrypt cannot (yet) handle wildcard-domains. Please set the ServerAlias to WWW or disable it completely';
 $lng['panel']['letsencrypt'] = 'Using Let\'s encrypt';
 $lng['crondesc']['cron_letsencrypt'] = 'updating Let\'s Encrypt certificates';
 $lng['serversettings']['letsencryptca']['title'] = "Let's Encrypt environment";
@@ -1940,6 +1941,7 @@ $lng['serversettings']['letsencryptcountrycode']['title'] = "Let's Encrypt count
 $lng['serversettings']['letsencryptcountrycode']['description'] = "2 letter country code used to generate Let's Encrypt certificates.<br><strong class=\"red\">ATTENTION:</strong>Let's Encrypt is still in beta</strong>";
 $lng['serversettings']['letsencryptstate']['title'] = "Let's Encrypt state";
 $lng['serversettings']['letsencryptstate']['description'] = "State used to generate Let's Encrypt certificates.<br><strong class=\"red\">ATTENTION:</strong>Let's Encrypt is still in beta</strong>";
+$lng['domains']['ssl_redirect_temporarilydisabled'] = "<br>The SSL redirect is temporarily deactivated while a new Let's Encrypt certificate is generated. It will be activated again after the certificate was generated.";
 
 // Autoupdate
 $lng['admin']['autoupdate'] = 'Auto-Update';
