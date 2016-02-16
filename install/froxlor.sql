@@ -71,6 +71,7 @@ CREATE TABLE `mail_virtual` (
   `customerid` int(11) NOT NULL default '0',
   `popaccountid` int(11) NOT NULL default '0',
   `iscatchall` tinyint(1) unsigned NOT NULL default '0',
+  `action` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `email` (`email`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;

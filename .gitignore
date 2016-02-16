@@ -7,3 +7,4 @@ install/update.log
 *.diff
 *~
 shsh-docs/
+shsh-docs/*
