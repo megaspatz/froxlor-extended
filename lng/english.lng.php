@@ -1959,3 +1959,11 @@ $lng['admin']['server_php'] = 'PHP';
 // Added for Termination-date
 $lng['domains']['termination_date'] = 'Date of termination';
 $lng['domains']['termination_date_overview'] = 'canceled until ';
+
+
+// Mail Proocessing
+$lng['emails']['processing'] = 'Accept, Reject or Discard';
+$lng['emails']['processing_desc'] = 'Accept - Mails will acceptet and deliverd to the Mailbox<br>Reject - Mails will be reject<br>Discard - Mails will acceptet and then discarded';
+$lng['emails']['accept'] = 'Accept';
+$lng['emails']['reject'] = 'Reject';
+$lng['emails']['discard'] = 'Discard';
