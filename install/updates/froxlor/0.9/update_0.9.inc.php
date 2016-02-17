@@ -1907,7 +1907,7 @@ if (isFroxlorVersion('0.9.28-svn1')) {
 
 	$handle = Database::query("SELECT `language` FROM `panel_languages` WHERE `iso`='foo'");
 
-	while ($langauge = $handle->fetch(PDO::FETCH_ASSOC)) {
+	while ($language = $handle->fetch(PDO::FETCH_ASSOC)) {
 		switch ($language) {
 			case "Deutsch":
 				Database::query("UPDATE `panel_languages` SET `iso`='de' WHERE `language` = 'Deutsch'");
@@ -3077,7 +3077,7 @@ if (isFroxlorVersion('0.9.35-dev1')) {
 }
 
 if (isFroxlorVersion('0.9.35-dev2')) {
-    
+
     showUpdateStep("Updating from 0.9.35-dev2 to 0.9.35-dev3");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `termination_date` date NOT NULL AFTER `registration_date`");
     lastStepStatus(0);
@@ -3086,26 +3086,31 @@ if (isFroxlorVersion('0.9.35-dev2')) {
 }
 
 if (isFroxlorVersion('0.9.35-dev3')) {
-    
-    showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4");
-    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
-    Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50)");
-    lastStepStatus(0);
-    
-    // SHSH Only
-    showUpdateStep("Remove SHSH-Workaound Mail-Reject-Workarround");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'REJECT' where destination = 'r-e-j-e-c-t@shsh.de'");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'DISCARD' where destination = 'd-e-v-n-u-l-l@shsh.de'");
-    Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set destination = '' where  destination = 'd-e-v-n-u-l-l@shsh.de' or destination = 'r-e-j-e-c-t@shsh.de'");
-    lastStepStatus(0);
-    
-    // SHSH Only
-    showUpdateStep("Set theme to Sparkle for all customers and admins");
-    Database::query("UPDATE `" . TABLE_PANEL_ADMINS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
-    Database::query("UPDATE `" . TABLE_PANEL_CUSTOMERS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
-    Settings::Set('panel.default_theme', 'Sparkle');
+
+	// remove unused setting
+	showUpdateStep("Removing unused setting &quot;Send cron-errors to froxlor-admin via e-mail&quot;");
+	Database::query("DELETE FROM `" . TABLE_PANEL_SETTINGS . "` WHERE `settinggroup` = 'system' AND `varname` = 'send_cron_errors';");
+	lastStepStatus(0);
  
-    lastStepStatus(0);
-    
-    updateToVersion('0.9.35-dev4');
+        showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4");
+        Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
+        Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50)");
+        lastStepStatus(0);
+
+        // SHSH Only
+        showUpdateStep("Remove SHSH-Workaound Mail-Reject-Workarround");
+        Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'REJECT' where destination = 'r-e-j-e-c-t@shsh.de'");
+        Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set action = 'DISCARD' where destination = 'd-e-v-n-u-l-l@shsh.de'");
+        Database::query("UPDATE `".TABLE_MAIL_VIRTUAL."` set destination = '' where  destination = 'd-e-v-n-u-l-l@shsh.de' or destination = 'r-e-j-e-c-t@shsh.de'");
+        lastStepStatus(0);
+
+        // SHSH Only
+        showUpdateStep("Set theme to Sparkle for all customers and admins");
+        Database::query("UPDATE `" . TABLE_PANEL_ADMINS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
+        Database::query("UPDATE `" . TABLE_PANEL_CUSTOMERS . "` set theme = 'Sparkle', def_language = 'Deutsch'");
+        Settings::Set('panel.default_theme', 'Sparkle');
+
+        lastStepStatus(0);
+
+        updateToVersion('0.9.35-dev4');
 }
