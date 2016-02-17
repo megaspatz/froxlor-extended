@@ -3087,12 +3087,7 @@ if (isFroxlorVersion('0.9.35-dev2')) {
 
 if (isFroxlorVersion('0.9.35-dev3')) {
 
-	// remove unused setting
-	showUpdateStep("Removing unused setting &quot;Send cron-errors to froxlor-admin via e-mail&quot;");
-	Database::query("DELETE FROM `" . TABLE_PANEL_SETTINGS . "` WHERE `settinggroup` = 'system' AND `varname` = 'send_cron_errors';");
-	lastStepStatus(0);
- 
-        showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4");
+	showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4");
         Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
         Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50)");
         lastStepStatus(0);
@@ -3113,4 +3108,14 @@ if (isFroxlorVersion('0.9.35-dev3')) {
         lastStepStatus(0);
 
         updateToVersion('0.9.35-dev4');
+}
+
+if (isFroxlorVersion('0.9.35-dev4')) {
+        
+        // remove unused setting
+	showUpdateStep("Removing unused setting &quot;Send cron-errors to froxlor-admin via e-mail&quot;");
+	Database::query("DELETE FROM `" . TABLE_PANEL_SETTINGS . "` WHERE `settinggroup` = 'system' AND `varname` = 'send_cron_errors';");
+	lastStepStatus(0);
+
+        updateToVersion('0.9.35-dev5');
 }
