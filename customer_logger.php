@@ -17,11 +17,10 @@
  *
  */
 
-define('AREA', 'admin');
+define('AREA', 'customer');
 require './lib/init.php';
 
 if ($page == 'log'
-   && $userinfo['change_serversettings'] == '1'
 ) {
 	if ($action == '') {
 		$fields = array(
@@ -31,9 +30,10 @@ if ($page == 'log'
 			'text' => $lng['logger']['action']
 		);
 		$paging = new paging($userinfo, TABLE_PANEL_LOG, $fields, null, null, 0, 'desc');
-		$result_stmt = Database::query('
-			SELECT * FROM `' . TABLE_PANEL_LOG . '` ' . $paging->getSqlWhere(false) . ' ' . $paging->getSqlOrderBy() . ' ' . $paging->getSqlLimit()
+		$result_stmt = Database::prepare('
+			SELECT * FROM `' . TABLE_PANEL_LOG . '` WHERE `user` = :loginname ' . $paging->getSqlWhere(true) . ' ' . $paging->getSqlOrderBy() . ' ' . $paging->getSqlLimit()
 		);
+		Database::pexecute($result_stmt, array("loginname" => $userinfo['loginname']));
 		$paging->setEntries(Database::num_rows());
 		$sortcode = $paging->getHtmlSortCode($lng);
 		$arrowcode = $paging->getHtmlArrowCode($filename . '?page=' . $page . '&s=' . $s);
@@ -111,20 +111,5 @@ if ($page == 'log'
 
 		eval("echo \"" . getTemplate('logger/logger') . "\";");
 
-	} elseif ($action == 'truncate') {
-
-		if (isset($_POST['send'])
-		   && $_POST['send'] == 'send'
-		) {
-			$truncatedate = time() - (60 * 10);
-			$trunc_stmt = Database::prepare("
-				DELETE FROM `" . TABLE_PANEL_LOG . "` WHERE `date` < :trunc"
-			);
-			Database::pexecute($trunc_stmt, array('trunc' => $truncatedate));
-			$log->logAction(ADM_ACTION, LOG_WARNING, 'truncated the system-log (mysql)');
-			redirectTo($filename, array('page' => $page, 's' => $s));
-		} else {
-			ask_yesno('logger_reallytruncate', $filename, array('page' => $page, 'action' => $action), TABLE_PANEL_LOG);
-		}
 	}
 }
