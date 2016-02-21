@@ -81,10 +81,11 @@ return array(
 						'size' => 10
 					),
                                         'authcode' => array(
-						'label' => $lng['domains']['authcode'],
-                                                'desc' => $lng['domains']['authcode_desc'],
-						'type' => 'text'
-					)
+                                        'label' => $lng['domains']['authcode'],
+                                        'desc' => $lng['domains']['authcode_desc'],
+                                        'type' => 'text',
+                                        'size' => 16
+                                         )
 				)
 			),
 			'section_b' => array(

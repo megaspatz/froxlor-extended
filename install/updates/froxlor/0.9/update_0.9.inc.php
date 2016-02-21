@@ -3142,3 +3142,12 @@ if (isFroxlorVersion('0.9.35-dev4')) {
 
 	updateToVersion('0.9.35-dev5');
 }
+
+if (isFroxlorVersion('0.9.35-dev5')) {
+    
+    showUpdateStep("Updating from 0.9.35-dev5 to 0.9.35-dev6");
+    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
+    lastStepStatus(0);
+
+    updateToVersion('0.9.35-dev6');
+}
