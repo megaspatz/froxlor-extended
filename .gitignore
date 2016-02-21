@@ -6,5 +6,8 @@ install/update.log
 .settings/
 *.diff
 *~
+.well-known
+.idea
+*.iml
 shsh-docs/
 shsh-docs/*
