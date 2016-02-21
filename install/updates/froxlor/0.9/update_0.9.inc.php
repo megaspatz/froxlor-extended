@@ -3038,8 +3038,8 @@ if (isFroxlorVersion('0.9.34.1')) {
 
 if (isFroxlorVersion('0.9.34.2')) {
 
-    showUpdateStep("Updating from 0.9.34.2 to 0.9.35-dev1");
-    lastStepStatus(0);
+    showUpdateStep("Updating from 0.9.34.2 to 0.9.35-dev1", false);
+
     showUpdateStep("Adding Let's Encrypt - certificate fields");
 #    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` ADD `expirationdate` DATETIME NULL AFTER `ssl_cert_chainfile`;");
     Database::query("ALTER TABLE `".TABLE_PANEL_CUSTOMERS."` ADD `lepublickey` MEDIUMTEXT DEFAULT NULL AFTER `custom_notes_show`");
@@ -3065,8 +3065,8 @@ if (isFroxlorVersion('0.9.34.2')) {
 
 if (isFroxlorVersion('0.9.35-dev1')) {
 
-    showUpdateStep("Updating from 0.9.35-dev1 to 0.9.35-dev2");
-    lastStepStatus(0);
+    showUpdateStep("Updating from 0.9.35-dev1 to 0.9.35-dev2", false);
+
     showUpdateStep("Adding Let's Encrypt - settings");
     Settings::AddNew("system.letsencryptca", 'testing');
     Settings::AddNew("system.letsencryptcountrycode", 'DE');
@@ -3078,7 +3078,9 @@ if (isFroxlorVersion('0.9.35-dev1')) {
 
 if (isFroxlorVersion('0.9.35-dev2')) {
 
-    showUpdateStep("Updating from 0.9.35-dev2 to 0.9.35-dev3");
+    showUpdateStep("Updating from 0.9.35-dev2 to 0.9.35-dev3", false);
+
+    showUpdateStep("Adding new domain fields for Let's Encrypt");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `termination_date` date NOT NULL AFTER `registration_date`");
     lastStepStatus(0);
 
@@ -3087,6 +3089,9 @@ if (isFroxlorVersion('0.9.35-dev2')) {
 
 if (isFroxlorVersion('0.9.35-dev3')) {
 
+    showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4", false);
+
+	// remove unused setting
 	showUpdateStep("Updating from 0.9.35-dev3 to 0.9.35-dev4");
         Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
         Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` ADD `action` varchar(50)");
@@ -3117,5 +3122,23 @@ if (isFroxlorVersion('0.9.35-dev4')) {
 	Database::query("DELETE FROM `" . TABLE_PANEL_SETTINGS . "` WHERE `settinggroup` = 'system' AND `varname` = 'send_cron_errors';");
 	lastStepStatus(0);
 
-        updateToVersion('0.9.35-dev5');
+	updateToVersion('0.9.35-dev4');
+}
+
+
+if (isFroxlorVersion('0.9.35-dev4')) {
+
+    showUpdateStep("Updating from 0.9.35-dev4 to 0.9.35-dev5", false);
+
+	showUpdateStep("Adding more Let's Encrypt settings");
+    Settings::AddNew("system.letsencryptchallengepath", FROXLOR_INSTALL_DIR);
+    Settings::AddNew("system.letsencryptkeysize", '4096');
+    Settings::AddNew("system.letsencryptreuseold", 0);
+    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` ADD `ssl_csr_file` MEDIUMTEXT AFTER `ssl_cert_chainfile`;");
+    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `hsts` VARCHAR(10) NOT NULL DEFAULT '0' AFTER `letsencrypt`");
+    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `hsts_sub` TINYINT(1) NOT NULL DEFAULT '0' AFTER `hsts`");
+    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `hsts_preload` TINYINT(1) NOT NULL DEFAULT '1' AFTER `hsts_sub`");
+	lastStepStatus(0);
+
+	updateToVersion('0.9.35-dev5');
 }
