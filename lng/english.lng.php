@@ -1980,3 +1980,8 @@ $lng['emails']['discard'] = 'Discard';
 // AuthCode
 $lng['domains']['authcode'] = 'AuthCode';
 $lng['domains']['authcode_desc'] = 'AuthCode also known as AuthInfo';
+
+
+// WWWALIAS-Settings
+$lng['serversettings']['panel_wwwaliassubdomains']['title'] = 'No wwwalias for subdomains';
+$lng['serversettings']['panel_wwwaliassubdomains']['description'] = 'Otherwise the domainsettings will be used';

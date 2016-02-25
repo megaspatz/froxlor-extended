@@ -227,6 +227,15 @@ return array(
 					'default' => false,
 					'save_method' => 'storeSettingField',
 					),
+                                'panel_wwwaliassubdomains' => array(
+					'label' => $lng['serversettings']['panel_wwwaliassubdomains'],
+                                        
+					'settinggroup' => 'panel',
+					'varname' => 'wwwaliassubdomains',
+					'type' => 'bool',
+					'default' => false,
+					'save_method' => 'storeSettingField',
+					),
 				),
 			),
 		),

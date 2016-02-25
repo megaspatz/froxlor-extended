@@ -3131,6 +3131,7 @@ if (isFroxlorVersion('0.9.35-dev4')) {
     showUpdateStep("Updating from 0.9.35-dev4 to 0.9.35-dev5", false);
 
 	showUpdateStep("Adding more Let's Encrypt settings");
+        
     Settings::AddNew("system.letsencryptchallengepath", FROXLOR_INSTALL_DIR);
     Settings::AddNew("system.letsencryptkeysize", '4096');
     Settings::AddNew("system.letsencryptreuseold", 0);
@@ -3150,4 +3151,13 @@ if (isFroxlorVersion('0.9.35-dev5')) {
     lastStepStatus(0);
 
     updateToVersion('0.9.35-dev6');
+}
+
+if (isFroxlorVersion('0.9.35-dev6')) {
+    
+    showUpdateStep("Updating from 0.9.35-dev6 to 0.9.35-dev7");
+    Settings::AddNew("panel.wwwaliassubdomains", '0');
+    lastStepStatus(0);
+    
+    updateToVersion('0.9.35-dev7');
 }
