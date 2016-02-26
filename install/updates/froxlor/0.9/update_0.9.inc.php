@@ -3156,7 +3156,7 @@ if (isFroxlorVersion('0.9.35-dev5')) {
 if (isFroxlorVersion('0.9.35-dev6')) {
     
     showUpdateStep("Updating from 0.9.35-dev6 to 0.9.35-dev7");
-    Settings::AddNew("panel.wwwaliassubdomains", '0');
+    Settings::AddNew("system.wwwaliassubdomains", '1');
     lastStepStatus(0);
     
     updateToVersion('0.9.35-dev7');

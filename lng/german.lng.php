@@ -1622,5 +1622,5 @@ $lng['domains']['authcode_desc'] = 'AuthCode oft auch AuthInfo genannt';
 
 
 // WWWALIAS
-$lng['serversettings']['panel_wwwaliassubdomains']['title'] = 'Kein WWW-Alias für Subdomains';
-$lng['serversettings']['panel_wwwaliassubdomains']['description'] = 'Ist diese Option nicht aktiviert, wird die Einstellung der Domain vererbt';
+$lng['serversettings']['wwwaliassubdomains']['title'] = 'Kein WWW-Alias für Subdomains';
+$lng['serversettings']['wwwaliassubdomains']['description'] = 'Ist diese Option nicht aktiviert, wird die Einstellung der Domain vererbt';

@@ -402,7 +402,7 @@ if ($page == 'overview') {
 						"documentroot" => $path,
 						"aliasdomain" => $aliasdomain != 0 ? $aliasdomain : null,
 						"parentdomainid" => $domain_check['id'],
-						"wwwserveralias" => Settings::Get('panel.wwwaliassubdomains') == '0' ? ($domain_check['wwwserveralias'] == '1' ? '1' : '0') : '0',
+						"wwwserveralias" => Settings::Get('system.wwwaliassubdomains') == '0' ? ($domain_check['wwwserveralias'] == '1' ? '1' : '0') : '0',
 						"iswildcarddomain" => $domain_check['iswildcarddomain'] == '1' ? '1' : '0',
 						"isemaildomain" => $domain_check['subcanemaildomain'] == '3' ? '1' : '0',
 						"openbasedir" => $domain_check['openbasedir'],
