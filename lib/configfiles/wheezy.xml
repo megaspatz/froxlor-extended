@@ -313,10 +313,10 @@ fastcgi_param  REDIRECT_STATUS    200;
 ]]>
 						</content>
 					</file>
-					<file name="/etc/nginx/conf.d/acme.conf">
+					<file name="/etc/nginx/acme.conf">
 						<content><![CDATA[
 location /.well-known/acme-challenge {
-	alias {{settings.system.letsencryptchallengepath}};
+	alias {{settings.system.letsencryptchallengepath}}/.well-known/acme-challenge;
 
 	location ~ /.well-known/acme-challenge/(.*) {
 		default_type text/plain;
@@ -962,28 +962,11 @@ data_directory = /var/lib/postfix
 #default_privs = nobody
 
 # INTERNET HOST AND DOMAIN NAMES
-#
-# The myhostname parameter specifies the internet hostname of this
-# mail system. The default is to use the fully-qualified domain name
-# from gethostname(). $myhostname is used as a default value for many
-# other configuration parameters.
-#
-# Froxlor Note: $myhostname can and should be the same as $mydomain as long as
-# you don't intend to send mail to it (it will be considered local, not virtual)
-# for the case of a subdomain, $mydomain *must* be equal to $myhostname,
-# otherwise you cannot use the main domain for virtual transport.
-# also check the note about $mydomain below.
-myhostname = mail.$mydomain
-#myhostname = virtual.domain.tld
-
-# The mydomain parameter specifies the local internet domain name.
-# The default is to use $myhostname minus the first component.
-# $mydomain is used as a default value for many other configuration
-# parameters.
-#
-# Froxlor Note: We are using a default here but that may or may not make sense,
-# depending on your dns configuration, please check yourself.
+# FQDN from Froxlor
 mydomain = <SERVERNAME>
+
+# set myhostname to $mydomain because Froxlor alrady uses a FQDN
+myhostname = $mydomain
 
 # SENDING MAIL
 #
@@ -4395,6 +4378,11 @@ MYSQL_AUXOPTIONS_FIELD	CONCAT("allowimap=",imap,",allowpop3=",pop3)
 				<!-- Proftpd -->
 				<daemon name="proftpd" title="ProFTPd" default="true">
 					<install><![CDATA[apt-get install proftpd-basic proftpd-mod-mysql]]></install>
+					<commands>
+						<command><![CDATA[[ -f /etc/ssl/certs/proftpd.crt ] || openssl req -new -x509 -newkey rsa:4096 -days 3650 -nodes -out /etc/ssl/certs/proftpd.crt -keyout /etc/ssl/private/proftpd.key -subj "/C=US/ST=Some-State/O=Internet Widgits Pty Ltd/CN=<SERVERNAME>"]]></command>
+						<command><![CDATA[[ -f /etc/ssl/certs/proftpd_ec.crt ] || openssl req -new -x509 -nodes -newkey ec:<(openssl ecparam -name secp521r1) -keyout /etc/ssl/private/proftpd_ec.key -out /etc/ssl/certs/proftpd_ec.crt -days 3650 -subj "/C=US/ST=Some-State/O=Internet Widgits Pty Ltd/CN=<SERVERNAME>"]]></command>
+						<command><![CDATA[chmod 0600 /etc/ssl/private/proftpd.key /etc/ssl/private/proftpd_ec.key]]></command>
+					</commands>
 					<file name="/etc/proftpd/proftpd.conf" chown="root:0" chmod="0600"
 						backup="true">
 						<content><![CDATA[
@@ -4535,7 +4523,7 @@ Include /etc/proftpd/sql.conf
 #
 # This is used for FTPS connections
 #
-#Include /etc/proftpd/tls.conf
+Include /etc/proftpd/tls.conf
 
 #
 # Useful to keep VirtualHost/VirtualRoot directives separated
@@ -4730,6 +4718,33 @@ SQLNamedQuery get-quota-tally SELECT "name, quota_type, bytes_in_used,bytes_out_
 SQLNamedQuery update-quota-tally UPDATE "bytes_in_used = bytes_in_used + %{0}, bytes_out_used = bytes_out_used + %{1}, bytes_xfer_used = bytes_xfer_used + %{2}, files_in_used = files_in_used + %{3}, files_out_used= files_out_used + %{4}, files_xfer_used = files_xfer_used + %{5} WHERE name= '%{6}' AND quota_type = '%{7}'" ftp_quotatallies
 SQLNamedQuery insert-quota-tally INSERT "%{0}, %{1}, %{2}, %{3}, %{4},%{5}, %{6}, %{7}" ftp_quotatallies
 
+</IfModule>
+]]>
+						</content>
+					</file>
+					<file name="/etc/proftpd/tls.conf" chown="root:root" chmod="0644" backup="true">
+						<content><![CDATA[
+<IfModule mod_tls.c>
+TLSEngine                               on
+TLSLog                                  /var/log/proftpd/tls.log
+TLSProtocol                             TLSv1 TLSv1.1 TLSv1.2
+TLSRSACertificateFile                   /etc/ssl/certs/proftpd.crt
+TLSRSACertificateKeyFile                /etc/ssl/private/proftpd.key
+TLSECCertificateFile                    /etc/ssl/certs/proftpd_ec.crt
+TLSECCertificateKeyFile                 /etc/ssl/private/proftpd_ec.key
+TLSOptions                              NoCertRequest NoSessionReuseRequired
+TLSVerifyClient                         off
+
+# Are clients required to use FTP over TLS when talking to this server?
+#TLSRequired                             on
+
+# Allow SSL/TLS renegotiations when the client requests them, but
+# do not force the renegotations.  Some clients do not support
+# SSL/TLS renegotiations; when mod_tls forces a renegotiation, these
+# clients will close the data connection, or there will be a timeout
+# on an idle data connection.
+#
+#TLSRenegotiate                          required off
 </IfModule>
 ]]>
 						</content>

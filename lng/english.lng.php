@@ -289,7 +289,7 @@ $lng['admin']['admin_edit'] = 'Edit admin';
 $lng['admin']['customers_see_all'] = 'Can see all customers?';
 $lng['admin']['domains_see_all'] = 'Can see all domains?';
 $lng['admin']['change_serversettings'] = 'Can change server settings?';
-$lng['admin']['server'] = 'Server';
+$lng['admin']['server'] = 'System';
 $lng['admin']['serversettings'] = 'Settings';
 $lng['admin']['rebuildconf'] = 'Rebuild config files';
 $lng['admin']['stdsubdomain'] = 'Standard subdomain';
@@ -743,8 +743,7 @@ $lng['serversettings']['logger']['logcronoption']['never'] = 'Never';
 $lng['serversettings']['logger']['logcronoption']['once'] = 'Once';
 $lng['serversettings']['logger']['logcronoption']['always'] = 'Always';
 $lng['question']['logger_reallytruncate'] = 'Do you really want to truncate the table "%s"?';
-$lng['admin']['loggersystem'] = 'System-logging';
-$lng['menue']['logger']['logger'] = 'System-logging';
+$lng['admin']['loggersystem'] = 'System log';
 $lng['logger']['date'] = 'Date';
 $lng['logger']['type'] = 'Type';
 $lng['logger']['action'] = 'Action';
@@ -1173,7 +1172,7 @@ $lng['serversettings']['ftpserver']['desc'] = 'If pureftpd is selected the .ftpq
 $lng['mails']['new_ftpaccount_by_customer']['subject'] = 'New ftp-user created';
 $lng['mails']['new_ftpaccount_by_customer']['mailbody'] = "Hello {CUST_NAME},\n\nyou have just added a new ftp-user. Here is the entered information:\n\nUsername: {USR_NAME}\nPassword: {USR_PASS}\nPath: {USR_PATH}\n\nYours sincerely, your administrator";
 $lng['domains']['redirectifpathisurl'] = 'Redirect code (default: empty)';
-$lng['domains']['redirectifpathisurlinfo'] = 'You only need to select one of these if you entered an URL as path';
+$lng['domains']['redirectifpathisurlinfo'] = 'You only need to select one of these if you entered an URL as path<br/><strong class="red">NOTE:</strong>Changes are only applied if the given path is an URL.';
 $lng['serversettings']['customredirect_enabled']['title'] = 'Allow customer redirects';
 $lng['serversettings']['customredirect_enabled']['description'] = 'Allow customers to choose the http-status code for redirects which will be used';
 $lng['serversettings']['customredirect_default']['title'] = 'Default redirect';
@@ -1762,7 +1761,9 @@ $lng['admin']['templates']['SERVER_HOSTNAME'] = 'Replaces the system-hostname (U
 $lng['admin']['templates']['SERVER_IP'] = 'Replaces the default server ip-address';
 $lng['admin']['templates']['SERVER_PORT'] = 'Replaces the default server port';
 $lng['admin']['templates']['DOMAINNAME'] = 'Replaces the customers standard-subdomain (can be empty if none is generated)';
-$lng['admin']['show_news_feed'] = 'Show news-feed on admin-dashboard';
+$lng['admin']['show_news_feed']['title'] = 'Show news-feed on admin-dashboard';
+$lng['admin']['show_news_feed']['description'] = 'Enable this to show the official froxlor newsfeed (https://inside.froxlor.org/news/) on your dashboard and never miss important information or release-announcements.';
+$lng['panel']['newsfeed_disabled'] = 'The newsfeed is disabled. Click the edit icon to go to the settings.';
 
 // Added in Froxlor 0.9.32
 $lng['logger']['reseller'] = "Reseller";
@@ -1804,8 +1805,9 @@ $lng['serversettings']['system_cron_allowautoupdate']['description'] = '<div cla
 $lng['error']['passwordshouldnotbeusername'] = 'The password should not be the same as the username.';
 
 // Added in Froxlor 0.9.33
-$lng['admin']['customer_show_news_feed'] = "Show custom newsfeed on customer-dashboard";
-$lng['admin']['customer_news_feed_url'] = "RSS-Feed for the custom newsfeed";
+$lng['admin']['customer_show_news_feed'] = "Show newsfeed on customer-dashboard";
+$lng['admin']['customer_news_feed_url']['title'] = "Use custom RSS-feed";
+$lng['admin']['customer_news_feed_url']['description'] = "Specify a custom RSS-feed that will be shown to your customers on their dashboard.<br /><small>Leave this empty to use the official froxlor newsfeed (https://inside.froxlor.org/news/).</small>";
 $lng['serversettings']['dns_createhostnameentry'] = "Create bind-zone/config for system hostname";
 $lng['serversettings']['panel_password_alpha_lower']['title'] = 'Lowercase character';
 $lng['serversettings']['panel_password_alpha_lower']['description'] = 'Password must contain at least one lowercase letter (a-z).';
@@ -1931,9 +1933,10 @@ $lng['opcacheinfo']['false'] = '<i>false</i>';
 $lng['admin']['letsencrypt']['title'] = 'Use Let\'s Encrypt';
 $lng['admin']['letsencrypt']['description'] = 'Get a free certificate from <a href="https://letsencrypt.org">Let\'s Encrypt</a>. The certificate will be created and renewed automatically.<br><strong class="red">ATTENTION:</strong>If wildcards are enabled, this option will automatically be disabled. This feature is still in beta.';
 $lng['customer']['letsencrypt']['title'] = 'Use Let\'s Encrypt';
-$lng['customer']['letsencrypt']['description'] = 'Get a free certificate from <a href="https://letsencrypt.org">Let\'s Encrypt</a>. The certificate will be created and renewed automatically.<br><string class="red">ATTENTION:"</strong>This feature is still in beta.';
+$lng['customer']['letsencrypt']['description'] = 'Get a free certificate from <a href="https://letsencrypt.org">Let\'s Encrypt</a>. The certificate will be created and renewed automatically.<br><strong class="red">ATTENTION:"</strong>This feature is still in beta.';
 $lng['error']['sslredirectonlypossiblewithsslipport'] = 'Using Let\'s Encrypt is only possible when the domain has at least one ssl-enabled IP/port combination assigned.';
 $lng['error']['nowildcardwithletsencrypt'] = 'Let\'s Encrypt cannot (yet) handle wildcard-domains. Please set the ServerAlias to WWW or disable it completely';
+$lng['error']['letsencryptdoesnotworkwithaliasdomains'] = "Usage of Let's Encrypt is not possible for aliasdomains at the moment. Please disable Let's Encrypt or AliasDomain";
 $lng['panel']['letsencrypt'] = 'Using Let\'s encrypt';
 $lng['crondesc']['cron_letsencrypt'] = 'updating Let\'s Encrypt certificates';
 $lng['serversettings']['letsencryptca']['title'] = "Let's Encrypt environment";
@@ -1954,14 +1957,14 @@ $lng['domains']['ssl_redirect_temporarilydisabled'] = "<br>The SSL redirect is t
 $lng['admin']['autoupdate'] = 'Auto-Update';
 $lng['error']['customized_version'] = 'It looks like your Froxlor installation has been customized, no support sorry.';
 $lng['error']['autoupdate_0'] = 'Unknown error';
-$lng['error']['autoupdate_1'] = 'PHP setting allow_url_fopen is disabled. Autoupdate needs this setting to be enabled in the php.ini';
+$lng['error']['autoupdate_1'] = 'PHP setting allow_url_fopen is disabled. Autoupdate needs this setting to be enabled in php.ini';
 $lng['error']['autoupdate_2'] = 'PHP extension Zlib not found, please ensure it is installed and activated';
 $lng['error']['autoupdate_4'] = 'The froxlor archive could not be stored to the disk :(';
 $lng['error']['autoupdate_5'] = 'version.froxlor.org returned inacceptable values :(';
 $lng['error']['autoupdate_6'] = 'Woops, there was no (valid) version given to download :(';
 $lng['error']['autoupdate_7'] = 'The downloaded archive could not be found :(';
-$lng['error']['autoupdate_8'] = 'The archive could not be extraxted :(';
-$lng['error']['autoupdate_9'] = 'The MD5 sum of the downloaded file is not correct. Please try to update again.';
+$lng['error']['autoupdate_8'] = 'The archive could not be extracted :(';
+$lng['error']['autoupdate_9'] = 'The downloaded file did not pass the integrity check. Please try to update again.';
 
 $lng['admin']['server_php'] = 'PHP';
 
