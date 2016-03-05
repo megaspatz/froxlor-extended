@@ -3054,7 +3054,7 @@ if (isFroxlorVersion('0.9.34.2')) {
         `cronfile` = 'letsencrypt',
         `interval` = '5 MINUTE',
         `desc_lng_key` = 'cron_letsencrypt',
-        `lastrun` = NOW(),
+        `lastrun` = UNIX_TIMESTAMP(),
         `isactive` = 1"
     );
     Database::pexecute($stmt);
@@ -3068,7 +3068,7 @@ if (isFroxlorVersion('0.9.35-dev1')) {
     showUpdateStep("Updating from 0.9.35-dev1 to 0.9.35-dev2", false);
 
     showUpdateStep("Adding Let's Encrypt - settings");
-    Settings::AddNew("system.letsencryptca", 'testing');
+    Settings::AddNew("system.letsencryptca", 'production');
     Settings::AddNew("system.letsencryptcountrycode", 'DE');
     Settings::AddNew("system.letsencryptstate", 'Germany');
     lastStepStatus(0);
@@ -3145,8 +3145,9 @@ if (isFroxlorVersion('0.9.35-dev4')) {
 }
 
 if (isFroxlorVersion('0.9.35-dev5')) {
-    
-    showUpdateStep("Updating from 0.9.35-dev5 to 0.9.35-dev6");
+
+    showUpdateStep("Updating from 0.9.35-dev5 to 0.9.35-dev6", false);
+
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `authcode` varchar(255) NOT NULL DEFAULT '' AFTER `termination_date`");
     lastStepStatus(0);
 
@@ -3161,3 +3162,33 @@ if (isFroxlorVersion('0.9.35-dev6')) {
     
     updateToVersion('0.9.35-dev7');
 }
+
+if (isFroxlorVersion('0.9.35-dev7')) {
+
+    showUpdateStep("Updating from 0.9.35-dev7 to 0.9.35-rc1");
+    showUpdateStep("Adding new panel_vhostconfigs table");
+    Database::query("DROP TABLE IF EXISTS `panel_vhostconfigs`;");
+    $sql = "CREATE TABLE `panel_vhostconfigs` (
+                    `id` int(11) NOT NULL AUTO_INCREMENT,
+                    `description` varchar(50) NOT NULL,
+                    `vhostsettings` text NOT NULL,
+                    PRIMARY KEY (`id`)
+                    ) DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;";
+    Database::query($sql);
+    lastStepStatus(0);
+
+    showUpdateStep("Adding new fields to panel_domains table");
+    Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS ."` ADD `vhost_usedefaultlocation` tinyint(1) NOT NULL default '1' AFTER `ssl_redirect`;");
+    Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS ."` ADD `vhostsettingid` tinyint(11) NOT NULL default '0' AFTER `vhost_usedefaultlocation`;");
+    
+    lastStepStatus(0);
+    
+    showUpdateStep("Adding a new field to the panel_vhostconfigs table");
+    $webserver = Settings::Get('system.webserver');
+    Database::query("ALTER TABLE `panel_vhostconfigs` ADD `webserver` VARCHAR(255) NOT NULL DEFAULT '" . $webserver . "' AFTER `vhostsettings`;");
+    lastStepStatus(0);
+
+    updateToVersion('0.9.35-rc1');
+}
+    
+    

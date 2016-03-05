@@ -193,6 +193,11 @@ return array (
 			        'label' => $lng['admin']['ipsandports']['ipsandports'],
 			        'required_resources' => 'change_serversettings',
 			    ),
+			    array (
+			        'url' => 'admin_settings.php?page=updatecounters',
+			        'label' => $lng['admin']['updatecounters'],
+			        'required_resources' => 'change_serversettings',
+			    ),
 			),
 		),
 		'traffic' => array (
@@ -234,16 +239,6 @@ return array (
 				array (
 					'url' => 'admin_settings.php?page=rebuildconfigs',
 					'label' => $lng['admin']['rebuildconf'],
-					'required_resources' => 'change_serversettings',
-				),
-				array (
-					'url' => 'admin_settings.php?page=updatecounters',
-					'label' => $lng['admin']['updatecounters'],
-					'required_resources' => 'change_serversettings',
-				),
-				array (
-					'url' => 'admin_settings.php?page=integritycheck',
-					'label' => $lng['admin']['integritycheck'],
 					'required_resources' => 'change_serversettings',
 				),
 			    array (
@@ -291,10 +286,15 @@ return array (
 		'misc' => array (
 			'label' => $lng['admin']['misc'],
 			'elements' => array (
-				array (
-					'url' => 'admin_templates.php?page=email',
-					'label' => $lng['admin']['templates']['email'],
-				),
+			    array (
+			        'url' => 'admin_settings.php?page=integritycheck',
+			        'label' => $lng['admin']['integritycheck'],
+			        'required_resources' => 'change_serversettings',
+			    ),
+			    array (
+			        'url' => 'admin_templates.php?page=email',
+			        'label' => $lng['admin']['templates']['email'],
+			    ),
 				array (
 					'url' => 'admin_message.php?page=message',
 					'label' => $lng['admin']['message'],

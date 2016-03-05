@@ -288,7 +288,6 @@ $lng['admin']['admin_edit'] = 'Admin bearbeiten';
 $lng['admin']['customers_see_all'] = 'Kann alle Kunden sehen?';
 $lng['admin']['domains_see_all'] = 'Kann alle Domains sehen?';
 $lng['admin']['change_serversettings'] = 'Kann Servereinstellungen bearbeiten?';
-$lng['admin']['server'] = 'Server';
 $lng['admin']['serversettings'] = 'Einstellungen';
 $lng['admin']['rebuildconf'] = 'Configs neu schreiben';
 $lng['admin']['stdsubdomain'] = 'Standardsubdomain';
@@ -740,8 +739,7 @@ $lng['serversettings']['logger']['logcronoption']['never'] = 'Nie';
 $lng['serversettings']['logger']['logcronoption']['once'] = 'Einmalig';
 $lng['serversettings']['logger']['logcronoption']['always'] = 'Immer';
 $lng['question']['logger_reallytruncate'] = 'Wollen Sie die Tabelle "%s" wirklich leeren?';
-$lng['admin']['loggersystem'] = 'System-Logging';
-$lng['menue']['logger']['logger'] = 'System-Logging';
+$lng['admin']['loggersystem'] = 'System-Log';
 $lng['logger']['date'] = 'Datum';
 $lng['logger']['type'] = 'Typ';
 $lng['logger']['action'] = 'Aktion';
@@ -1166,7 +1164,7 @@ $lng['serversettings']['ftpserver']['desc'] = 'Wenn pureftpd ausgewählt ist, we
 $lng['mails']['new_ftpaccount_by_customer']['subject'] = 'Neuer FTP-Benutzer erstellt';
 $lng['mails']['new_ftpaccount_by_customer']['mailbody'] = "Hallo {CUST_NAME},\n\ndu hast gerade einen neuen FTP-Benutzer angelegt. Hier die angegebenen Informationen:\n\nBenutzername: {USR_NAME}\nPasswort: {USR_PASS}\nPfad: {USR_PATH}\n\nVielen Dank, Ihr Administrator";
 $lng['domains']['redirectifpathisurl'] = 'Redirect-Code (Standard: leer)';
-$lng['domains']['redirectifpathisurlinfo'] = 'Der Redirect-Code kann gewählt werden, wenn der eingegebene Pfad eine URL ist';
+$lng['domains']['redirectifpathisurlinfo'] = 'Der Redirect-Code kann gewählt werden, wenn der eingegebene Pfad eine URL ist.<br/><strong class="red">HINWEIS:</strong>Änderungen werden nur wirksam wenn der Pfad eine URL ist.';
 $lng['serversettings']['customredirect_enabled']['title'] = 'Erlaube Kunden-Redirect';
 $lng['serversettings']['customredirect_enabled']['description'] = 'Erlaubt es Kunden den HTTP-Status Code für einen Redirect zu wählen';
 $lng['serversettings']['customredirect_default']['title'] = 'Standard-Redirect';
@@ -1489,7 +1487,9 @@ $lng['admin']['templates']['SERVER_HOSTNAME'] = 'Wird mit dem System-Hostname (U
 $lng['admin']['templates']['SERVER_IP'] = 'Wird mit der Standard-System-IP-Adresse ersetzt';
 $lng['admin']['templates']['SERVER_PORT'] = 'Wird mit dem Standard-Port ersetzt';
 $lng['admin']['templates']['DOMAINNAME'] = 'Wird mit der Standardsubdomain des Kunden ersetzt (kann leer sein, wenn keine erstellt werden soll)';
-$lng['admin']['show_news_feed'] = 'Zeige Newsfeed im Admin-Dashboard';
+$lng['admin']['show_news_feed']['title'] = 'Zeige Newsfeed im Admin-Dashboard';
+$lng['admin']['show_news_feed']['description'] = 'Aktiviere diese Option, um das offizielle Froxlor newsfeed (https://inside.froxlor.org/news/) auf deinem Dashboard anzuzeigen und verpasse keine wichtigen Informationen oder Release-Announcements.';
+$lng['panel']['newsfeed_disabled'] = 'Das Newsfeed ist deaktiviert. Klicke das Editier-Icon, um zu den Einstellungen zu gelangen.';
 
 // Added in Froxlfor 0.9.32
 $lng['logger']['reseller'] = "Reseller";
@@ -1531,8 +1531,9 @@ $lng['serversettings']['system_cron_allowautoupdate']['description'] = '<strong 
 $lng['error']['passwordshouldnotbeusername'] = 'Das Passwort sollte nicht mit dem Benutzernamen übereinstimmen.';
 
 // Added in Froxlor 0.9.33
-$lng['admin']['customer_show_news_feed'] = "Zeige benutzerdefinierten Newsfeed im Kunden-Dashboard";
-$lng['admin']['customer_news_feed_url'] = "RSS-Feed für den benutzerdefinierten Newsfeed";
+$lng['admin']['customer_show_news_feed'] = "Zeige Newsfeed im Kunden-Dashboard";
+$lng['admin']['customer_news_feed_url']['title'] = "Benutzerdefiniertes RSS-Feed";
+$lng['admin']['customer_news_feed_url']['description'] = "Hier kann ein eigenes RSS-Feed angegeben werden, welches den Kunden auf dem Dashboard angezeigt wird.<br /><small>Leerlassen um das offizielle Froxlor Newsfeed (https://inside.froxlor.org/news/) zu verwenden.</small>";
 $lng['serversettings']['dns_createhostnameentry'] = "Erstelle bind-Zone/Konfiguration für den System-Hostnamen";
 $lng['serversettings']['panel_password_alpha_lower']['title'] = 'Kleinbuchstaben';
 $lng['serversettings']['panel_password_alpha_lower']['description'] = 'Das Passwort muss mindestens einen Kleinbuchstaben (a-z) enthalten.';
@@ -1586,9 +1587,10 @@ $lng['admin']['mod_fcgid_umask']['title'] = 'Umask (Standard: 022)';
 $lng['admin']['letsencrypt']['title'] = 'Benutze Let\'s Encrypt';
 $lng['admin']['letsencrypt']['description'] = 'Holt ein kostenloses Zertifikat von <a href="https://letsencrypt.org">Let\'s Encrypt</a>. Das Zertifikat wird automatisch erstellt und verlängert.<br><strong class="red">ACHTUNG:</strong>Wenn Wildcards aktiviert sind, wird diese Option automatisch deaktiviert. Dieses Feature befindet sich noch im Test.';
 $lng['customer']['letsencrypt']['title'] = 'Benutze Let\'s Encrypt';
-$lng['customer']['letsencrypt']['description'] = 'Holt ein kostenloses Zertifikat von <a href="https://letsencrypt.org">Let\'s Encrypt</a>. Das Zertifikat wird automatisch erstellt und verlängert.<br><string class="red">ACHTUNG:</strong>Dieses Feature befindet sich noch im Test.';
+$lng['customer']['letsencrypt']['description'] = 'Holt ein kostenloses Zertifikat von <a href="https://letsencrypt.org">Let\'s Encrypt</a>. Das Zertifikat wird automatisch erstellt und verlängert.<br><strong class="red">ACHTUNG:</strong>Dieses Feature befindet sich noch im Test.';
 $lng['error']['sslredirectonlypossiblewithsslipport'] = 'Die Nutzung von Let\'s Encrypt ist nur möglich, wenn die Domain mindestens eine IP/Port - Kombination mit aktiviertem SSL zugewiesen hat.';
 $lng['error']['nowildcardwithletsencrypt'] = 'Let\'s Encrypt kann (noch) nicht mit Wildcard-Domains umgehen. Bitte den ServerAlias auf WWW setzen oder deaktivieren';
+$lng['error']['letsencryptdoesnotworkwithaliasdomains'] = "Die Nutzung von Let's Encrypt ist mit AliasDomains derzeit nicht möglich. Bitte Let's Encrypt oder AliasDomain deaktivieren";
 $lng['panel']['letsencrypt'] = 'Benutzt Let\'s encrypt';
 $lng['crondesc']['cron_letsencrypt'] = 'aktualisiert Let\'s Encrypt Zertifikate';
 $lng['serversettings']['letsencryptca']['title'] = "Let's Encrypt Umgebung";

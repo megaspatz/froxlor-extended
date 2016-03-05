@@ -301,7 +301,6 @@ if ($page == 'domains'
 
 				if ($_POST['domain'] == Settings::Get('system.hostname')) {
 					standard_error('admin_domain_emailsystemhostname');
-					exit;
 				}
 
 				$domain = $idna_convert->encode(preg_replace(array('/\:(\d)+$/', '/^https?\:\/\//'), '', validate($_POST['domain'], 'domain')));
@@ -699,6 +698,11 @@ if ($page == 'domains'
 					$issubof = '0';
 				}
 
+				if ($aliasdomain != 0 && $letsencrypt != 0)
+				{
+					standard_error('letsencryptdoesnotworkwithaliasdomains');
+				}
+
 				if ($domain == '') {
 					standard_error(array('stringisempty', 'mydomain'));
 				}
@@ -759,7 +763,6 @@ if ($page == 'domains'
 								|| $_POST[$question_name] != $question_name
 							) {
 								ask_yesno('admin_domain_' . $question_name, $filename, $params, $question_nr);
-								exit;
 							}
 						}
 						$question_nr++;
@@ -1235,6 +1238,7 @@ if ($page == 'domains'
 					}
 
 					$specialsettings = validate(str_replace("\r\n", "\n", $_POST['specialsettings']), 'specialsettings', '/^[^\0]*$/');
+					$ssfs = (isset($_POST['specialsettingsforsubdomains']) && intval($_POST['specialsettingsforsubdomains']) == 1) ? 1 : 0;
 					$documentroot = validate($_POST['documentroot'], 'documentroot');
 
 					if ($documentroot == '') {
@@ -1258,6 +1262,7 @@ if ($page == 'domains'
 					$zonefile = $result['zonefile'];
 					$dkim = $result['dkim'];
 					$specialsettings = $result['specialsettings'];
+					$ssfs = (empty($specialsettings) ? 0 : 1);
 					$documentroot = $result['documentroot'];
 				}
 
@@ -1480,6 +1485,11 @@ if ($page == 'domains'
 					$issubof = '0';
 				}
 
+				if ($aliasdomain != 0 && $letsencrypt != 0)
+				{
+					standard_error('letsencryptdoesnotworkwithaliasdomains');
+				}
+
 				if ($serveraliasoption != '1' && $serveraliasoption != '2') {
 					$serveraliasoption = '0';
 				}
@@ -1506,6 +1516,7 @@ if ($page == 'domains'
 					'mod_fcgid_starter' => $mod_fcgid_starter,
 					'mod_fcgid_maxrequests' => $mod_fcgid_maxrequests,
 					'specialsettings' => $specialsettings,
+					'specialsettingsforsubdomains' => $ssfs,
 					'registration_date' => $registration_date,
 					'termination_date' => $termination_date,
                                         'authcode' => $authcode,
@@ -1528,7 +1539,6 @@ if ($page == 'domains'
 							|| $_POST[$question_name] != $question_name
 						) {
 							ask_yesno('admin_domain_' . $question_name, $filename, $params);
-							exit;
 						}
 					}
 				}

@@ -374,7 +374,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('dkim', 'dkim_domains', 'domains'),
 	('dkim', 'dkim_dkimkeys', 'dkim-keys.conf'),
 	('dkim', 'dkimrestart_command', '/etc/init.d/dkim-filter restart'),
-	('admin', 'show_news_feed', '1'),
+	('admin', 'show_news_feed', '0'),
 	('admin', 'show_version_login', '0'),
 	('admin', 'show_version_footer', '0'),
 	('spf', 'use_spf', '0'),
@@ -520,7 +520,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'apacheitksupport', '0'),
 	('system', 'leprivatekey', 'unset'),
 	('system', 'lepublickey', 'unset'),
-	('system', 'letsencryptca', 'testing'),
+	('system', 'letsencryptca', 'production'),
 	('system', 'letsencryptcountrycode', 'DE'),
 	('system', 'letsencryptstate', 'Germany'),
 	('system', 'letsencryptchallengepath', '/var/www/froxlor'),
@@ -557,7 +557,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_numeric', '0'),
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
-        ('panel', 'version', '0.9.35-dev7');
+	('panel', 'version', '0.9.35-rc1');
 
 
 DROP TABLE IF EXISTS `panel_tasks`;
