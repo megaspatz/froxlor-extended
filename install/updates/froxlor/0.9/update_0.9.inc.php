@@ -1886,6 +1886,11 @@ if (isFroxlorVersion('0.9.27')) {
         Database::query("drop view view_emaildomains");
         lastStepStatus(0);
         
+        //SHSH Only
+        showUpdateStep("drop ssl_csr_file from domain_ssl_settings (SHSH only)");
+        Database::query("alter table domain_ssl_settings drop ssl_csr_file");
+        lastStepStatus(0);
+        
 	// Get AliasconfigDir setting if available
 	$handle = Database::query("SELECT `value` FROM `panel_settings` WHERE `settinggroup` = 'phpfpm' AND `varname` = 'aliasconfigdir';");
 
