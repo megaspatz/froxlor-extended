@@ -61,7 +61,7 @@ return array(
 						'select_var' => $redirectcode
 					),
 					'selectserveralias' => array(
-						'visible' => (($result['parentdomainid'] == '0' && $userinfo['subdomains'] != '0') ? true : false),
+						'visible' => ((($result['parentdomainid'] == '0' && $userinfo['subdomains'] != '0') || $result['parentdomainid'] != '0') ? true : false),
 						'label' => $lng['admin']['selectserveralias'],
 						'desc' => $lng['admin']['selectserveralias_desc'],
 						'type' => 'select',
@@ -87,7 +87,7 @@ return array(
 						'value' => array($result['ssl_redirect'])
 					),
 					'letsencrypt' => array(
-						'visible' => (Settings::Get('system.use_ssl') == '1' ? ($ssl_ipsandports != '' ? (domainHasSslIpPort($result['id']) ? true : false) : false) : false),
+						'visible' => (Settings::Get('system.use_ssl') == '1' ? (Settings::Get('system.leenabled') == '1' ? ($ssl_ipsandports != '' ? (domainHasSslIpPort($result['id']) ? true : false) : false) : false) : false),
 						'label' => $lng['customer']['letsencrypt']['title'],
 						'desc' => $lng['customer']['letsencrypt']['description'],
 						'type' => 'checkbox',

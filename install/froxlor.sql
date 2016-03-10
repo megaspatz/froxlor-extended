@@ -526,6 +526,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'letsencryptchallengepath', '/var/www/froxlor'),
 	('system', 'letsencryptkeysize', '4096'),
 	('system', 'letsencryptreuseold', 0),
+	('system', 'leenabled', '0'),
         ('system', 'wwwaliassubdomains','1'),
 	('panel', 'decimal_places', '4'),
 	('panel', 'adminmail', 'admin@SERVERNAME'),
@@ -557,7 +558,8 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_numeric', '0'),
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
-	('panel', 'version', '0.9.35-rc1');
+	('panel', 'version', '0.9.35-rc1'),
+	('panel', 'db_version', '201603070');
 
 
 DROP TABLE IF EXISTS `panel_tasks`;
@@ -766,7 +768,7 @@ INSERT INTO `cronjobs_run` (`id`, `module`, `cronfile`, `interval`, `isactive`, 
 	(4, 'froxlor/ticket', 'ticketarchive', '1 MONTH', '1', 'cron_ticketarchive'),
 	(5, 'froxlor/reports', 'usage_report', '1 DAY', '1', 'cron_usage_report'),
 	(6, 'froxlor/core', 'mailboxsize', '6 HOUR', '1', 'cron_mailboxsize'),
-	(7, 'froxlor/letsencrypt', 'letsencrypt', '5 MINUTE', '1', 'cron_letsencrypt');
+	(7, 'froxlor/letsencrypt', 'letsencrypt', '5 MINUTE', '0', 'cron_letsencrypt');
 
 
 
