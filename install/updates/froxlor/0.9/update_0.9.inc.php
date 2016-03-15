@@ -3135,8 +3135,6 @@ if (isFroxlorVersion('0.9.35-dev4')) {
     Settings::AddNew("system.letsencryptchallengepath", FROXLOR_INSTALL_DIR);
     Settings::AddNew("system.letsencryptkeysize", '4096');
     Settings::AddNew("system.letsencryptreuseold", 0);
-    // This field exists in SHSH-Installations and is unused since 0.9.27 - so we can drop it 
-    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` DROP `ssl_csr_file`;");
     
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` ADD `ssl_csr_file` MEDIUMTEXT AFTER `ssl_cert_chainfile`;");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `hsts` VARCHAR(10) NOT NULL DEFAULT '0' AFTER `letsencrypt`");
@@ -3185,12 +3183,12 @@ if (isFroxlorVersion('0.9.35-dev7')) {
     Database::query("ALTER TABLE `panel_vhostconfigs` ADD `webserver` VARCHAR(255) NOT NULL DEFAULT '" . $webserver . "' AFTER `vhostsettings`;");
     lastStepStatus(0);
 
+    Settings::AddNew("panel.db_version", "0");
     updateToVersion('0.9.35-rc1');
 }
 
-if (isFroxlorVersion('0.9.35-rc1') && isDatabaseVersion('0')) {
 
-    Settings::AddNew("panel.db_version", "201603070");
+if (isFroxlorVersion('0.9.35-rc1') && isDatabaseVersion('0')) {
 
     showUpdateStep("Removing unused table and fields from database");
     Database::query("DROP TABLE IF EXISTS `panel_vhostconfigs`;");
@@ -3203,7 +3201,8 @@ if (isFroxlorVersion('0.9.35-rc1') && isDatabaseVersion('0')) {
     Settings::AddNew("system.leenabled", $enable_letsencrypt);
     Database::query("UPDATE `".TABLE_PANEL_CRONRUNS."` SET `isactive` = '".$enable_letsencrypt."' WHERE `cronfile` = 'letsencrypt'");
     lastStepStatus(0);
-
+    
+    updateToDbVersion('201603070');
 }
 
 if (isDatabaseVersion('201603070')) {
