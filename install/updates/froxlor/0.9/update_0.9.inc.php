@@ -3188,7 +3188,7 @@ if (isFroxlorVersion('0.9.35-dev7')) {
     updateToVersion('0.9.35-rc1');
 }
 
-if (isFroxlorVersion('0.9.35-rc1')) {
+if (isFroxlorVersion('0.9.35-rc1') && isDatabaseVersion('0')) {
 
     Settings::AddNew("panel.db_version", "201603070");
 
@@ -3204,4 +3204,13 @@ if (isFroxlorVersion('0.9.35-rc1')) {
     Database::query("UPDATE `".TABLE_PANEL_CRONRUNS."` SET `isactive` = '".$enable_letsencrypt."' WHERE `cronfile` = 'letsencrypt'");
     lastStepStatus(0);
 
+}
+
+if (isDatabaseVersion('201603070')) {
+
+	showUpdateStep("Adding new php.ini directive to php-configurations: opcache.restrict_api");
+	Database::query("UPDATE `" . TABLE_PANEL_PHPCONFIGS ."` SET `phpsettings` = CONCAT(`phpsettings`, '\r\nopcache.restrict_api = \"{DOCUMENT_ROOT}\"\r\n');");
+	lastStepStatus(0);
+
+	updateToDbVersion('201603150');
 }

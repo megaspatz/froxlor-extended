@@ -952,6 +952,7 @@ $lng['admin']['phpconfig']['admin_email'] = 'Will be replaced with e-mail addres
 $lng['admin']['phpconfig']['domain'] = 'Will be replaced with the domain.';
 $lng['admin']['phpconfig']['customer'] = 'Will be replaced with the loginname of the customer who owns this domain.';
 $lng['admin']['phpconfig']['admin'] = 'Will be replaced with the loginname of the admin who owns this domain.';
+$lng['admin']['phpconfig']['docroot'] = 'Will be replaces with the customer\'s document-root.';
 $lng['login']['backtologin'] = 'Back to login';
 $lng['serversettings']['mod_fcgid']['starter']['title'] = 'Processes per domain';
 $lng['serversettings']['mod_fcgid']['starter']['description'] = 'How many processes should be started/allowed per domain? The value 0 is recommended cause PHP will then manage the amount of processes itself very efficiently.';
@@ -1973,6 +1974,7 @@ $lng['domains']['termination_date'] = 'Date of termination';
 $lng['domains']['termination_date_overview'] = 'canceled until ';
 $lng['panel']['set'] = 'Apply';
 $lng['customer']['selectserveralias_addinfo'] = 'This option can be set when editing the domain. Its initial value is inherited from the parent-domain.';
+$lng['error']['mailaccistobedeleted'] = "Another account with the same name (%s) is currently being deleted and can therefore not be added at this moment.";
 
 // Mail Proocessing
 $lng['emails']['processing'] = 'Accept, Reject or Discard';

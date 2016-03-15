@@ -947,6 +947,7 @@ $lng['admin']['phpconfig']['admin_email'] = 'Wird mit der E-Mail-Adresse des Adm
 $lng['admin']['phpconfig']['domain'] = 'Wird mit der Domain ersetzt.';
 $lng['admin']['phpconfig']['customer'] = 'Wird mit dem Loginnamen des Kunden ersetzt, dem die Domain gehört.';
 $lng['admin']['phpconfig']['admin'] = 'Wird mit dem Loginnamen des Admins ersetzt, dem die Domain gehört.';
+$lng['admin']['phpconfig']['docroot'] = 'Wird mit dem Heimatverzeichnis des Kunden ersetzt.';
 $lng['login']['backtologin'] = 'Zurück zum Login';
 $lng['serversettings']['mod_fcgid']['starter']['title'] = 'Prozesse je Domain';
 $lng['serversettings']['mod_fcgid']['starter']['description'] = 'Wieviele PHP-Prozesse pro Domain sollen gestartet/erlaubt werden. Der Wert 0 wird empfohlen, da PHP die Anzahl dann selbst effizient verwaltet.';
@@ -1626,6 +1627,7 @@ $lng['domains']['termination_date'] = 'Kündigungsdatum';
 $lng['domains']['termination_date_overview'] = 'gekündigt zum ';
 $lng['panel']['set'] = 'Setzen';
 $lng['customer']['selectserveralias_addinfo'] = 'Diese Option steht beim Bearbeiten der Domain zur Verfügung. Als Initial-Wert wird die Einstellung der Hauptdomain vererbt.';
+$lng['error']['mailaccistobedeleted'] = "Ein vorheriges Konto mit dem gleichen Namen (%s) wird aktuell noch gelöscht und kann daher derzeit nicht angelegt werden";
 
 // Mail Proocessing
 $lng['emails']['processing'] = 'Annehmen, Ablehnen oder L&ouml;schen';
