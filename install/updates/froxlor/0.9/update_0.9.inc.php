@@ -3214,3 +3214,13 @@ if (isDatabaseVersion('201603070')) {
 
 	updateToDbVersion('201603150');
 }
+
+if (isDatabaseVersion('201603150')) {
+    
+    showUpdateStep("Remove Setting system.wwwaliassubdomains");
+    //panel_settings` (`settinggroup`, `varname`, `value`)
+    Database::query("DELETE FROM " . TABLE_PANEL_SETTINGS . " where settinggroup = 'system' AND varname = 'wwwaliassubdomains';");
+    lastStepStatus(0);
+    
+    updateToDbVersion('201603151');
+}
