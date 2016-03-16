@@ -240,15 +240,6 @@ return array(
 					'save_method' => 'storeSettingField',
 					'websrv_avail' => array('apache2', 'lighttpd')
 					),
-                                'wwwaliassubdomains' => array(
-					'label' => $lng['serversettings']['wwwaliassubdomains'],
-                                        
-					'settinggroup' => 'system',
-					'varname' => 'wwwaliassubdomains',
-					'type' => 'bool',
-					'default' => false,
-					'save_method' => 'storeSettingField',
-					),
 				)
 			)
 		)

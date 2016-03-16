@@ -33,13 +33,22 @@ class bind {
 		if (Settings::Get('system.nameservers') != '') {
 			$nameservers = explode(',', Settings::Get('system.nameservers'));
 			foreach ($nameservers as $nameserver) {
-				$nameserver_ip = gethostbyname(trim($nameserver));
+				$nameserver = trim($nameserver);
+				// DNS servers might be multi homed; allow transfer from all ip
+				// addresses of the DNS server
+				$nameserver_ips = gethostbynamel($nameserver);
+				// append dot to hostname
 				if (substr($nameserver, -1, 1) != '.') {
 					$nameserver.= '.';
 				}
+				// ignore invalid responses
+				if (!is_array($nameserver_ips)) {
+					// act like gethostbyname() and return unmodified hostname on error
+					$nameserver_ips = array($nameserver);
+				}
 				$this->nameservers[] = array(
-					'hostname' => trim($nameserver),
-					'ip' => trim($nameserver_ip)
+					'hostname' => $nameserver,
+					'ips' => $nameserver_ips
 				);
 			}
 		}
@@ -233,7 +242,9 @@ class bind {
 			// put nameservers in allow-transfer
 			if (count($this->nameservers) > 0) {
 				foreach ($this->nameservers as $ns) {
-					$bindconf_file.= '		' . $ns['ip'] . ';' . "\n";
+					foreach($ns["ips"] as $ip) {
+						$bindconf_file.= '		' . $ip . ";\n";
+					}
 				}
 			}
 			// AXFR server #100

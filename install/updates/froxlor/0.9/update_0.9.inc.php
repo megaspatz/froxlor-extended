@@ -1886,11 +1886,6 @@ if (isFroxlorVersion('0.9.27')) {
         Database::query("drop view view_emaildomains");
         lastStepStatus(0);
         
-        //SHSH Only
-        showUpdateStep("drop ssl_csr_file from domain_ssl_settings (SHSH only)");
-        Database::query("alter table domain_ssl_settings drop ssl_csr_file");
-        lastStepStatus(0);
-        
 	// Get AliasconfigDir setting if available
 	$handle = Database::query("SELECT `value` FROM `panel_settings` WHERE `settinggroup` = 'phpfpm' AND `varname` = 'aliasconfigdir';");
 
@@ -3060,7 +3055,7 @@ if (isFroxlorVersion('0.9.34.2')) {
         `interval` = '5 MINUTE',
         `desc_lng_key` = 'cron_letsencrypt',
         `lastrun` = UNIX_TIMESTAMP(),
-        `isactive` = 1"
+        `isactive` = 0"
     );
     Database::pexecute($stmt);
     lastStepStatus(0);
@@ -3133,27 +3128,21 @@ if (isFroxlorVersion('0.9.35-dev4')) {
 
 if (isFroxlorVersion('0.9.35-dev4')) {
 
-    showUpdateStep("Updating from 0.9.35-dev4 to 0.9.35-dev5", false);
+    showUpdateStep("Updating from 0.9.35-dev4 to 0.9.35-dev6", false);
 
 	showUpdateStep("Adding more Let's Encrypt settings");
         
     Settings::AddNew("system.letsencryptchallengepath", FROXLOR_INSTALL_DIR);
     Settings::AddNew("system.letsencryptkeysize", '4096');
     Settings::AddNew("system.letsencryptreuseold", 0);
+    
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` ADD `ssl_csr_file` MEDIUMTEXT AFTER `ssl_cert_chainfile`;");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `hsts` VARCHAR(10) NOT NULL DEFAULT '0' AFTER `letsencrypt`");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `hsts_sub` TINYINT(1) NOT NULL DEFAULT '0' AFTER `hsts`");
     Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` ADD `hsts_preload` TINYINT(1) NOT NULL DEFAULT '1' AFTER `hsts_sub`");
 	lastStepStatus(0);
 
-	updateToVersion('0.9.35-dev5');
-}
-
-if (isFroxlorVersion('0.9.35-dev5')) {
-
-    showUpdateStep("Updating from 0.9.35-dev5 to 0.9.35-dev6", false);
-
-    lastStepStatus(0);
+	
 
     updateToVersion('0.9.35-dev6');
 }
@@ -3181,6 +3170,8 @@ if (isFroxlorVersion('0.9.35-dev7')) {
     Database::query($sql);
     lastStepStatus(0);
 
+    
+    
     showUpdateStep("Adding new fields to panel_domains table");
     Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS ."` ADD `vhost_usedefaultlocation` tinyint(1) NOT NULL default '1' AFTER `ssl_redirect`;");
     Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS ."` ADD `vhostsettingid` tinyint(11) NOT NULL default '0' AFTER `vhost_usedefaultlocation`;");
@@ -3192,7 +3183,43 @@ if (isFroxlorVersion('0.9.35-dev7')) {
     Database::query("ALTER TABLE `panel_vhostconfigs` ADD `webserver` VARCHAR(255) NOT NULL DEFAULT '" . $webserver . "' AFTER `vhostsettings`;");
     lastStepStatus(0);
 
+    Settings::AddNew("panel.db_version", "0");
     updateToVersion('0.9.35-rc1');
 }
+
+
+if (isFroxlorVersion('0.9.35-rc1') && isDatabaseVersion('0')) {
+
+    showUpdateStep("Removing unused table and fields from database");
+    Database::query("DROP TABLE IF EXISTS `panel_vhostconfigs`;");
+    Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS ."` DROP `vhost_usedefaultlocation`;");
+    Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS ."` DROP `vhostsettingid`;");
+    lastStepStatus(0);
+
+    showUpdateStep("Adding new setting to enable/disable Let's Encrypt");
+    $enable_letsencrypt = isset($_POST['enable_letsencrypt']) ? (int)$_POST['enable_letsencrypt'] : "1";
+    Settings::AddNew("system.leenabled", $enable_letsencrypt);
+    Database::query("UPDATE `".TABLE_PANEL_CRONRUNS."` SET `isactive` = '".$enable_letsencrypt."' WHERE `cronfile` = 'letsencrypt'");
+    lastStepStatus(0);
     
+    updateToDbVersion('201603070');
+}
+
+if (isDatabaseVersion('201603070')) {
+
+	showUpdateStep("Adding new php.ini directive to php-configurations: opcache.restrict_api");
+	Database::query("UPDATE `" . TABLE_PANEL_PHPCONFIGS ."` SET `phpsettings` = CONCAT(`phpsettings`, '\r\nopcache.restrict_api = \"{DOCUMENT_ROOT}\"\r\n');");
+	lastStepStatus(0);
+
+	updateToDbVersion('201603150');
+}
+
+if (isDatabaseVersion('201603150')) {
     
+    showUpdateStep("Remove Setting system.wwwaliassubdomains");
+    //panel_settings` (`settinggroup`, `varname`, `value`)
+    Database::query("DELETE FROM " . TABLE_PANEL_SETTINGS . " where settinggroup = 'system' AND varname = 'wwwaliassubdomains';");
+    lastStepStatus(0);
+    
+    updateToDbVersion('201603151');
+}

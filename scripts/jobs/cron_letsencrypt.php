@@ -28,7 +28,7 @@ $certificates_stmt = Database::query("
 ");
 
 $updcert_stmt = Database::prepare("
-	REPLACE INTO `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` SET `id` = :id, `domainid` = :domainid, `ssl_cert_file` = :crt, `ssl_key_file` = :key, `ssl_ca_file` = :ca, `ssl_cert_chainfile` = :fullchain, `ssl_csr_file` = :csr, expirationdate = :expirationdate
+	REPLACE INTO `".TABLE_PANEL_DOMAIN_SSL_SETTINGS."` SET `id` = :id, `domainid` = :domainid, `ssl_cert_file` = :crt, `ssl_key_file` = :key, `ssl_ca_file` = :ca, `ssl_cert_chainfile` = :chain, `ssl_csr_file` = :csr, expirationdate = :expirationdate
 ");
 
 $upddom_stmt = Database::prepare("
@@ -36,7 +36,8 @@ $upddom_stmt = Database::prepare("
 ");
 
 $changedetected = 0;
-while ($certrow = $certificates_stmt->fetch(PDO::FETCH_ASSOC)) {
+$certrows = $certificates_stmt->fetchAll(PDO::FETCH_ASSOC);
+foreach($certrows AS $certrow) {
 
     // set logger to corresponding loginname for the log to appear in the users system-log
     $cronlog = FroxlorLogger::getInstanceOf(array('loginname' => $certrow['loginname']));
@@ -86,7 +87,7 @@ while ($certrow = $certificates_stmt->fetch(PDO::FETCH_ASSOC)) {
 					'crt' => $return['crt'],
 					'key' => $return['key'],
 					'ca' => $return['chain'],
-					'fullchain' => $return['fullchain'],
+					'chain' => $return['chain'],
 					'csr' => $return['csr'],
 					'expirationdate' => date('Y-m-d H:i:s', $newcert['validTo_time_t'])
 				)
