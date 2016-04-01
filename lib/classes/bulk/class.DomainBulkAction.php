@@ -77,26 +77,29 @@ class DomainBulkAction
     private $_required_fields = array (
 /*  1 */	'domain',
 /*  2 */	'documentroot',
-/*  3 */    'aliasdomain',
+/*  3 */        'aliasdomain',
 /*  4 */	'isbinddomain',
 /*  5 */	'isemaildomain',
 /*  6 */	'email_only',
 /*  7 */	'iswildcarddomain',
 /*  8 */	'subcanemaildomain',
 /*  9 */	'caneditdomain',
-/* 10 */    'zonefile',
+/* 10 */        'zonefile',
 /* 11 */	'wwwserveralias',
-/* 12 */    'openbasedir',
-/* 13 */    'speciallogfile',
+/* 12 */        'openbasedir',
+/* 13 */        'speciallogfile',
 /* 14 */	'specialsettings',
 /* 15 */	'ssl_redirect',
-/* 16 */    'use_ssl',
+/* 16 */        'use_ssl',
 /* 17 */	'registration_date',
 /* 18 */	'ips',
-	    /* automatically added */
-		'adminid',
-        'customerid',
-        'add_date'
+/* 19 */        'termination_date',
+/* 20 */        'authcode',
+                /* automatically added */
+                'adminid',
+                'customerid',
+                'add_date'
+                
     );
 
     /**
@@ -186,21 +189,23 @@ class DomainBulkAction
 				`adminid` = :adminid,
 				`customerid` = :customerid,
 				`documentroot` = :documentroot,
-                `aliasdomain` = :aliasdomain,
+                                `aliasdomain` = :aliasdomain,
 				`isbinddomain` = :isbinddomain,
 				`isemaildomain` = :isemaildomain,
 				`email_only` = :email_only,
 				`iswildcarddomain` = :iswildcarddomain,
 				`subcanemaildomain` = :subcanemaildomain,
 				`caneditdomain` = :caneditdomain,
-                `zonefile` = :zonefile,
+                                `zonefile` = :zonefile,
 				`wwwserveralias` = :wwwserveralias,
-                `openbasedir` = :openbasedir,
-                `speciallogfile` = :speciallogfile,
+                                `openbasedir` = :openbasedir,
+                                `speciallogfile` = :speciallogfile,
 				`specialsettings` = :specialsettings,
 				`ssl_redirect` = :ssl_redirect,
 				`registration_date` = :registration_date,
-				`add_date` = :add_date
+				`add_date` = :add_date,
+                                `termination_date` = :termination_date,
+                                `authcode` = :authcode
 		");
         
         // prepare insert statement for ip/port <> domain
