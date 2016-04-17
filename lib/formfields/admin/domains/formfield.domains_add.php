@@ -213,7 +213,7 @@ return array(
 					),
 					'zonefile' => array(
 						'label' => 'Zonefile',
-						'desc' => $lng['panel']['emptyfordefault'],
+						'desc' => $lng['admin']['bindzonewarning'],
 						'type' => 'text'
 					)
 				)
