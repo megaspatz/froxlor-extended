@@ -3327,3 +3327,17 @@ if (isFroxlorVersion('0.9.35')) {
 
 	updateToVersion('0.9.35.1');
 }
+
+if (isDatabaseVersion('201603151')) {
+
+	showUpdateStep("Adding Default Values to Table " . TABLE_PANEL_DOMAINS);
+	Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `dkim_id` int(11) unsigned NOT NULL default '0';");
+        Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `registration_date` date NOT NULL default '0000-00-00';");
+        Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `termination_date` date NOT NULL default '0000-00-00';");
+        
+        
+	lastStepStatus(0);
+
+	updateToDbVersion('201604270');
+}
+
