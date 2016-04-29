@@ -1628,11 +1628,16 @@ $lng['panel']['set'] = 'Setzen';
 $lng['customer']['selectserveralias_addinfo'] = 'Diese Option steht beim Bearbeiten der Domain zur Verfügung. Als Initial-Wert wird die Einstellung der Hauptdomain vererbt.';
 $lng['error']['mailaccistobedeleted'] = "Ein vorheriges Konto mit dem gleichen Namen (%s) wird aktuell noch gelöscht und kann daher derzeit nicht angelegt werden";
 
-// Mail Proocessing
-$lng['emails']['processing'] = 'Annehmen, Ablehnen oder L&ouml;schen';
-$lng['emails']['processing_desc'] = 'Annehmen - E-Mails werden angenommen und in das entsprechende Postfach zugestellt<br>Ablehnen - der Annahme der E-Mails wird verweigert<br>L&ouml;schen - E-Mails werden angenommen und anschlie&szlig;end gel&ouml;scht.';
-$lng['emails']['accept'] = 'Annehmen';
-$lng['emails']['reject'] = 'Ablehnen';
-$lng['emails']['discard'] = 'L&ouml;schen';
-// Authcode
-$lng['domains']['authcode_desc'] = 'AuthCode oft auch AuthInfo genannt';
+$lng['menue']['extras']['backup'] = 'Sicherung';
+$lng['extras']['backup'] = 'Sicherung erstellen';
+$lng['extras']['backup_web'] = 'Web-Daten sichern';
+$lng['extras']['backup_mail'] = 'E-Mail Daten sichern';
+$lng['extras']['backup_dbs'] = 'Datenbanken sichern';
+$lng['error']['customerhasongoingbackupjob'] = 'Es gibt noch einen austehenden Backup-Job. Bitte haben Sie etwas Geduld.';
+$lng['success']['backupscheduled'] = 'Ihre Sicherung wurde erfolgreich geplant. Bitte warten Sie nun, bis diese abgearbeitet wurde.';
+$lng['crondesc']['cron_backup'] = 'Ausstehende Sicherungen erstellen';
+$lng['error']['backupfunctionnotenabled'] = 'Die Sicherungs-Funktion is nicht aktiviert';
+$lng['serversettings']['backupenabled']['title'] = "Backup für Kunden aktivieren";
+$lng['serversettings']['backupenabled']['description'] = "Wenn dies aktiviert ist, kann der Kunde Sicherungen planen (cron-backup) welche ein Archiv in sein Heimatverzeichnis ablegt (Unterordner vom Kunden wählbar)";
+$lng['extras']['path_protection_label'] = '<strong class="red">Wichtig</strong>';
+$lng['extras']['path_protection_info'] = '<strong class="red">Wir raten dringend dazu den angegebenen Pfad zu schützen, siehe "Extras" -> "Verzeichnisschutz"</strong>';

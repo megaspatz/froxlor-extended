@@ -3328,16 +3328,33 @@ if (isFroxlorVersion('0.9.35')) {
 	updateToVersion('0.9.35.1');
 }
 
-if (isDatabaseVersion('201603151')) {
+
+if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201603151')) {
 
 	showUpdateStep("Adding Default Values to Table " . TABLE_PANEL_DOMAINS);
 	Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `dkim_id` int(11) unsigned NOT NULL default '0';");
         Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `registration_date` date NOT NULL default '0000-00-00';");
         Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `termination_date` date NOT NULL default '0000-00-00';");
+}
         
-        
+
+if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201603151')) {
+
+	showUpdateStep("Adding new backup settings and cron");
+	$enable_backup = isset($_POST['enable_backup']) ? (int) $_POST['enable_backup'] : "0";
+	Settings::AddNew("system.backupenabled", $enable_backup);
+	$stmt = Database::prepare("
+		INSERT INTO `" . TABLE_PANEL_CRONRUNS . "` SET
+		`module` = 'froxlor/backup',
+		`cronfile` = 'backup',
+		`interval` = '1 DAY',
+		`desc_lng_key` = 'cron_backup',
+		`lastrun` = 0,
+		`isactive` = :isactive"
+	);
+	Database::pexecute($stmt, array('isactive' => $enable_backup));
+
 	lastStepStatus(0);
 
 	updateToDbVersion('201604270');
 }
-
