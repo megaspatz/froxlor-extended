@@ -3335,10 +3335,14 @@ if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201603151')) {
 	Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `dkim_id` int(11) unsigned NOT NULL default '0';");
         Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `registration_date` date NOT NULL default '0000-00-00';");
         Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `termination_date` date NOT NULL default '0000-00-00';");
+        
+        lastStepStatus(0);
+
+	updateToDbVersion('201604270');
 }
         
 
-if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201603151')) {
+if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201604270')) {
 
 	showUpdateStep("Adding new backup settings and cron");
 	$enable_backup = isset($_POST['enable_backup']) ? (int) $_POST['enable_backup'] : "0";
@@ -3356,5 +3360,5 @@ if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201603151')) {
 
 	lastStepStatus(0);
 
-	updateToDbVersion('201604270');
+	updateToDbVersion('201604271');
 }
