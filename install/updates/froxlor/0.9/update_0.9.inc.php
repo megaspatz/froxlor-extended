@@ -3362,3 +3362,17 @@ if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201604270')) {
 
 	updateToDbVersion('201604271');
 }
+
+if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201604271')) {
+
+	showUpdateStep("Adding Default-Values to table " . TABLE_PANEL_IPSANDPORTS);
+	Database::query("alter table " . TABLE_PANEL_IPSANDPORTS . " modify `ssl_cert_file` varchar(255) NOT NULL default '';");
+        Database::query("alter table " . TABLE_PANEL_IPSANDPORTS . " modify `ssl_key_file` varchar(255) NOT NULL default '';");
+        Database::query("alter table " . TABLE_PANEL_IPSANDPORTS . " modify `ssl_ca_file` varchar(255) NOT NULL default '';");
+	lastStepStatus(0);
+        
+              
+       
+        
+	updateToDbVersion('2016042290');
+}

@@ -245,8 +245,8 @@ CREATE TABLE `panel_domains` (
   `deactivated` tinyint(1) NOT NULL default '0',
   `bindserial` varchar(10) NOT NULL default '2000010100',
   `add_date` int( 11 ) NOT NULL default '0',
-  `registration_date` date NOT NULL,
-  `termination_date` date NOT NULL,
+  `registration_date` date NOT NULL default '0000-00-00',
+  `termination_date` date NOT NULL default '0000-00-00',
   `authcode` varchar(255) NOT NULL DEFAULT '',
   `phpsettingid` INT( 11 ) UNSIGNED NOT NULL DEFAULT '1',
   `mod_fcgid_starter` int(4) default '-1',
@@ -275,9 +275,9 @@ CREATE TABLE `panel_ipsandports` (
   `vhostcontainer_servername_statement` tinyint(1) NOT NULL default '0',
   `specialsettings` text,
   `ssl` tinyint(4) NOT NULL default '0',
-  `ssl_cert_file` varchar(255) NOT NULL,
-  `ssl_key_file` varchar(255) NOT NULL,
-  `ssl_ca_file` varchar(255) NOT NULL,
+  `ssl_cert_file` varchar(255) NOT NULL default '',
+  `ssl_key_file` varchar(255) NOT NULL default '',
+  `ssl_ca_file` varchar(255) NOT NULL default '',
   `default_vhostconf_domain` text,
   `ssl_cert_chainfile` varchar(255) NOT NULL,
   `docroot` varchar(255) NOT NULL default '',
@@ -559,7 +559,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
 	('panel', 'version', '0.9.35.1'),
-	('panel', 'db_version', '201604270');
+	('panel', 'db_version', '201604290');
 
 
 DROP TABLE IF EXISTS `panel_tasks`;
