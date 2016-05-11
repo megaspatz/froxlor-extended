@@ -1988,3 +1988,12 @@ $lng['serversettings']['backupenabled']['title'] = "Enable backup for customers"
 $lng['serversettings']['backupenabled']['description'] = "If activated, the customer will be able to schedule backup jobs (cron-backup) which generates an archive within his docroot (subdirectory chosable by customer)";
 $lng['extras']['path_protection_label'] = '<strong class="red">Important</strong>';
 $lng['extras']['path_protection_info'] = '<strong class="red">We strongly recommend protecting the given path, see "Extras" -> "Directory protection"</strong>';
+
+// Authcode
+$lng['domains']['authcode'] = 'AuthCode';
+$lng['domains']['authcode_desc'] = 'AuthCode also known as AuthInfo'; 
+
+// Extended DNS
+$lng['ext-dns']['title'] = "Extended DNS" ;
+$lng['ext-dns']['enable']['title'] = 'Enable Extended DNS';
+$lng['ext-dns']['enable']['description'] = 'If enabled, please dissable (Standard)-Nameserver.';

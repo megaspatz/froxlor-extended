@@ -3376,3 +3376,12 @@ if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201604271')) {
         
 	updateToDbVersion('2016042290');
 }
+if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('2016042290')) {
+    
+    showUpdateStep("Adding new Settings");
+    Settings::AddNew("ext-dns.enabled", "0");
+    lastStepStatus(0);
+
+    updateToDbVersion('201605101');
+}
+// Settings::AddNew("system.backupenabled", $enable_backup);
