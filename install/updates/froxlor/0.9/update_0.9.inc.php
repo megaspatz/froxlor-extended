@@ -3384,4 +3384,11 @@ if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('2016042290')) {
 
     updateToDbVersion('201605101');
 }
-// Settings::AddNew("system.backupenabled", $enable_backup);
+
+if (isFroxlorVersion('0.9.35.1')) {
+
+	showUpdateStep("Updating from 0.9.35.1 to 0.9.36 final");
+	lastStepStatus(0);
+
+	updateToVersion('0.9.36');
+}
