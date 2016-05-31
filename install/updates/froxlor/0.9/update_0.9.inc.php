@@ -3393,7 +3393,7 @@ if (isFroxlorVersion('0.9.35.1')) {
 	updateToVersion('0.9.36');
 }
 
-if (isDatabaseVersion('201604270')) {
+if (isDatabaseVersion('201605101')) {
 
 	showUpdateStep("Adding new dns related tables and settings");
 	$enable_dns = isset($_POST['enable_dns']) ? (int) $_POST['enable_dns'] : "0";
