@@ -3446,3 +3446,12 @@ if (isDatabaseVersion('201605170')) {
 
 	updateToDbVersion('201605180');
 }
+
+if (isDatabaseVersion('201605180')) {
+
+    showUpdateStep("Remove ext-dns Settings from table " . TABLE_PANEL_SETTINGS);
+    Database::query("DELETE FROM `" . TABLE_PANEL_SETTINGS . "` WHERE `settinggroup` = 'ext-dns';");
+    lastStepStatus(0);
+    
+    updateToDbVersion('201606010');
+}

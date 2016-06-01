@@ -2024,7 +2024,4 @@ $lng['error']['dns_record_toolong'] = 'Records/labels can only be up to 63 chara
 $lng['domains']['authcode'] = 'AuthCode';
 $lng['domains']['authcode_desc'] = 'AuthCode also known as AuthInfo'; 
 
-// Extended DNS
-$lng['ext-dns']['title'] = "Extended DNS" ;
-$lng['ext-dns']['enable']['title'] = 'Enable Extended DNS';
-$lng['ext-dns']['enable']['description'] = 'If enabled, please dissable (Standard)-Nameserver.';
+
