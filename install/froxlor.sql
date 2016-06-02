@@ -192,6 +192,7 @@ CREATE TABLE `panel_customers` (
   `pop3` tinyint(1) NOT NULL default '1',
   `imap` tinyint(1) NOT NULL default '1',
   `perlenabled` tinyint(1) NOT NULL default '0',
+  `dnsenabled` tinyint(1) NOT NULL default '0'
   `theme` varchar(255) NOT NULL default 'Sparkle',
   `custom_notes` text,
   `custom_notes_show` tinyint(1) NOT NULL default '0',
@@ -245,8 +246,8 @@ CREATE TABLE `panel_domains` (
   `deactivated` tinyint(1) NOT NULL default '0',
   `bindserial` varchar(10) NOT NULL default '2000010100',
   `add_date` int( 11 ) NOT NULL default '0',
-  `registration_date` date NOT NULL,
-  `termination_date` date NOT NULL,
+  `registration_date` date NOT NULL default '0000-00-00',
+  `termination_date` date NOT NULL default '0000-00-00',
   `authcode` varchar(255) NOT NULL DEFAULT '',
   `phpsettingid` INT( 11 ) UNSIGNED NOT NULL DEFAULT '1',
   `mod_fcgid_starter` int(4) default '-1',
@@ -275,9 +276,9 @@ CREATE TABLE `panel_ipsandports` (
   `vhostcontainer_servername_statement` tinyint(1) NOT NULL default '0',
   `specialsettings` text,
   `ssl` tinyint(4) NOT NULL default '0',
-  `ssl_cert_file` varchar(255) NOT NULL,
-  `ssl_key_file` varchar(255) NOT NULL,
-  `ssl_ca_file` varchar(255) NOT NULL,
+  `ssl_cert_file` varchar(255) NOT NULL default '',
+  `ssl_key_file` varchar(255) NOT NULL default '',
+  `ssl_ca_file` varchar(255) NOT NULL default '',
   `default_vhostconf_domain` text,
   `ssl_cert_chainfile` varchar(255) NOT NULL,
   `docroot` varchar(255) NOT NULL default '',
@@ -378,7 +379,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('admin', 'show_version_login', '0'),
 	('admin', 'show_version_footer', '0'),
 	('spf', 'use_spf', '0'),
-	('spf', 'spf_entry', '@	IN	TXT	"v=spf1 a mx -all"'),
+	('spf', 'spf_entry', '"v=spf1 a mx -all"'),
 	('dkim', 'dkim_algorithm', 'all'),
 	('dkim', 'dkim_add_adsp', '1'),
 	('dkim', 'dkim_keylength', '1024'),
@@ -527,7 +528,10 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'letsencryptkeysize', '4096'),
 	('system', 'letsencryptreuseold', 0),
 	('system', 'leenabled', '0'),
-  	('panel', 'decimal_places', '4'),
+	('system', 'backupenabled', '0'),
+	('system', 'dnsenabled', '0'),
+	('system', 'dns_server', 'bind'),
+	('panel', 'decimal_places', '4'),
 	('panel', 'adminmail', 'admin@SERVERNAME'),
 	('panel', 'phpmyadmin_url', ''),
 	('panel', 'webmail_url', ''),
@@ -557,8 +561,8 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_numeric', '0'),
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
-	('panel', 'version', '0.9.35.1'),
-	('panel', 'db_version', '201603151');
+	('panel', 'version', '0.9.36'),
+	('panel', 'db_version', '201606010');
 
 
 DROP TABLE IF EXISTS `panel_tasks`;
@@ -767,7 +771,8 @@ INSERT INTO `cronjobs_run` (`id`, `module`, `cronfile`, `interval`, `isactive`, 
 	(4, 'froxlor/ticket', 'ticketarchive', '1 MONTH', '1', 'cron_ticketarchive'),
 	(5, 'froxlor/reports', 'usage_report', '1 DAY', '1', 'cron_usage_report'),
 	(6, 'froxlor/core', 'mailboxsize', '6 HOUR', '1', 'cron_mailboxsize'),
-	(7, 'froxlor/letsencrypt', 'letsencrypt', '5 MINUTE', '0', 'cron_letsencrypt');
+	(7, 'froxlor/letsencrypt', 'letsencrypt', '5 MINUTE', '0', 'cron_letsencrypt'),
+	(8, 'froxlor/backup', 'backup', '1 DAY', '1', 'cron_backup');
 
 
 
@@ -853,5 +858,18 @@ CREATE TABLE IF NOT EXISTS `panel_domaintoip` (
   `id_domain` int(11) unsigned NOT NULL,
   `id_ipandports` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id_domain`,`id_ipandports`)
+) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+DROP TABLE IF EXISTS `domain_dns_entries`;
+CREATE TABLE `domain_dns_entries` (
+  `id` int(20) NOT NULL auto_increment,
+  `domain_id` int(15) NOT NULL,
+  `record` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL DEFAULT 'A',
+  `content` text NOT NULL,
+  `ttl` int(11) NOT NULL DEFAULT '18000',
+  `prio` int(11) DEFAULT NULL,
+  PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;
 
