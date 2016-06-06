@@ -17,6 +17,9 @@
  *
  */
 
+
+require_once 'german.ext.lng.php';
+
 /**
  * Global
  */

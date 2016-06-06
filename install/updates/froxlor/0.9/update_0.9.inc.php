@@ -3455,3 +3455,13 @@ if (isDatabaseVersion('201605180')) {
     
     updateToDbVersion('201606010');
 }
+
+if (isDatabaseVersion('201606010')) {
+
+    showUpdateStep("Update DB-Schema to MySQL 5.6");
+    Database::query("alter table " . TABLE_MAIL_VIRTUAL . " modify `destination` text;");
+    
+    lastStepStatus(0);
+    
+    updateToDbVersion('201606060');
+}
