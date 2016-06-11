@@ -141,16 +141,6 @@ return array(
 					'int_max' => 2147483647, /* integer max */
 					'save_method' => 'storeSettingField',
 					),
-                                'system_default_soa_minserial' => array(
-					'label' => $lng['serversettings']['default_soa_minserial'],
-					'settinggroup' => 'system',
-					'varname' => 'default_soa_minserial',
-					'type' => 'int',
-					'default' => 2016010100, 
-					'int_min' => 2000000000, 
-					'int_max' => 2147483647, /* integer max */
-					'save_method' => 'storeSettingField',
-					),
                                 'system_default_soa_refresh' => array(
 					'label' => $lng['serversettings']['default_soa_refresh'],
 					'settinggroup' => 'system',

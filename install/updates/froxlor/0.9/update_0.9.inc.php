@@ -3470,7 +3470,7 @@ if (isDatabaseVersion('201606010')) {
 if (isDatabaseVersion('201606060')) {
 
     showUpdateStep("Add DNS-Default-Settings");
-    Settings::AddNew("system.default_soa_minserial", "2016010100");
+    
     Settings::AddNew("system.default_soa_refresh", "3600");
     Settings::AddNew("system.default_soa_retry", "900");
     Settings::AddNew("system.default_soa_expire", "1209600");

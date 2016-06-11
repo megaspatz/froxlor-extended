@@ -28,8 +28,7 @@ $lng['emails']['reject'] = 'Reject';
 $lng['emails']['discard'] = 'Discard';
 
 // DNS
-$lng['serversettings']['default_soa_minserial']['title']= 'Serial';
-$lng['serversettings']['default_soa_minserial']['description']= 'Default Start-Serial (SOA)';
+
 $lng['serversettings']['default_soa_refresh']['title'] = 'Refresh';
 $lng['serversettings']['default_soa_refresh']['description'] = 'SOA refresh';
 $lng['serversettings']['default_soa_retry']['title'] = 'Retry';

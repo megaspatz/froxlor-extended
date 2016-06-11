@@ -17,7 +17,7 @@
 function createDomainZone($domain_id, $froxlorhostname = false)
 {
         $defaultttl = Settings::Get('system.defaultttl');
-        $default_soa_minserial = Settings::Get('system.default_soa_minserial');
+
         $default_soa_refresh = Settings::Get('system.default_soa_refresh');
         $default_soa_retry = Settings::Get('system.default_soa_retry');
         $default_soa_expire = Settings::Get('system.default_soa_expire');
