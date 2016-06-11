@@ -20,13 +20,17 @@ if (! defined('AREA'))
 // This file is being included in admin_domains and customer_domains
 	// and therefore does not need to require lib/init.php
 
+// Get Default-SOA-Settings from Database
+$defaultttl = Settings::Get('system.defaultttl');
+
+
 $domain_id = isset($_GET['domain_id']) ? (int) $_GET['domain_id'] : null;
 
 $record = isset($_POST['record']['record']) ? trim($_POST['record']['record']) : null;
 $type = isset($_POST['record']['type']) ? $_POST['record']['type'] : 'A';
 $prio = isset($_POST['record']['prio']) ? (int) $_POST['record']['prio'] : null;
 $content = isset($_POST['record']['content']) ? trim($_POST['record']['content']) : null;
-$ttl = isset($_POST['record']['ttl']) ? (int) $_POST['record']['ttl'] : 18000;
+$ttl = isset($_POST['record']['ttl']) ? (int) $_POST['record']['ttl'] : $defaultttl;
 
 // get domain-name
 $domain = getAllowedDomainEntry($domain_id, AREA, $userinfo, $idna_convert);
@@ -72,7 +76,7 @@ if ($action == 'add_record' && ! empty($_POST)) {
 	// TODO regex validate content for invalid characters
 
 	if ($ttl <= 0) {
-		$ttl = 18000;
+		$ttl = $defaultttl;
 	}
 
 	if (empty($content)) {

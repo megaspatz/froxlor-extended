@@ -58,6 +58,24 @@ return array(
 					'default' => '/etc/bind/',
 					'save_method' => 'storeSettingField',
 					),
+                                'system_bindconf_zonefiles_directory' => array(
+					'label' => $lng['serversettings']['bindconf_zonefiles_directory'],
+					'settinggroup' => 'system',
+					'varname' => 'bindconf_zonefiles_directory',
+					'type' => 'string',
+					'string_type' => 'dir',
+					'default' => '/etc/bind/domains',
+					'save_method' => 'storeSettingField',
+					),
+                                'system_bindconf_file' => array(
+					'label' => $lng['serversettings']['bindconf_file'],
+					'settinggroup' => 'system',
+					'varname' => 'bindconf_file',
+					'type' => 'string',
+					'string_type' => 'dir',
+					'default' => 'froxlor.conf',
+					'save_method' => 'storeSettingField',
+					),
 				'system_bindreload_command' => array(
 					'label' => $lng['serversettings']['bindreload_command'],
 					'settinggroup' => 'system',
@@ -119,7 +137,57 @@ return array(
 					'varname' => 'defaultttl',
 					'type' => 'int',
 					'default' => 604800, /* 1 week */
-					'int_min' => 3600, /* 1 hour */
+					'int_min' => 180, /* 1 hour */
+					'int_max' => 2147483647, /* integer max */
+					'save_method' => 'storeSettingField',
+					),
+                                'system_default_soa_minserial' => array(
+					'label' => $lng['serversettings']['default_soa_minserial'],
+					'settinggroup' => 'system',
+					'varname' => 'default_soa_minserial',
+					'type' => 'int',
+					'default' => 2016010100, 
+					'int_min' => 2000000000, 
+					'int_max' => 2147483647, /* integer max */
+					'save_method' => 'storeSettingField',
+					),
+                                'system_default_soa_refresh' => array(
+					'label' => $lng['serversettings']['default_soa_refresh'],
+					'settinggroup' => 'system',
+					'varname' => 'default_soa_refresh',
+					'type' => 'int',
+					'default' => 3600, 
+					'int_min' => 180, 
+					'int_max' => 2147483647, /* integer max */
+					'save_method' => 'storeSettingField',
+					),
+                                'system_default_soa_retry' => array(
+					'label' => $lng['serversettings']['default_soa_retry'],
+					'settinggroup' => 'system',
+					'varname' => 'default_soa_retry',
+					'type' => 'int',
+					'default' => 900, 
+					'int_min' => 180, 
+					'int_max' => 2147483647, /* integer max */
+					'save_method' => 'storeSettingField',
+					),
+                                'system_default_soa_expire' => array(
+					'label' => $lng['serversettings']['default_soa_expire'],
+					'settinggroup' => 'system',
+					'varname' => 'default_soa_expire',
+					'type' => 'int',
+					'default' => 1209600, 
+					'int_min' => 180, 
+					'int_max' => 2147483647, /* integer max */
+					'save_method' => 'storeSettingField',
+					),
+                                'system_default_soa_minimum' => array(
+					'label' => $lng['serversettings']['default_soa_minimum'],
+					'settinggroup' => 'system',
+					'varname' => 'default_soa_minimum',
+					'type' => 'int',
+					'default' => 86400, 
+					'int_min' => 180, 
 					'int_max' => 2147483647, /* integer max */
 					'save_method' => 'storeSettingField',
 					),

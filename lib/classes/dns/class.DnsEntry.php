@@ -29,7 +29,7 @@ class DnsEntry
 
 	public $content;
 
-	public function __construct($record = '', $type = 'A', $content = null, $prio = 0, $ttl = 18000, $class = 'IN')
+	public function __construct($record = '', $type = 'A', $content = null, $prio = 0, $ttl = '', $class = 'IN')
 	{
 		$this->record = $record;
 		$this->type = $type;

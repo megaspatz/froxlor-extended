@@ -531,7 +531,14 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'backupenabled', '0'),
 	('system', 'dnsenabled', '0'),
 	('system', 'dns_server', 'bind'),
-	('panel', 'decimal_places', '4'),
+        ('system', 'default_soa_minserial','2016010100'),
+        ('system', 'default_soa_refresh','3600'),
+        ('system', 'default_soa_retry','900'),
+        ('system', 'default_soa_expire','1209600'),
+        ('system', 'default_soa_minimum','86400'),
+        ('system', 'bindconf_zonefiles_directory', '/etc/bind/domains'),
+        ('system', 'bindconf_file','froxlor.conf'),
+  	('panel', 'decimal_places', '4'),
 	('panel', 'adminmail', 'admin@SERVERNAME'),
 	('panel', 'phpmyadmin_url', ''),
 	('panel', 'webmail_url', ''),
@@ -562,7 +569,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
 	('panel', 'version', '0.9.36'),
-	('panel', 'db_version', '201606060');
+	('panel', 'db_version', '201606110');
 
 
 DROP TABLE IF EXISTS `panel_tasks`;

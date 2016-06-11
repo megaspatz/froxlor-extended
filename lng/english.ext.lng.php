@@ -26,3 +26,22 @@ $lng['emails']['processing_desc'] = 'Accept - Mails will acceptet and deliverd t
 $lng['emails']['accept'] = 'Accept';
 $lng['emails']['reject'] = 'Reject';
 $lng['emails']['discard'] = 'Discard';
+
+// DNS
+$lng['serversettings']['default_soa_minserial']['title']= 'Serial';
+$lng['serversettings']['default_soa_minserial']['description']= 'Default Start-Serial (SOA)';
+$lng['serversettings']['default_soa_refresh']['title'] = 'Refresh';
+$lng['serversettings']['default_soa_refresh']['description'] = 'SOA refresh';
+$lng['serversettings']['default_soa_retry']['title'] = 'Retry';
+$lng['serversettings']['default_soa_retry']['description'] = 'SOA retry';
+$lng['serversettings']['default_soa_expire']['title'] = 'Expire';
+$lng['serversettings']['default_soa_expire']['desciption'] = 'SOA expire';
+$lng['serversettings']['default_soa_minimum']['title'] = 'Minimum';
+$lng['serversettings']['default_soa_minimum']['description'] = 'SOA minimum';
+$lng['serversettings']['bindconf_zonefiles_directory']['title']= 'Zonefile Direktory';
+$lng['serversettings']['bindconf_zonefiles_directory']['description']= 'Where Froxlor stores the Zonefiles';
+$lng['serversettings']['bindconf_file']['title'] = 'Nameserverconfig file';
+$lng['serversettings']['bindconf_file']['description'] = 'This configfile will be created by Froxlor';
+
+        
+

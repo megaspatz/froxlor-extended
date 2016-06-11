@@ -3465,3 +3465,21 @@ if (isDatabaseVersion('201606010')) {
     
     updateToDbVersion('201606060');
 }
+
+
+if (isDatabaseVersion('201606060')) {
+
+    showUpdateStep("Add DNS-Default-Settings");
+    Settings::AddNew("system.default_soa_minserial", "2016010100");
+    Settings::AddNew("system.default_soa_refresh", "3600");
+    Settings::AddNew("system.default_soa_retry", "900");
+    Settings::AddNew("system.default_soa_expire", "1209600");
+    Settings::AddNew("system.default_soa_minimum", "86400");
+    Settings::AddNew("system.bindconf_zonefiles_directory", "/etc/bind/domains");
+    Settings::AddNew("system.bindconf_file", "froxlor.conf");
+    
+    
+    lastStepStatus(0);
+    
+    updateToDbVersion('201606110');
+}

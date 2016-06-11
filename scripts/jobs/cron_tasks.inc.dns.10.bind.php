@@ -28,15 +28,16 @@ class bind extends DnsBase
 		$this->_cleanZonefiles();
 
 		// check for subfolder in bind-config-directory
-		if (! file_exists(makeCorrectDir(Settings::Get('system.bindconf_directory') . '/domains/'))) {
-			$this->_logger->logAction(CRON_ACTION, LOG_NOTICE, 'mkdir ' . escapeshellarg(makeCorrectDir(Settings::Get('system.bindconf_directory') . '/domains/')));
-			safe_exec('mkdir -p ' . escapeshellarg(makeCorrectDir(Settings::Get('system.bindconf_directory') . '/domains/')));
+                $system_bindconf_zonefiles_directory = Settings::Get('system.bindconf_zonefiles_directory');
+		if (! file_exists(makeCorrectDir($system_bindconf_zonefiles_directory))) {
+			$this->_logger->logAction(CRON_ACTION, LOG_NOTICE, 'mkdir ' . escapeshellarg(makeCorrectDir($system_bindconf_zonefiles_directory)));
+			safe_exec('mkdir -p ' . escapeshellarg(makeCorrectDir($system_bindconf_zonefiles_directory)));
 		}
 
 		$domains = $this->getDomainList();
-
+                $system_bindconf_file = Settings::Get('system.bindconf_directory') . '/' . Settings::Get('system.bindconf_file');
 		if (! empty($domains)) {
-			$bindconf_file = '# ' . Settings::Get('system.bindconf_directory') . 'froxlor_bind.conf' . "\n" . '# Created ' . date('d.m.Y H:i') . "\n" . '# Do NOT manually edit this file, all changes will be deleted after the next domain change at the panel.' . "\n\n";
+			$bindconf_file = '# ' . $system_bindconf_file . "\n" . '# Created ' . date('d.m.Y H:i') . "\n" . '# Do NOT manually edit this file, all changes will be deleted after the next domain change at the panel.' . "\n\n";
 
 			foreach ($domains as $domain) {
 				// check for system-hostname
@@ -48,8 +49,9 @@ class bind extends DnsBase
 				$this->_logger->logAction(CRON_ACTION, LOG_DEBUG, 'Generating dns zone for ' . $domain['domain']);
 				$zone = createDomainZone(($domain['id'] == 'none') ? $domain : $domain['id'], $isFroxlorHostname);
 				$zonefile = (string)$zone;
-				$domain['zonefile'] = 'domains/' . $domain['domain'] . '.zone';
-				$zonefile_name = makeCorrectFile(Settings::Get('system.bindconf_directory') . '/' . $domain['zonefile']);
+				$domain['zonefile'] =  $domain['domain'] . '.zone';
+				$zonefile_name = makeCorrectFile($system_bindconf_zonefiles_directory . '/' . $domain['zonefile']);
+                                $domain['zonefile_name'] = $zonefile_name;
 				$zonefile_handler = fopen($zonefile_name, 'w');
 				fwrite($zonefile_handler, $zonefile);
 				fclose($zonefile_handler);
@@ -60,10 +62,10 @@ class bind extends DnsBase
 			}
 
 			// write config
-			$bindconf_file_handler = fopen(makeCorrectFile(Settings::Get('system.bindconf_directory') . '/froxlor_bind.conf'), 'w');
+			$bindconf_file_handler = fopen(makeCorrectFile( $system_bindconf_file), 'w');
 			fwrite($bindconf_file_handler, $bindconf_file);
 			fclose($bindconf_file_handler);
-			$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'froxlor_bind.conf written');
+			$this->_logger->logAction(CRON_ACTION, LOG_INFO, $system_bindconf_file . ' written');
 
 			// reload Bind
 			safe_exec(escapeshellcmd(Settings::Get('system.bindreload_command')));
@@ -78,7 +80,7 @@ class bind extends DnsBase
 		$bindconf_file = '# Domain ID: ' . $domain['id'] . ' - CustomerID: ' . $domain['customerid'] . ' - CustomerLogin: ' . $domain['loginname'] . "\n";
 		$bindconf_file .= 'zone "' . $domain['domain'] . '" in {' . "\n";
 		$bindconf_file .= '	type master;' . "\n";
-		$bindconf_file .= '	file "' . makeCorrectFile(Settings::Get('system.bindconf_directory') . '/' . $domain['zonefile']) . '";' . "\n";
+		$bindconf_file .= '	file "' . makeCorrectFile($domain['zonefile_name']) . '";' . "\n";
 		$bindconf_file .= '	allow-query { any; };' . "\n";
 
 		if (count($this->_ns) > 0 || count($this->_axfr) > 0) {
@@ -112,7 +114,7 @@ class bind extends DnsBase
 
 	private function _cleanZonefiles()
 	{
-		$config_dir = makeCorrectFile(Settings::Get('system.bindconf_directory') . '/domains/');
+		$config_dir = makeCorrectFile(Settings::Get('system.bindconf_directory') . '/' . Settings::Get('system.bindconf_file'));
 
 		$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'Cleaning dns zone files from ' . $config_dir);
 

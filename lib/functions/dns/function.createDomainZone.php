@@ -16,6 +16,14 @@
  */
 function createDomainZone($domain_id, $froxlorhostname = false)
 {
+        $defaultttl = Settings::Get('system.defaultttl');
+        $default_soa_minserial = Settings::Get('system.default_soa_minserial');
+        $default_soa_refresh = Settings::Get('system.default_soa_refresh');
+        $default_soa_retry = Settings::Get('system.default_soa_retry');
+        $default_soa_expire = Settings::Get('system.default_soa_expire');
+        $default_soa_minimum = Settings::Get('system.default_soa_minimum');
+    
+    
 	if (!$froxlorhostname)
 	{
 		// get domain-name
@@ -137,6 +145,11 @@ function createDomainZone($domain_id, $froxlorhostname = false)
 			// use the first NS entry as primary ns
 			$primary_ns = $entry['content'];
 		}
+                if($entry['ttl'] == $defaultttl) {
+                    // If the TTL equals the defaulttl, so there is no TTL for this entry needed
+                    $entry['ttl'] = '';
+                }
+                    
 		$zonerecords[] = new DnsEntry($entry['record'], $entry['type'], $entry['content'], $entry['prio'], $entry['ttl']);
 	}
 
@@ -267,11 +280,11 @@ function createDomainZone($domain_id, $froxlorhostname = false)
 
 	// TODO for now, dummy time-periods
 	$soa_content = $primary_ns . " " . escapeSoaAdminMail(Settings::Get('panel.adminmail')) . " (" . PHP_EOL;
-	$soa_content .= $domain['bindserial'] . "\t; serial" . PHP_EOL;
-	$soa_content .= "1800\t; refresh (30 mins)" . PHP_EOL;
-	$soa_content .= "900\t; retry (15 mins)" . PHP_EOL;
-	$soa_content .= "604800\t; expire (7 days)" . PHP_EOL;
-	$soa_content .= "1200\t)\t; minimum (20 mins)";
+	$soa_content .= _getSerial() . "\t; serial" . PHP_EOL;
+	$soa_content .= $default_soa_refresh ."\t; refresh " . PHP_EOL;
+	$soa_content .= $default_soa_retry ."\t; retry " . PHP_EOL;
+	$soa_content .= $default_soa_expire ."\t; expire" . PHP_EOL;
+	$soa_content .= $default_soa_minimum ."\t)\t; minimum ";
 
 	$soa_record = new DnsEntry('@', 'SOA', $soa_content);
 	array_unshift($zonerecords, $soa_record);
@@ -317,4 +330,9 @@ function escapeSoaAdminMail($email)
 	$mail_parts = explode("@", $email);
 	$escpd_mail = str_replace(".", "\.", $mail_parts[0]).".".$mail_parts[1].".";
 	return $escpd_mail;
+}
+
+function _getSerial()
+{
+    return time();
 }
