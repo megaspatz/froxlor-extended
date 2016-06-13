@@ -203,6 +203,10 @@ return array (
 			        'label' => $lng['admin']['updatecounters'],
 			        'required_resources' => 'change_serversettings',
 			    ),
+                            array (
+			        'url' => 'admin_server.php?page=server',
+			        'label' => $lng['admin']['serveradmin'],			        'required_resources' => 'change_serversettings',
+			    ),
 			),
 		),
 		'traffic' => array (

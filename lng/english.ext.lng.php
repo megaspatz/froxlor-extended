@@ -42,5 +42,6 @@ $lng['serversettings']['bindconf_zonefiles_directory']['description']= 'Where Fr
 $lng['serversettings']['bindconf_file']['title'] = 'Nameserverconfig file';
 $lng['serversettings']['bindconf_file']['description'] = 'This configfile will be created by Froxlor';
 
+$lng['admin']['serveradmin'] = 'Server';
         
 
