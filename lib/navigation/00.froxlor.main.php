@@ -246,11 +246,6 @@ return array (
 					'label' => $lng['admin']['rebuildconf'],
 					'required_resources' => 'change_serversettings',
 				),
-			    array (
-			        'url' => 'admin_autoupdate.php?page=overview',
-			        'label' => $lng['admin']['autoupdate'],
-			        'required_resources' => 'change_serversettings',
-			    ),
 			),
 		),
 	    'server_php' => array (
