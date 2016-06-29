@@ -259,24 +259,7 @@ $header
 							<td>{$lng['admin']['installedversion']}:</td>
 							<td>{$version}{$branding} (DB: {$dbversion})</td>
 						</tr>
-						<tr>
-							<td>{$lng['admin']['latestversion']}:</td>
-							<if $isnewerversion != 0 >
-								<td><a href="$lookfornewversion_link"><strong>$lookfornewversion_lable</strong></a></td>
-							<else>
-								<td><a href="$lookfornewversion_link">$lookfornewversion_lable</a></td>
-							</if>
-						</tr>
-						<if $isnewerversion == 1 >
-						<tr>
-							<td colspan="2"><strong>{$lng['admin']['newerversionavailable']}</strong></td>
-						</tr>
-							<if $lookfornewversion_addinfo != ''>
-							<tr>
-								<td colspan="2">$lookfornewversion_addinfo</td>
-							</tr>
-							</if>
-						</if>
+						
 					</tbody>
 				</table>
 			</div>

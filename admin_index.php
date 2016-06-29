@@ -82,55 +82,55 @@ if ($page == 'overview') {
 	$mysqlserverversion = Database::getAttribute(PDO::ATTR_SERVER_VERSION);
 	$webserverinterface = strtoupper(@php_sapi_name());
 
-	if ((isset($_GET['lookfornewversion']) && $_GET['lookfornewversion'] == 'yes')
-		|| (isset($lookfornewversion) && $lookfornewversion == 'yes')
-	) {
-		$update_check_uri = 'http://version.froxlor.org/Froxlor/legacy/' . $version;
-
-		if (ini_get('allow_url_fopen')) {
-			$latestversion = @file($update_check_uri);
-
-			if (isset($latestversion[0])) {
-				$latestversion = explode('|', $latestversion[0]);
-
-				if (is_array($latestversion)
-					&& count($latestversion) >= 1
-				) {
-					$_version = $latestversion[0];
-					$_message = isset($latestversion[1]) ? $latestversion[1] : '';
-					$_link = isset($latestversion[2]) ? $latestversion[2] : htmlspecialchars($filename . '?s=' . urlencode($s) . '&page=' . urlencode($page) . '&lookfornewversion=yes');
-
-					// add the branding so debian guys are not gettings confused
-					// about their version-number
-					$lookfornewversion_lable = $_version.$branding;
-					$lookfornewversion_link = $_link;
-					$lookfornewversion_addinfo = $_message;
-
-					// not numeric -> error-message
-					if (!preg_match('/^((\d+\\.)(\d+\\.)(\d+\\.)?(\d+)?(\-(svn|dev|rc)(\d+))?)$/', $_version)) {
-						// check for customized version to not output
-						// "There is a newer version of froxlor" besides the error-message
-						$isnewerversion = 2;
-					} elseif (version_compare2($version, $_version) == -1) {
-						$isnewerversion = 1;
-					} else {
-						$isnewerversion = 0;
-					}
-				} else {
-					redirectTo($update_check_uri.'/pretty', NULL, false);
-				}
-			} else {
-				redirectTo($update_check_uri.'/pretty', NULL, false);
-			}
-		} else {
-			redirectTo($update_check_uri.'/pretty', NULL, false);
-		}
-	} else {
-		$lookfornewversion_lable = $lng['admin']['lookfornewversion']['clickhere'];
-		$lookfornewversion_link = htmlspecialchars($filename . '?s=' . urlencode($s) . '&page=' . urlencode($page) . '&lookfornewversion=yes');
-		$lookfornewversion_addinfo = '';
-		$isnewerversion = 0;
-	}
+//	if ((isset($_GET['lookfornewversion']) && $_GET['lookfornewversion'] == 'yes')
+//		|| (isset($lookfornewversion) && $lookfornewversion == 'yes')
+//	) {
+//		$update_check_uri = 'http://version.froxlor.org/Froxlor/legacy/' . $version;
+//
+//		if (ini_get('allow_url_fopen')) {
+//			$latestversion = @file($update_check_uri);
+//
+//			if (isset($latestversion[0])) {
+//				$latestversion = explode('|', $latestversion[0]);
+//
+//				if (is_array($latestversion)
+//					&& count($latestversion) >= 1
+//				) {
+//					$_version = $latestversion[0];
+//					$_message = isset($latestversion[1]) ? $latestversion[1] : '';
+//					$_link = isset($latestversion[2]) ? $latestversion[2] : htmlspecialchars($filename . '?s=' . urlencode($s) . '&page=' . urlencode($page) . '&lookfornewversion=yes');
+//
+//					// add the branding so debian guys are not gettings confused
+//					// about their version-number
+//					$lookfornewversion_lable = $_version.$branding;
+//					$lookfornewversion_link = $_link;
+//					$lookfornewversion_addinfo = $_message;
+//
+//					// not numeric -> error-message
+//					if (!preg_match('/^((\d+\\.)(\d+\\.)(\d+\\.)?(\d+)?(\-(svn|dev|rc)(\d+))?)$/', $_version)) {
+//						// check for customized version to not output
+//						// "There is a newer version of froxlor" besides the error-message
+//						$isnewerversion = 2;
+//					} elseif (version_compare2($version, $_version) == -1) {
+//						$isnewerversion = 1;
+//					} else {
+//						$isnewerversion = 0;
+//					}
+//				} else {
+//					redirectTo($update_check_uri.'/pretty', NULL, false);
+//				}
+//			} else {
+//				redirectTo($update_check_uri.'/pretty', NULL, false);
+//			}
+//		} else {
+//			redirectTo($update_check_uri.'/pretty', NULL, false);
+//		}
+//	} else {
+//		$lookfornewversion_lable = $lng['admin']['lookfornewversion']['clickhere'];
+//		$lookfornewversion_link = htmlspecialchars($filename . '?s=' . urlencode($s) . '&page=' . urlencode($page) . '&lookfornewversion=yes');
+//		$lookfornewversion_addinfo = '';
+//		$isnewerversion = 0;
+//	}
 
 	$dec_places = Settings::Get('panel.decimal_places');
 	$userinfo['diskspace'] = round($userinfo['diskspace'] / 1024, $dec_places);
@@ -371,10 +371,10 @@ if ($page == 'overview') {
 				// send mail and say thanks
 				$_mailerror = false;
 				try {
-					$mail->Subject = '[Froxlor] Error report by user';
+					$mail->Subject = '[Froxlor-Extended] Error report by user';
 					$mail->AltBody = $mail_body;
 					$mail->MsgHTML($mail_html);
-					$mail->AddAddress('error-reports@froxlor.org', 'Froxlor Developer Team');
+					$mail->AddAddress('error-reports@shsh.de', 'Froxlor-Extended Developer Team');
 					$mail->Send();
 				} catch(phpmailerException $e) {
 					$mailerr_msg = $e->errorMessage();
