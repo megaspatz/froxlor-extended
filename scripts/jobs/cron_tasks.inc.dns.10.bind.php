@@ -39,6 +39,13 @@ class bind extends DnsBase
 		if (! empty($domains)) {
 			$bindconf_file = '# ' . $system_bindconf_file . "\n" . '# Created ' . date('d.m.Y H:i') . "\n" . '# Do NOT manually edit this file, all changes will be deleted after the next domain change at the panel.' . "\n\n";
 
+		if (empty($domains)) {
+			$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'No domains found for nameserver-config, skipping...');
+			return;
+		}
+
+		$bindconf_file = '# ' . Settings::Get('system.bindconf_directory') . 'froxlor_bind.conf' . "\n" . '# Created ' . date('d.m.Y H:i') . "\n" . '# Do NOT manually edit this file, all changes will be deleted after the next domain change at the panel.' . "\n\n";
+
 			foreach ($domains as $domain) {
 				// check for system-hostname
 				$isFroxlorHostname = false;

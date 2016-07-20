@@ -531,6 +531,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'backupenabled', '0'),
 	('system', 'dnsenabled', '0'),
 	('system', 'dns_server', 'bind'),
+        ('system', 'apacheglobaldiropt', ''),
         ('system', 'default_soa_refresh','3600'),
         ('system', 'default_soa_retry','900'),
         ('system', 'default_soa_expire','1209600'),

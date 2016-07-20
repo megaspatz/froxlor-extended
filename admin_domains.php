@@ -382,7 +382,11 @@ if ($page == 'domains' || $page == 'overview') {
 				));
 
                                 $termination_date = trim($_POST['termination_date']);
-                                $termination_date = validate($termination_date, 'termination_date', '/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/', '', array('0000-00-00', '0', ''));
+				$termination_date = validate($termination_date, 'termination_date', '/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/', '', array(
+					'0000-00-00',
+					'0',
+					''
+				));
                                 
                                 $authcode = trim($_POST['authcode']);
                                  

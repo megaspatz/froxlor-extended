@@ -3286,8 +3286,6 @@ if (isFroxlorVersion('0.9.35-dev7')) {
 	showUpdateStep("Updating from 0.9.35-dev7 to 0.9.35-rc1");
 	lastStepStatus(0);
 
-	updateToVersion('0.9.35-rc1');
-
 	Settings::AddNew("panel.db_version", "201603070");
 
 	showUpdateStep("Removing unused table and fields from database");
@@ -3301,6 +3299,8 @@ if (isFroxlorVersion('0.9.35-dev7')) {
 	Settings::AddNew("system.leenabled", $enable_letsencrypt);
 	Database::query("UPDATE `" . TABLE_PANEL_CRONRUNS . "` SET `isactive` = '" . $enable_letsencrypt . "' WHERE `cronfile` = 'letsencrypt'");
 	lastStepStatus(0);
+        
+        updateToVersion('0.9.35-rc1');
 }
 
 if (isDatabaseVersion('201603070')) {
@@ -3357,7 +3357,6 @@ if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201604270')) {
 		`isactive` = :isactive"
 	);
 	Database::pexecute($stmt, array('isactive' => $enable_backup));
-
 	lastStepStatus(0);
 
 	updateToDbVersion('201604271');

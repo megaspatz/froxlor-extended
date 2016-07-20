@@ -99,7 +99,6 @@ class DomainBulkAction
                 'adminid',
                 'customerid',
                 'add_date'
-                
     );
 
     /**
