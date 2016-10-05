@@ -63,8 +63,8 @@ function createDomainZone($domain_id, $froxlorhostname = false, $isMainButSubTo 
 	if ($domain['isemaildomain'] === '1') {
 		addRequiredEntry('@', 'MX', $required_entries);
 		if (Settings::Get('system.dns_createmailentry')) {
-			foreach(['imap', 'pop3', 'mail', 'smtp'] as $record) {
-				foreach(['AAAA', 'A'] as $type) {
+			foreach(array('imap', 'pop3', 'mail', 'smtp') as $record) {
+				foreach(array('AAAA', 'A') as $type) {
 					addRequiredEntry($record, $type, $required_entries);
                                 }
 			}
@@ -232,6 +232,7 @@ function createDomainZone($domain_id, $froxlorhostname = false, $isMainButSubTo 
 			if (Settings::Get('system.mxservers') != '') {
 				$mxservers = explode(',', Settings::Get('system.mxservers'));
 				foreach ($mxservers as $mxserver) {
+					$mxserver = trim($mxserver);
 					if (substr($mxserver, - 1, 1) != '.') {
 						$mxserver .= '.';
 					}

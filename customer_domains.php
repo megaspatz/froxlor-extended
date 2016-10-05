@@ -20,6 +20,11 @@
 define('AREA', 'customer');
 require './lib/init.php';
 
+// redirect if this customer page is hidden via settings
+if (Settings::IsInList('panel.customer_hide_options','domains')) {
+	redirectTo('customer_index.php');
+}
+
 if (isset($_POST['id'])) {
 	$id = intval($_POST['id']);
 } elseif (isset($_GET['id'])) {
@@ -36,7 +41,7 @@ if ($page == 'overview') {
 			'd.domain' => $lng['domains']['domainname']
 		);
 		$paging = new paging($userinfo, TABLE_PANEL_DOMAINS, $fields);
-		$domains_stmt = Database::prepare("SELECT `d`.`id`, `d`.`customerid`, `d`.`domain`, `d`.`documentroot`, `d`.`isemaildomain`, `d`.`caneditdomain`, `d`.`iswildcarddomain`, `d`.`parentdomainid`, `d`.`letsencrypt`, `d`.`termination_date`, `d`.`authcode`, `ad`.`id` AS `aliasdomainid`, `ad`.`domain` AS `aliasdomain`, `da`.`id` AS `domainaliasid`, `da`.`domain` AS `domainalias` FROM `" . TABLE_PANEL_DOMAINS . "` `d`
+		$domains_stmt = Database::prepare("SELECT `d`.`id`, `d`.`customerid`, `d`.`domain`, `d`.`documentroot`, `d`.`isbinddomain`, `d`.`isemaildomain`, `d`.`caneditdomain`, `d`.`iswildcarddomain`, `d`.`parentdomainid`, `d`.`letsencrypt`, `d`.`termination_date`, `ad`.`id` AS `aliasdomainid`, `ad`.`domain` AS `aliasdomain`, `da`.`id` AS `domainaliasid`, `da`.`domain` AS `domainalias` FROM `" . TABLE_PANEL_DOMAINS . "` `d`
 			LEFT JOIN `" . TABLE_PANEL_DOMAINS . "` `ad` ON `d`.`aliasdomain`=`ad`.`id`
 			LEFT JOIN `" . TABLE_PANEL_DOMAINS . "` `da` ON `da`.`aliasdomain`=`d`.`id`
 			WHERE `d`.`customerid`= :customerid
@@ -260,7 +265,7 @@ if ($page == 'overview') {
 				}
 
 				$subdomain = $idna_convert->encode(preg_replace(array('/\:(\d)+$/', '/^https?\:\/\//'), '', validate($_POST['subdomain'], 'subdomain', '', 'subdomainiswrong')));
-				$domain = $idna_convert->encode($_POST['domain']);
+				$domain = $_POST['domain'];
 				$domain_stmt = Database::prepare("SELECT * FROM `" . TABLE_PANEL_DOMAINS . "`
 					WHERE `domain` = :domain
 					AND `customerid` = :customerid
@@ -271,6 +276,13 @@ if ($page == 'overview') {
 				$domain_check = Database::pexecute_first($domain_stmt, array("domain" => $domain, "customerid" => $userinfo['customerid']));
 
 				$completedomain = $subdomain . '.' . $domain;
+
+				if (Settings::Get('system.validate_domain') && ! validateDomain($completedomain)) {
+					standard_error(array(
+						'stringiswrong',
+						'mydomain'
+					));
+				}
 
 				if ($completedomain == Settings::Get('system.hostname')) {
 					standard_error('admin_domain_emailsystemhostname');
@@ -307,14 +319,14 @@ if ($page == 'overview') {
 					triggerLetsEncryptCSRForAliasDestinationDomain($aliasdomain, $log);
 				}
 
-				if (isset($_POST['url']) && $_POST['url'] != '' && validateUrl($idna_convert->encode($_POST['url']))) {
+				if (isset($_POST['url']) && $_POST['url'] != '' && validateUrl($_POST['url'])) {
 					$path = $_POST['url'];
 					$_doredirect = true;
 				} else {
 					$path = validate($_POST['path'], 'path');
 				}
 
-				if (!preg_match('/^https?\:\/\//', $path) || !validateUrl($idna_convert->encode($path))) {
+				if (!preg_match('/^https?\:\/\//', $path) || !validateUrl($path)) {
 					// If path is empty or '/' and 'Use domain name as default value for DocumentRoot path' is enabled in settings,
 					// set default path to subdomain or domain name
 					if ((($path == '') || ($path == '/')) && Settings::Get('system.documentroot_use_default_value') == 1) {
@@ -534,14 +546,14 @@ if ($page == 'overview') {
 
 		if (isset($result['customerid']) && $result['customerid'] == $userinfo['customerid']) {
 			if (isset($_POST['send']) && $_POST['send'] == 'send') {
-				if (isset($_POST['url']) && $_POST['url'] != '' && validateUrl($idna_convert->encode($_POST['url']))) {
+				if (isset($_POST['url']) && $_POST['url'] != '' && validateUrl($_POST['url'])) {
 					$path = $_POST['url'];
 					$_doredirect = true;
 				} else {
 					$path = validate($_POST['path'], 'path');
 				}
 
-				if (!preg_match('/^https?\:\/\//', $path) || !validateUrl($idna_convert->encode($path))) {
+				if (!preg_match('/^https?\:\/\//', $path) || !validateUrl($path)) {
 					// If path is empty or '/' and 'Use domain name as default value for DocumentRoot path' is enabled in settings,
 					// set default path to subdomain or domain name
 					if ((($path == '') || ($path == '/')) && Settings::Get('system.documentroot_use_default_value') == 1) {
@@ -718,7 +730,7 @@ if ($page == 'overview') {
 					AND `dip`.`id_ipandports`
 					IN (SELECT `id_ipandports` FROM `".TABLE_DOMAINTOIP."`
 						WHERE `id_domain` = :id)
-					GROUP BY `d`.`domain`
+					GROUP BY `d`.`id`, `d`.`domain`
 					ORDER BY `d`.`domain` ASC"
 				);
 				Database::pexecute($domains_stmt, array("id" => $result['id'], "customerid" => $userinfo['customerid']));
@@ -727,7 +739,7 @@ if ($page == 'overview') {
 					$domains .= makeoption($idna_convert->decode($row_domain['domain']), $row_domain['id'], $result['aliasdomain']);
 				}
 
-				if (preg_match('/^https?\:\/\//', $result['documentroot']) && validateUrl($idna_convert->encode($result['documentroot']))) {
+				if (preg_match('/^https?\:\/\//', $result['documentroot']) && validateUrl($result['documentroot'])) {
 					if (Settings::Get('panel.pathedit') == 'Dropdown') {
 						$urlvalue = $result['documentroot'];
 						$pathSelect = makePathfield($userinfo['documentroot'], $userinfo['guid'], $userinfo['guid']);
@@ -923,4 +935,9 @@ if ($page == 'overview') {
 } elseif ($page == 'domaindnseditor' && $userinfo['dnsenabled'] == '1' && Settings::Get('system.dnsenabled') == '1') {
 
 	require_once __DIR__.'/dns_editor.php';
+
+} elseif ($page == 'sslcertificates') {
+
+	require_once __DIR__.'/ssl_certificates.php';
+
 }

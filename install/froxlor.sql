@@ -23,7 +23,7 @@ CREATE TABLE `ftp_users` (
   `shell` varchar(255) NOT NULL default '/bin/false',
   `login_enabled` enum('N','Y') NOT NULL default 'N',
   `login_count` int(15) NOT NULL default '0',
-  `last_login` datetime NOT NULL default '0000-00-00 00:00:00',
+  `last_login` datetime default NULL,
   `up_count` int(15) NOT NULL default '0',
   `up_bytes` bigint(30) NOT NULL default '0',
   `down_count` int(15) NOT NULL default '0',
@@ -66,7 +66,7 @@ CREATE TABLE `mail_virtual` (
   `id` int(11) NOT NULL auto_increment,
   `email` varchar(255) NOT NULL default '',
   `email_full` varchar(255) NOT NULL default '',
-  `destination` text,
+  `destination` text NOT NULL default '',
   `domainid` int(11) NOT NULL default '0',
   `customerid` int(11) NOT NULL default '0',
   `popaccountid` int(11) NOT NULL default '0',
@@ -523,7 +523,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'lepublickey', 'unset'),
 	('system', 'letsencryptca', 'production'),
 	('system', 'letsencryptcountrycode', 'DE'),
-	('system', 'letsencryptstate', 'Germany'),
+	('system', 'letsencryptstate', 'Hessen'),
 	('system', 'letsencryptchallengepath', '/var/www/froxlor'),
 	('system', 'letsencryptkeysize', '4096'),
 	('system', 'letsencryptreuseold', 0),
@@ -531,6 +531,26 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'backupenabled', '0'),
 	('system', 'dnsenabled', '0'),
 	('system', 'dns_server', 'bind'),
+	('system', 'apacheglobaldiropt', ''),
+        ('system', 'default_soa_refresh','3600'),
+        ('system', 'default_soa_retry','900'),
+        ('system', 'default_soa_expire','1209600'),
+        ('system', 'default_soa_minimum','86400'),
+        ('system', 'bindconf_zonefiles_directory', '/etc/bind/domains'),
+        ('system', 'bindconf_file','froxlor.conf'),
+  	('system', 'allow_customer_shell', '0'),
+	('system', 'available_shells', ''),
+	('system', 'le_froxlor_enabled', '0'),
+	('system', 'le_froxlor_redirect', '0'),
+	('system', 'letsencryptacmeconf', '/etc/apache2/conf-enabled/acme.conf'),
+	('system', 'mail_use_smtp', '0'),
+	('system', 'mail_smtp_host', 'localhost'),
+	('system', 'mail_smtp_port', '25'),
+	('system', 'mail_smtp_usetls', '1'),
+	('system', 'mail_smtp_auth', '1'),
+	('system', 'mail_smtp_user', ''),
+	('system', 'mail_smtp_passwd', ''),
+	
         ('system', 'default_soa_refresh','3600'),
         ('system', 'default_soa_retry','900'),
         ('system', 'default_soa_expire','1209600'),
@@ -567,15 +587,16 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_numeric', '0'),
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
-	('panel', 'version', '0.9.36'),
-	('panel', 'db_version', '201606110');
+	('panel', 'version', '0.9.37'),
+	('panel', 'db_version', '201609240');
+
 
 
 DROP TABLE IF EXISTS `panel_tasks`;
 CREATE TABLE `panel_tasks` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `type` int(11) NOT NULL default '0',
-  `data` text NOT NULL,
+  `data` text,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;
 

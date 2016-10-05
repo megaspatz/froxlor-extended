@@ -29,12 +29,23 @@ class pdns extends DnsBase
 		// connect to db
 		$this->_connectToPdnsDb();
 
-		// clean up
-		$this->_cleanZonefiles();
-
 		$domains = $this->getDomainList();
 
-		if (! empty($domains)) {
+		// clean up
+		$this->_clearZoneTables($domains);
+
+		if (empty($domains)) {
+			$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'No domains found for nameserver-config, skipping...');
+			return;
+		}
+
+		foreach ($domains as $domain) {
+			if ($domain['ismainbutsubto'] > 0) {
+				// domains with ismainbutsubto>0 are handled by recursion within walkDomainList()
+				continue;
+			}
+			$this->walkDomainList($domain, $domains);
+		}
 
 			foreach ($domains as $domain) {
 				// check for system-hostname
@@ -50,24 +61,61 @@ class pdns extends DnsBase
 				$this->_insertRecords($dom_id, $zone->records, $zone->origin);
 				$this->_insertAllowedTransfers($dom_id);
 
-				$this->_logger->logAction(CRON_ACTION, LOG_INFO, '`' . $domain['domain'] . '` zone written');
+		if ($domain['zonefile'] == '') {
+		// check for system-hostname
+			$isFroxlorHostname = false;
+			if (isset($domain['froxlorhost']) && $domain['froxlorhost'] == 1) {
+				$isFroxlorHostname = true;
 			}
 
-			$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'Database updated');
-
-			// reload Bind
-			safe_exec(escapeshellcmd(Settings::Get('system.bindreload_command')));
-			$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'pdns reloaded');
+			if ($domain['ismainbutsubto'] == 0) {
+				$zoneContent = createDomainZone(($domain['id'] == 'none') ?
+					$domain :
+					$domain['id'],
+					$isFroxlorHostname);
+				if (count($subzones)) {
+					foreach ($subzones as $subzone) {
+						$zoneContent->records[] = $subzone;
+					}
+				}
+				$pdnsDomId = $this->_insertZone($zoneContent->origin, $zoneContent->serial);
+				$this->_insertRecords($pdnsDomId, $zoneContent->records, $zoneContent->origin);
+				$this->_insertAllowedTransfers($pdnsDomId);
+				$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'DB entries stored for zone `' . $domain['domain'] . '`');
+			} else {
+				return createDomainZone(($domain['id'] == 'none') ?
+					$domain :
+					$domain['id'],
+					$isFroxlorHostname,
+					true);
+			}
+		} else {
+			$this->_logger->logAction(CRON_ACTION, LOG_ERROR,
+				'Custom zonefiles are NOT supported when PowerDNS is selected as DNS daemon (triggered by: ' .
+				$domain['domain'] . ')');
 		}
 	}
+        }
 
-	private function _cleanZonefiles()
+	private function _clearZoneTables($domains = null)
 	{
 		$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'Cleaning dns zone entries from database');
 
-		$this->pdns_db->query("TRUNCATE TABLE `records`");
-		$this->pdns_db->query("TRUNCATE TABLE `domains`");
-		$this->pdns_db->query("TRUNCATE TABLE `domainmetadata`");
+		$pdns_domains_stmt = $this->pdns_db->prepare("SELECT `id`, `name` FROM `domains` WHERE `name` = :domain");
+
+		$del_rec_stmt = $this->pdns_db->prepare("DELETE FROM `records` WHERE `domain_id` = :did");
+		$del_meta_stmt = $this->pdns_db->prepare("DELETE FROM `domainmetadata` WHERE `domain_id` = :did");
+		$del_dom_stmt = $this->pdns_db->prepare("DELETE FROM `domains` WHERE `id` = :did");
+
+		foreach ($domains as $domain)
+		{
+			$pdns_domains_stmt->execute(array('domain' => $domain['domain']));
+			$pdns_domain = $pdns_domains_stmt->fetch(\PDO::FETCH_ASSOC);
+
+			$del_rec_stmt->execute(array('did' => $pdns_domain['id']));
+			$del_meta_stmt->execute(array('did' => $pdns_domain['id']));
+			$del_dom_stmt->execute(array('did' => $pdns_domain['id']));
+		}
 	}
 
 	private function _insertZone($domainname, $serial = 0)
@@ -82,6 +130,8 @@ class pdns extends DnsBase
 
 	private function _insertRecords($domainid = 0, $records, $origin)
 	{
+		$changedate = date('Ymds', time());
+
 		$ins_stmt = $this->pdns_db->prepare("
 			INSERT INTO records set
 			`domain_id` = :did,
@@ -91,7 +141,7 @@ class pdns extends DnsBase
 			`ttl` = :ttl,
 			`prio` = :prio,
 			`disabled` = '0',
-			`change_date` = UNIX_TIMESTAMP()
+			`change_date` = :changedate
 		");
 
 		foreach ($records as $record)
@@ -110,7 +160,8 @@ class pdns extends DnsBase
 				'type' => $record->type,
 				'content' => $record->content,
 				'ttl' => $record->ttl,
-				'prio' => $record->priority
+				'prio' => $record->priority,
+				'changedate' => $changedate
 			);
 			$ins_stmt->execute($ins_data);
 		}

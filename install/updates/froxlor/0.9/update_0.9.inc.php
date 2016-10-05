@@ -3286,8 +3286,6 @@ if (isFroxlorVersion('0.9.35-dev7')) {
 	showUpdateStep("Updating from 0.9.35-dev7 to 0.9.35-rc1");
 	lastStepStatus(0);
 
-	updateToVersion('0.9.35-rc1');
-
 	Settings::AddNew("panel.db_version", "201603070");
 
 	showUpdateStep("Removing unused table and fields from database");
@@ -3301,6 +3299,8 @@ if (isFroxlorVersion('0.9.35-dev7')) {
 	Settings::AddNew("system.leenabled", $enable_letsencrypt);
 	Database::query("UPDATE `" . TABLE_PANEL_CRONRUNS . "` SET `isactive` = '" . $enable_letsencrypt . "' WHERE `cronfile` = 'letsencrypt'");
 	lastStepStatus(0);
+        
+        updateToVersion('0.9.35-rc1');
 }
 
 if (isDatabaseVersion('201603070')) {
@@ -3357,7 +3357,6 @@ if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201604270')) {
 		`isactive` = :isactive"
 	);
 	Database::pexecute($stmt, array('isactive' => $enable_backup));
-
 	lastStepStatus(0);
 
 	updateToDbVersion('201604271');
@@ -3441,13 +3440,14 @@ if (isDatabaseVersion('201605120')) {
 if (isDatabaseVersion('201605170')) {
 
 	showUpdateStep("Adding new dns-editor setting for customers");
-	Database::query("ALTER TABLE `panel_customers` ADD `dnsenabled` tinyint(1) NOT NULL default '0' AFTER `perlenabled`;");
+	Database::query("ALTER TABLE `".TABLE_PANEL_CUSTOMERS."` ADD `dnsenabled` tinyint(1) NOT NULL default '0' AFTER `perlenabled`;");
 	lastStepStatus(0);
 
 	updateToDbVersion('201605180');
 }
 
 if (isDatabaseVersion('201605180')) {
+
 
     showUpdateStep("Remove ext-dns Settings from table " . TABLE_PANEL_SETTINGS);
     Database::query("DELETE FROM `" . TABLE_PANEL_SETTINGS . "` WHERE `settinggroup` = 'ext-dns';");
@@ -3480,6 +3480,122 @@ if (isDatabaseVersion('201606060')) {
     
     
     lastStepStatus(0);
-    
     updateToDbVersion('201606110');
 }
+if (isDatabaseVersion('201606110')) {
+    
+
+	showUpdateStep("Changing tables to be more mysql strict-mode compatible");
+	Database::query("ALTER TABLE `".TABLE_FTP_USERS."` CHANGE `last_login` `last_login` DATETIME NULL DEFAULT NULL;");
+	Database::query("ALTER TABLE `".TABLE_PANEL_IPSANDPORTS."` CHANGE `specialsettings` `specialsettings` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;");
+	Database::query("ALTER TABLE `".TABLE_PANEL_TASKS."` CHANGE `data` `data` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;");
+	lastStepStatus(0);
+
+	updateToDbVersion('201606190');
+}
+
+if (isDatabaseVersion('201606190')) {
+
+	showUpdateStep("Adding new setting for mod_php users to specify content of the global directory options file");
+	Settings::AddNew("system.apacheglobaldiropt", "");
+	lastStepStatus(0);
+
+	updateToDbVersion('201607140');
+}
+
+if (isFroxlorVersion('0.9.36')) {
+
+	showUpdateStep("Updating from 0.9.36 to 0.9.37-rc1", false);
+	updateToVersion('0.9.37-rc1');
+}
+
+if (isDatabaseVersion('201607140')) {
+
+	showUpdateStep("Adding new setting to hide certain options in customer panel");
+	Settings::AddNew("panel.customer_hide_options", "");
+	lastStepStatus(0);
+
+	updateToDbVersion('201607210');
+}
+
+if (isFroxlorVersion('0.9.37-rc1')) {
+
+	showUpdateStep("Updating from 0.9.37-rc1 to 0.9.37 final", false);
+	updateToVersion('0.9.37');
+}
+
+if (isDatabaseVersion('201607210')) {
+
+	showUpdateStep("Adding new settings for customer shell option");
+	Settings::AddNew("system.allow_customer_shell", "0");
+	Settings::AddNew("system.available_shells", "");
+	lastStepStatus(0);
+
+	updateToDbVersion('201608260');
+}
+
+if (isDatabaseVersion('201608260')) {
+
+	showUpdateStep("Adding new settings to use Let's Encrypt for froxlor");
+	Settings::AddNew("system.le_froxlor_enabled", "0");
+	Settings::AddNew("system.le_froxlor_redirect", "0");
+	lastStepStatus(0);
+
+	updateToDbVersion('201609050');
+}
+
+if (isDatabaseVersion('201609050')) {
+
+	showUpdateStep("Adding new settings for acme.conf (Let's Encrypt)");
+	// get user-chosen value
+	$websrv_default = "/etc/apache2/conf-enabled/acme.conf";
+	if (Settings::Get('system.webserver') == 'nginx') {
+		$websrv_default = "/etc/nginx/acme.conf";
+	}
+	$acmeconffile = isset($_POST['acmeconffile']) ? $_POST['acmeconffile'] : $websrv_default;
+	$acmeconffile = makeCorrectFile($acmeconffile);
+	Settings::AddNew("system.letsencryptacmeconf", $acmeconffile);
+	lastStepStatus(0);
+
+	updateToDbVersion('201609120');
+}
+
+if (isDatabaseVersion('201609120')) {
+
+	showUpdateStep("Adding new SMTP settings for emails sent by froxlor");
+	// get user-chosen value
+	$smtp_enable = isset($_POST['smtp_enable']) ? (int) $_POST['smtp_enable'] : 0;
+	$smtp_host = isset($_POST['smtp_host']) ? $_POST['smtp_host'] : "localhost";
+	$smtp_port = isset($_POST['smtp_port']) ? (int)$_POST['smtp_port'] : 25;
+	$smtp_usetls = isset($_POST['smtp_usetls']) ? (int) $_POST['smtp_usetls'] : 1;
+	$smtp_useauth = isset($_POST['smtp_auth']) ? (int) $_POST['smtp_auth'] : 1;
+	$smtp_user = isset($_POST['smtp_user']) ? $_POST['smtp_user'] : "";
+	$smtp_passwd = isset($_POST['smtp_passwd']) ? $_POST['smtp_passwd'] : "";
+
+	Settings::AddNew("system.mail_use_smtp", $smtp_enable);
+	Settings::AddNew("system.mail_smtp_host", $smtp_host);
+	Settings::AddNew("system.mail_smtp_port", $smtp_port);
+	Settings::AddNew("system.mail_smtp_usetls", $smtp_usetls);
+	Settings::AddNew("system.mail_smtp_auth", $smtp_useauth);
+	Settings::AddNew("system.mail_smtp_user", $smtp_user);
+	Settings::AddNew("system.mail_smtp_passwd", $smtp_passwd);
+	lastStepStatus(0);
+
+	updateToDbVersion('201609200');
+}
+
+if (isDatabaseVersion('201609200')) {
+
+    showUpdateStep("Changing tables to be more mysql strict-mode compatible");
+    
+    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` CHANGE `registration_date` `registration_date` DATE NULL DEFAULT NULL;");
+    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` CHANGE `termination_date` `termination_date` DATE NULL DEFAULT NULL;");
+    
+    Database::query("update `".TABLE_PANEL_DOMAINS."` set `registration_date`  = null where `registration_date`  = '0000-00-00';");
+    Database::query("update `".TABLE_PANEL_DOMAINS."` set `termination_date`  = null where `termination_date`  = '0000-00-00';");
+    
+    lastStepStatus(0);
+
+    updateToDbVersion('201609240');
+}
+

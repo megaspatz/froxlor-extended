@@ -27,8 +27,7 @@ if (! extension_loaded('curl')) {
 	exit();
 }
 
-$certificates_stmt = Database::query(
-	"
+$certificates_stmt = Database::query("
 		SELECT
 			domssl.`id`,
 			domssl.`domainid`,
@@ -63,8 +62,7 @@ $certificates_stmt = Database::query(
 			)
 	");
 
-$aliasdomains_stmt = Database::prepare(
-	"
+$aliasdomains_stmt = Database::prepare("
 		SELECT
 			dom.`id` as domainid,
 			dom.`domain`,
@@ -76,8 +74,7 @@ $aliasdomains_stmt = Database::prepare(
 			AND dom.`iswildcarddomain` = 0
 	");
 
-$updcert_stmt = Database::prepare(
-	"
+$updcert_stmt = Database::prepare("
 		REPLACE INTO
 			`" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "`
 		SET
@@ -93,7 +90,108 @@ $updcert_stmt = Database::prepare(
 
 $upddom_stmt = Database::prepare("UPDATE `" . TABLE_PANEL_DOMAINS . "` SET `ssl_redirect` = '1' WHERE `id` = :domainid");
 
+// flag for re-generation of vhost files
 $changedetected = 0;
+
+// first - generate LE for system-vhost if enabled
+if (Settings::Get('system.le_froxlor_enabled') == '1') {
+
+	$certrow = array(
+		'loginname' => 'froxlor.panel',
+		'domain' => Settings::Get('system.hostname'),
+		'domainid' => 0,
+		'documentroot' => FROXLOR_INSTALL_DIR,
+		'leprivatekey' => Settings::Get('system.leprivatekey'),
+		'lepublickey' => Settings::Get('system.lepublickey'),
+		'ssl_redirect' => Settings::Get('system.le_froxlor_redirect'),
+		'expirationdate' => null,
+		'ssl_cert_file' => null,
+		'ssl_key_file' => null,
+		'ssl_ca_file' => null,
+		'ssl_csr_file' => null,
+		'id' => null
+	);
+
+	$froxlor_ssl_settings_stmt = Database::prepare("
+		SELECT * FROM `" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "`
+		WHERE `domainid` = '0' AND
+		(`expirationdate` < DATE_ADD(NOW(), INTERVAL 30 DAY) OR `expirationdate` IS NULL)
+	");
+	$froxlor_ssl = Database::pexecute_first($froxlor_ssl_settings_stmt);
+
+	$insert_or_update_required = true;
+	if ($froxlor_ssl) {
+		$certrow['id'] = $froxlor_ssl['id'];
+		$certrow['expirationdate'] = $froxlor_ssl['expirationdate'];
+		$certrow['ssl_cert_file'] = $froxlor_ssl['ssl_cert_file'];
+		$certrow['ssl_key_file'] = $froxlor_ssl['ssl_key_file'];
+		$certrow['ssl_ca_file'] = $froxlor_ssl['ssl_ca_file'];
+		$certrow['ssl_csr_file'] = $froxlor_ssl['ssl_csr_file'];
+	} else {
+		// check whether we have an entry with valid certificates which just does not need
+		// updating yet, so we need to skip this here
+		$froxlor_ssl_settings_stmt = Database::prepare("
+			SELECT * FROM `" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "` WHERE `domainid` = '0'
+		");
+		$froxlor_ssl = Database::pexecute_first($froxlor_ssl_settings_stmt);
+		if ($froxlor_ssl && ! empty($froxlor_ssl['ssl_cert_file'])) {
+			$insert_or_update_required = false;
+		}
+	}
+
+	if ($insert_or_update_required) {
+		$domains = array(
+			$certrow['domain'],
+			'www.' . $certrow['domain']
+		);
+
+		// Only renew let's encrypt certificate if no broken ssl_redirect is enabled
+		// - this temp. deactivation of the ssl-redirect is handled by the webserver-cronjob
+		$cronlog->logAction(CRON_ACTION, LOG_INFO, "Updating " . $certrow['domain']);
+
+		$cronlog = FroxlorLogger::getInstanceOf(array(
+			'loginname' => $certrow['loginname']
+		));
+
+		try {
+			// Initialize Lescript with documentroot
+			$le = new lescript($cronlog, $version);
+
+			// Initialize Lescript
+			$le->initAccount($certrow, true);
+
+			// Request the new certificate (old key may be used)
+			$return = $le->signDomains($domains, $certrow['ssl_key_file']);
+
+			// We are interessted in the expirationdate
+			$newcert = openssl_x509_parse($return['crt']);
+
+			// Store the new data
+			Database::pexecute($updcert_stmt, array(
+				'id' => $certrow['id'],
+				'domainid' => $certrow['domainid'],
+				'crt' => $return['crt'],
+				'key' => $return['key'],
+				'ca' => $return['chain'],
+				'chain' => $return['chain'],
+				'csr' => $return['csr'],
+				'expirationdate' => date('Y-m-d H:i:s', $newcert['validTo_time_t'])
+			));
+
+			if ($certrow['ssl_redirect'] == 3) {
+				Settings::Set('system.le_froxlor_redirect', '1');
+			}
+
+			$cronlog->logAction(CRON_ACTION, LOG_INFO, "Updated Let's Encrypt certificate for " . $certrow['domain']);
+
+			$changedetected = 1;
+		} catch (Exception $e) {
+			$cronlog->logAction(CRON_ACTION, LOG_ERR, "Could not get Let's Encrypt certificate for " . $certrow['domain'] . ": " . $e->getMessage());
+		}
+	}
+}
+
+// customer domains
 $certrows = $certificates_stmt->fetchAll(PDO::FETCH_ASSOC);
 foreach ($certrows as $certrow) {
 
@@ -104,15 +202,15 @@ foreach ($certrows as $certrow) {
 
 	// Only renew let's encrypt certificate if no broken ssl_redirect is enabled
 	if ($certrow['ssl_redirect'] != 2) {
-		$cronlog->logAction(CRON_ACTION, LOG_DEBUG, "Updating " . $certrow['domain']);
+		$cronlog->logAction(CRON_ACTION, LOG_INFO, "Updating " . $certrow['domain']);
 
-		$cronlog->logAction(CRON_ACTION, LOG_DEBUG, "Adding SAN entry: " . $certrow['domain']);
+		$cronlog->logAction(CRON_ACTION, LOG_INFO, "Adding SAN entry: " . $certrow['domain']);
 		$domains = array(
 			$certrow['domain']
 		);
 		// add www.<domain> to SAN list
 		if ($certrow['wwwserveralias'] == 1) {
-			$cronlog->logAction(CRON_ACTION, LOG_DEBUG, "Adding SAN entry: www." . $certrow['domain']);
+			$cronlog->logAction(CRON_ACTION, LOG_INFO, "Adding SAN entry: www." . $certrow['domain']);
 			$domains[] = 'www.' . $certrow['domain'];
 		}
 
@@ -122,39 +220,38 @@ foreach ($certrows as $certrow) {
 		));
 		$aliasdomains = $aliasdomains_stmt->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($aliasdomains as $aliasdomain) {
-			$cronlog->logAction(CRON_ACTION, LOG_DEBUG, "Adding SAN entry: " . $aliasdomain['domain']);
+			$cronlog->logAction(CRON_ACTION, LOG_INFO, "Adding SAN entry: " . $aliasdomain['domain']);
 			$domains[] = $aliasdomain['domain'];
 			if ($aliasdomain['wwwserveralias'] == 1) {
-				$cronlog->logAction(CRON_ACTION, LOG_DEBUG, "Adding SAN entry: www." . $aliasdomain['domain']);
+				$cronlog->logAction(CRON_ACTION, LOG_INFO, "Adding SAN entry: www." . $aliasdomain['domain']);
 				$domains[] = 'www.' . $aliasdomain['domain'];
 			}
 		}
 
 		try {
 			// Initialize Lescript with documentroot
-			$le = new lescript($cronlog);
+			$le = new lescript($cronlog, $version);
 
 			// Initialize Lescript
 			$le->initAccount($certrow);
 
 			// Request the new certificate (old key may be used)
-			$return = $le->signDomains($domains, $certrow['ssl_key_file'], $certrow['ssl_csr_file']);
+			$return = $le->signDomains($domains, $certrow['ssl_key_file']);
 
 			// We are interessted in the expirationdate
 			$newcert = openssl_x509_parse($return['crt']);
 
 			// Store the new data
-			Database::pexecute($updcert_stmt,
-				array(
-					'id' => $certrow['id'],
-					'domainid' => $certrow['domainid'],
-					'crt' => $return['crt'],
-					'key' => $return['key'],
-					'ca' => $return['chain'],
-					'chain' => $return['chain'],
-					'csr' => $return['csr'],
-					'expirationdate' => date('Y-m-d H:i:s', $newcert['validTo_time_t'])
-				));
+			Database::pexecute($updcert_stmt, array(
+				'id' => $certrow['id'],
+				'domainid' => $certrow['domainid'],
+				'crt' => $return['crt'],
+				'key' => $return['key'],
+				'ca' => $return['chain'],
+				'chain' => $return['chain'],
+				'csr' => $return['csr'],
+				'expirationdate' => date('Y-m-d H:i:s', $newcert['validTo_time_t'])
+			));
 
 			if ($certrow['ssl_redirect'] == 3) {
 				Database::pexecute($upddom_stmt, array(
@@ -166,12 +263,10 @@ foreach ($certrows as $certrow) {
 
 			$changedetected = 1;
 		} catch (Exception $e) {
-			$cronlog->logAction(CRON_ACTION, LOG_ERR,
-				"Could not get Let's Encrypt certificate for " . $certrow['domain'] . ": " . $e->getMessage());
+			$cronlog->logAction(CRON_ACTION, LOG_ERR, "Could not get Let's Encrypt certificate for " . $certrow['domain'] . ": " . $e->getMessage());
 		}
 	} else {
-		$cronlog->logAction(CRON_ACTION, LOG_WARNING,
-			"Skipping Let's Encrypt generation for " . $certrow['domain'] . " due to an enabled ssl_redirect");
+		$cronlog->logAction(CRON_ACTION, LOG_WARNING, "Skipping Let's Encrypt generation for " . $certrow['domain'] . " due to an enabled ssl_redirect");
 	}
 }
 

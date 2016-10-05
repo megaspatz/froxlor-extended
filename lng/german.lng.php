@@ -783,8 +783,6 @@ $lng['serversettings']['default_vhostconf']['description'] = 'Der Inhalt dieses 
 $lng['serversettings']['default_vhostconf_domain']['description'] = 'Der Inhalt dieses Feldes wird direkt in jeden Domain-vHost-Container übernommen. '. $lng['admin']['specialsettings_replacements'].'<strong>ACHTUNG:</strong> Der Code wird nicht auf Fehler geprüft. Etwaige Fehler werden also auch übernommen. Der Webserver könnte nicht mehr starten!';
 $lng['serversettings']['apache_globaldiropt']['title'] = 'Kunden-Prefix Ordner-Optionen';
 $lng['serversettings']['apache_globaldiropt']['description'] = 'Der Inhalt dieses Feldes wird in die 05_froxlor_dirfix_nofcgid.conf Apache Konfigurationsdatei eingefügt. Wenn leer werden folgende Standardwerte verwendet:<br><br>apache >=2.4<br><code>Require all granted<br>AllowOverride All</code><br><br>apache <=2.2<br><code>Order allow,deny<br>allow from all</code>';
-$lng['serversettings']['default_vhostconf']['description'] = 'Der Inhalt dieses Feldes wird direkt in den IP/Port-vHost-Container übernommen.<br /><strong>ACHTUNG:</strong> Der Code wird nicht auf Fehler geprüft. Etwaige Fehler werden also auch übernommen. Der Webserver könnte nicht mehr starten!';
-$lng['serversettings']['default_vhostconf_domain']['description'] = 'Der Inhalt dieses Feldes wird direkt in jeden Domain-vHost-Container übernommen.<br /><strong>ACHTUNG:</strong> Der Code wird nicht auf Fehler geprüft. Etwaige Fehler werden also auch übernommen. Der Webserver könnte nicht mehr starten!';
 $lng['error']['invalidip'] = 'Ungültige IP-Adresse: "%s"';
 $lng['serversettings']['decimal_places'] = 'Nachkommastellen bei der Ausgabe von Traffic/Webspace';
 
@@ -905,7 +903,7 @@ $lng['serversettings']['mail_quota_enabled']['enforcelink'] = 'Hier klicken, um 
 $lng['question']['admin_quotas_reallywipe'] = 'Sind Sie sicher, dass alle E-Mail-Kontingente aus der Tabelle mail_users entfernt werden sollen? Dieser Schritt kann nicht rückgängig gemacht werden!';
 $lng['question']['admin_quotas_reallyenforce'] = 'Sind Sie sicher, dass Sie allen Benutzern das Default-Quota zuweisen wollen? Dies kann nicht rückgängig gemacht werden!';
 $lng['error']['vmailquotawrong'] = 'Die Kontingent-Größe muss positiv sein.';
-$lng['customer']['email_quota'] = 'E-Mail-Kontingent';
+$lng['customer']['email_quota'] = 'E-Mail-Kontingent (MiB)';
 $lng['customer']['email_imap'] = 'IMAP';
 $lng['customer']['email_pop3'] = 'POP3';
 $lng['customer']['mail_quota'] = 'E-Mail-Kontingent';
@@ -1143,7 +1141,9 @@ $lng['admin']['lastlogin_succ'] = 'Letzte Anmeldung';
 $lng['panel']['neverloggedin'] = 'Keine Anmeldung bisher';
 
 // ADDED IN FROXLOR 0.9.6-svn1
-$lng['serversettings']['defaultttl'] = 'Domain TTL für Bind in Sekunden (default \'604800\' = 1 Woche)';
+$lng['serversettings']['defaultttl']['title'] = 'Default TTL';
+$lng['serversettings']['defaultttl']['description'] = 'Domain TTL für Bind in Sekunden (default \'604800\' = 1 Woche)';
+
 $lng['ticket']['logicalorder'] = 'Logische Sortierung';
 $lng['ticket']['orderdesc'] = 'Hier kann eine logische Sortierung für die Ticket-Kategorien angegeben werden. Benutze 1 - 999, niedrigere Zahlen werden zuerst angezeigt.';
 
@@ -1207,7 +1207,7 @@ $lng['serversettings']['perl_path']['description'] = 'Standard ist /usr/bin/perl
 // ADDED IN FROXLOR 0.9.12-svn1
 $lng['admin']['fcgid_settings'] = 'FCGID';
 $lng['serversettings']['mod_fcgid_ownvhost']['title'] = 'Verwende FCGID im Froxlor-Vhost';
-$lng['serversettings']['mod_fcgid_ownvhost']['description'] = 'Wenn verwendet, wird Froxlor selbst unter einem lokalem Benutzer ausgeführt';
+$lng['serversettings']['mod_fcgid_ownvhost']['description'] = 'Wenn verwendet, wird Froxlor selbst unter einem lokalen Benutzer ausgeführt';
 $lng['admin']['mod_fcgid_user'] = 'Lokaler Benutzer für FCGID (Froxlor Vhost)';
 $lng['admin']['mod_fcgid_group'] = 'Lokale Gruppe für FCGID (Froxlor Vhost)';
 
@@ -1296,7 +1296,7 @@ $lng['error']['fcgidstillenabled'] = 'FCGID ist derzeit aktiviert. Bitte deaktiv
 $lng['phpfpm']['vhost_httpuser'] = 'Lokaler Benutzer für PHP-FPM (Froxlor-Vhost)';
 $lng['phpfpm']['vhost_httpgroup'] = 'Lokale Gruppe für PHP-FPM (Froxlor-Vhost)';
 $lng['phpfpm']['ownvhost']['title'] = 'Verwende PHP-FPM im Froxlor-Vhost';
-$lng['phpfpm']['ownvhost']['description'] = 'Wenn verwendet, wird Froxlor selbst unter einem lokalem Benutzer ausgeführt';
+$lng['phpfpm']['ownvhost']['description'] = 'Wenn verwendet, wird Froxlor selbst unter einem lokalen Benutzer ausgeführt';
 
 // ADDED IN FROXLOR 0.9.17
 $lng['crondesc']['cron_usage_report'] = 'Webspace- und Trafficreport';
@@ -1588,9 +1588,6 @@ $lng['integrity_check']['SubdomainSslRedirect'] = 'Falsches SSL-redirect Flag be
 $lng['integrity_check']['FroxlorLocalGroupMemberForFcgidPhpFpm'] = 'froxlor-Benutzer in Kunden-Gruppen (f&uuml;r FCGID/php-fpm)';
 $lng['integrity_check']['WebserverGroupMemberForFcgidPhpFpm'] = 'Webserver-Benutzer in Kunden-Gruppen (f&uuml;r FCGID/php-fpm)';
 $lng['integrity_check']['SubdomainLetsencrypt'] = 'Hauptdomains ohne zugewiesenen SSL-Port haben keine Subdomain mit aktiviertem SSL-Redirect';
-$lng['admin']['specialsettings_replacements'] = "Die folgenden Variablen können verwendet werden:<br/><code>{DOMAIN}</code>, <code>{DOCROOT}</code>, <code>{CUSTOMER}</code>, <code>{IP}</code>, <code>{PORT}</code>, <code>{SCHEME}</code><br/>";
-$lng['serversettings']['default_vhostconf']['description'] = 'Der Inhalt dieses Feldes wird direkt in den IP/Port-vHost-Container übernommen. '.$lng['admin']['specialsettings_replacements'].'<br /><strong>ACHTUNG:</strong> Der Code wird nicht auf Fehler geprüft. Etwaige Fehler werden also auch übernommen. Der Webserver könnte nicht mehr starten!';
-$lng['serversettings']['default_vhostconf_domain']['description'] = 'Der Inhalt dieses Feldes wird direkt in jeden Domain-vHost-Container übernommen. '. $lng['admin']['specialsettings_replacements'].'<strong>ACHTUNG:</strong> Der Code wird nicht auf Fehler geprüft. Etwaige Fehler werden also auch übernommen. Der Webserver könnte nicht mehr starten!';
 $lng['admin']['mod_fcgid_umask']['title'] = 'Umask (Standard: 022)';
 
 // Added for let's encrypt
@@ -1623,7 +1620,7 @@ $lng['admin']['autoupdate'] = 'Auto-Update';
 $lng['error']['customized_version'] = 'Es scheint als wäre die Froxlor Installation angepasst worden. Kein Support, sorry.';
 $lng['error']['autoupdate_0'] = 'Unbekannter Fehler';
 $lng['error']['autoupdate_1'] = 'PHP Einstellung allow_url_fopen ist deaktiviert. Autoupdate benötigt diese Option, bitte in der php.ini aktivieren.';
-$lng['error']['autoupdate_2'] = 'PHP Extension Zlib nicht gefunden, bitte prüfen, ob diese installiert und aktiviert ist.';
+$lng['error']['autoupdate_2'] = 'PHP zip Erweiterung nicht gefunden, bitte prüfen, ob diese installiert und aktiviert ist.';
 $lng['error']['autoupdate_4'] = 'Das froxlor Archiv konnte nicht auf der Festplatte gespeichert werden :(';
 $lng['error']['autoupdate_5'] = 'version.froxlor.org gab ungültige Werte zurück :(';
 $lng['error']['autoupdate_6'] = 'Woops, keine (gültige) Version angegeben für den Download :(';
@@ -1682,3 +1679,35 @@ $lng['serversettings']['dns_server']['description'] = 'Dienste müssen mit den f
 $lng['error']['domain_nopunycode'] = 'Die Eingabe von Punycode (IDNA) ist nicht notwendig. Die Domain wird automatisch konvertiert.';
 $lng['admin']['dnsenabled'] = 'Zugriff auf DNS Editor';
 $lng['error']['dns_record_toolong'] = 'Records/Labels können maximal 63 Zeichen lang sein';
+
+// Added in froxlor 0.9.37-rc1
+$lng['serversettings']['panel_customer_hide_options']['title'] = 'Menüpunkte und Traffic-Charts im Kundenbereich ausblenden';
+$lng['serversettings']['panel_customer_hide_options']['description'] = 'Wählen Sie hier die gewünschten Menüpunkte und Traffic-Charts aus, welche im Kundenbereich ausgeblendet werden sollen. Für Mehrfachauswahl, halten Sie während der Auswahl STRG gedrückt.';
+
+// Added in froxlor 0.9.37.1
+$lng['serversettings']['allow_allow_customer_shell']['title'] = 'Erlaube Kunden für FTP Benutzer eine Shell auszuwählen';
+$lng['serversettings']['allow_allow_customer_shell']['description'] = '<strong class="red">Bitte beachten: Shell Zugriff gestattet dem Benutzer verschiedene Programme auf Ihrem System auszuführen. Mit großer Vorsicht verwenden. Bitte aktiviere dies nur wenn WIRKLICH bekannt ist, was das bedeutet!!!</strong>';
+$lng['serversettings']['available_shells']['title'] = 'Liste der verfügbaren Shells';
+$lng['serversettings']['available_shells']['description'] = 'Komme-getrennte Liste von Shells die der Kunde für seine FTP-Konten wählen kann.<br><br>Hinweis: Die Standard-Shell <strong>/bin/false</strong> wird immer eine Auswahlmöglichkeit sein (wenn aktiviert), auch wenn diese Einstellung leer ist. Sie ist in jedem Fall der Standardwert für alle FTP-Konten';
+$lng['serversettings']['le_froxlor_enabled']['title'] = "Let's Encrypt für den froxlor Vhost verwenden";
+$lng['serversettings']['le_froxlor_enabled']['description'] = "Wenn dies aktiviert ist, erstellt froxlor für seinen vhost automatisch ein Let's Encrypt Zertifikat.";
+$lng['serversettings']['le_froxlor_redirect']['title'] = "SSL-Weiterleitung für den froxlor Vhost aktivieren";
+$lng['serversettings']['le_froxlor_redirect']['description'] = "Wenn dies aktiviert ist, werden alle HTTP Anfragen an die entsprechende SSL Seite weitergeleitet.";
+$lng['admin']['froxlorvhost'] = 'Froxlor VirtualHost Einstellungen';
+$lng['serversettings']['option_unavailable_websrv'] = '<br><em class="red">Nur verfügbar für: %s</em>';
+$lng['serversettings']['option_unavailable'] = '<br><em class="red">Option aufgrund anderer Einstellungen nicht verfügbar.</em>';
+$lng['serversettings']['letsencryptacmeconf']['title'] = "Pfad zu acme.conf";
+$lng['serversettings']['letsencryptacmeconf']['description'] = "Dateiname der Konfiguration, die dem Webserver erlaubt, die ACME-Challenges zu bedienen.";
+$lng['admin']['hostname'] = 'Hostname';
+$lng['admin']['memory'] = 'Speicherauslastung';
+$lng['serversettings']['mail_use_smtp'] = 'Nutze SMTP für das Senden von E-Mails';
+$lng['serversettings']['mail_smtp_host'] = 'SMTP Server';
+$lng['serversettings']['mail_smtp_usetls'] = 'Aktiviere TLS Verschlüsselung';
+$lng['serversettings']['mail_smtp_auth'] = 'Nutze SMTP Authentifizierung';
+$lng['serversettings']['mail_smtp_port'] = 'TCP Port für SMTP';
+$lng['serversettings']['mail_smtp_user'] = 'SMTP Benutzer';
+$lng['serversettings']['mail_smtp_passwd'] = 'SMTP Passwort';
+$lng['domains']['ssl_certificates'] = 'SSL Zertifikate';
+$lng['domains']['ssl_certificate_removed'] = 'Das Zertifikat mit der ID #%s wurde erfolgreich gelöscht.';
+$lng['domains']['ssl_certificate_error'] = "Fehler beim Lesen des Zertifikats für die Domain: %s";
+$lng['domains']['no_ssl_certificates'] = "Es wurden keine SSL-Zertifikate gefunden";

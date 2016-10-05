@@ -166,7 +166,7 @@ if ($page == 'domains' || $page == 'overview') {
 
 				$subresult_stmt = Database::prepare("
 					SELECT `id` FROM `" . TABLE_PANEL_DOMAINS . "`
-					WHERE (`id` = :id OR `parentdomainid` = :id " . $rsd_sql . ") AND `isemaildomain` = '1'");
+					WHERE (`id` = :id OR `parentdomainid` = :id " . $rsd_sql . ")");
 				Database::pexecute($subresult_stmt, array(
 					'id' => $id
 				));
@@ -189,13 +189,26 @@ if ($page == 'domains' || $page == 'overview') {
 					$log->logAction(ADM_ACTION, LOG_NOTICE, "deleted domain/s from mail-tables");
 				}
 
+				// if mainbutsubto-domains are not to be deleted, re-assign the (ismainbutsubto value of the main
+				// domain which is being deleted) as their new ismainbutsubto value
+				if ($remove_subbutmain_domains !== 1) {
+					$upd_stmt = Database::prepare("
+						UPDATE `" . TABLE_PANEL_DOMAINS . "` SET
+						`ismainbutsubto` = :newIsMainButSubtoValue
+						WHERE `ismainbutsubto` = :deletedMainDomainId
+						");
+					Database::pexecute($upd_stmt, array(
+						'newIsMainButSubtoValue' => $result['ismainbutsubto'],
+						'deletedMainDomainId' => $id,
+					));
+				}
+
 				$del_stmt = Database::prepare("
 					DELETE FROM `" . TABLE_PANEL_DOMAINS . "`
 					WHERE `id` = :id OR `parentdomainid` = :id " . $rsd_sql);
 				Database::pexecute($del_stmt, array(
 					'id' => $id
 				));
-				$deleted_domains = $del_stmt->rowCount();
 
 				$upd_stmt = Database::prepare("
 					UPDATE `" . TABLE_PANEL_CUSTOMERS . "` SET
@@ -380,10 +393,19 @@ if ($page == 'domains' || $page == 'overview') {
 					'0',
 					''
 				));
+				if ($registration_date == '0000-00-00') {
+					$registration_date = null;
+				}
 
                                 $termination_date = trim($_POST['termination_date']);
-                                $termination_date = validate($termination_date, 'termination_date', '/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/', '', array('0000-00-00', '0', ''));
-                                
+				$termination_date = validate($termination_date, 'termination_date', '/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/', '', array(
+					'0000-00-00',
+					'0',
+					''
+				));
+				if ($termination_date == '0000-00-00') {
+					$termination_date = null;
+				}
                                 $authcode = trim($_POST['authcode']);
                                  
 				if ($userinfo['change_serversettings'] == '1') {
@@ -1194,12 +1216,18 @@ if ($page == 'domains' || $page == 'overview') {
 					'0',
 					''
 				));
+				if ($registration_date == '0000-00-00') {
+					$registration_date = null;
+				}
 				$termination_date = trim($_POST['termination_date']);
 				$termination_date = validate($termination_date, 'termination_date', '/^(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/', '', array(
 					'0000-00-00',
 					'0',
 					''
 				));
+				if ($termination_date == '0000-00-00') {
+					$termination_date = null;
+				}
 
                                 $authcode = trim($_POST['authcode']);
                                 
@@ -2092,6 +2120,11 @@ if ($page == 'domains' || $page == 'overview') {
 } elseif ($page == 'domaindnseditor' && Settings::Get('system.dnsenabled') == '1') {
 
 	require_once __DIR__.'/dns_editor.php';
+
+} elseif ($page == 'sslcertificates') {
+
+	require_once __DIR__.'/ssl_certificates.php';
+
 }
 
 function formatDomainEntry(&$row, &$idna_convert)

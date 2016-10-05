@@ -134,6 +134,8 @@ class nginx extends HttpConfigBase {
 
 				$this->nginx_data[$vhost_filename] .= 'server { ' . "\n";
 
+				$mypath = $this->getMyPath($row_ipsandports);
+
 				// check for ssl before anything else so
 				// we know whether it's an ssl vhost or not
 				$ssl_vhost = false;
@@ -150,6 +152,36 @@ class nginx extends HttpConfigBase {
 					if ($row_ipsandports['ssl_cert_file'] != '' && file_exists($row_ipsandports['ssl_cert_file'])) {
 						$ssl_vhost = true;
 					}
+
+					$domain = array(
+						'id' => 0,
+						'domain' => Settings::Get('system.hostname'),
+						'adminid' => 1, /* first admin-user (superadmin) */
+						'loginname' => 'froxlor.panel',
+						'documentroot' => $mypath,
+						'parentdomainid' => 0,
+					);
+
+					// override corresponding array values
+					$domain['ssl_cert_file'] = $row_ipsandports['ssl_cert_file'];
+					$domain['ssl_key_file'] = $row_ipsandports['ssl_key_file'];
+					$domain['ssl_ca_file'] = $row_ipsandports['ssl_ca_file'];
+					$domain['ssl_cert_chainfile'] = $row_ipsandports['ssl_cert_chainfile'];
+
+					// SSL STUFF
+					$dssl = new DomainSSL();
+					// this sets the ssl-related array-indices in the $domain array
+					// if the domain has customer-defined ssl-certificates
+					$dssl->setDomainSSLFilesArray($domain);
+
+					if ($domain['ssl_cert_file'] != '' && file_exists($domain['ssl_cert_file'])) {
+						// override corresponding array values
+						$row_ipsandports['ssl_cert_file'] = $domain['ssl_cert_file'];
+						$row_ipsandports['ssl_key_file'] = $domain['ssl_key_file'];
+						$row_ipsandports['ssl_ca_file'] = $domain['ssl_ca_file'];
+						$row_ipsandports['ssl_cert_chainfile'] = $domain['ssl_cert_chainfile'];
+						$ssl_vhost = true;
+					}
 				}
 
 				/**
@@ -161,26 +193,28 @@ class nginx extends HttpConfigBase {
 				$this->nginx_data[$vhost_filename] .= "\t".'server_name    ' . Settings::Get('system.hostname') . ';' . "\n";
 				$this->nginx_data[$vhost_filename] .= "\t".'access_log      /var/log/nginx/access.log;' . "\n";
 
-				$mypath = '';
-
-				// no custom docroot set?
-				if ($row_ipsandports['docroot'] == '') {
-					// check whether the hostname should directly point to
-					// the froxlor-installation or not
-					if (Settings::Get('system.froxlordirectlyviahostname')) {
-						$mypath = makeCorrectDir(dirname(dirname(dirname(__FILE__))));
+				$is_redirect = false;
+				// check for SSL redirect
+				if ($row_ipsandports['ssl'] == '0' && Settings::Get('system.le_froxlor_redirect') == '1') {
+					$is_redirect = true;
+					// check whether froxlor uses Let's Encrypt and not cert is being generated yet
+					// or a renew is ongoing - disable redirect
+					if (Settings::Get('system.le_froxlor_enabled') && ($this->froxlorVhostHasLetsEncryptCert() == false || $this->froxlorVhostLetsEncryptNeedsRenew())) {
+						$this->nginx_data[$vhost_filename] .= '# temp. disabled ssl-redirect due to Let\'s Encrypt certificate generation.' . PHP_EOL;
+						$is_redirect = false;
 					} else {
-						$mypath = makeCorrectDir(dirname(dirname(dirname(dirname(__FILE__)))));
+						$_sslport = $this->checkAlternativeSslPort();
+						$mypath = 'https://' . Settings::Get('system.hostname') . $_sslport . '/';
+						$this->nginx_data[$vhost_filename] .= "\t".'return 301 '.$mypath.'$request_uri;'."\n";
 					}
-				} else {
-					// user-defined docroot, #417
-					$mypath = makeCorrectDir($row_ipsandports['docroot']);
 				}
 
-				$this->nginx_data[$vhost_filename] .= "\t".'root     '.$mypath.';'."\n";
-				$this->nginx_data[$vhost_filename] .= "\t".'index    index.php index.html index.htm;'."\n\n";
-				$this->nginx_data[$vhost_filename] .= "\t".'location / {'."\n";
-				$this->nginx_data[$vhost_filename] .= "\t".'}'."\n";
+				if (!$is_redirect) {
+					$this->nginx_data[$vhost_filename] .= "\t".'root     '.$mypath.';'."\n";
+					$this->nginx_data[$vhost_filename] .= "\t".'index    index.php index.html index.htm;'."\n\n";
+					$this->nginx_data[$vhost_filename] .= "\t".'location / {'."\n";
+					$this->nginx_data[$vhost_filename] .= "\t".'}'."\n";
+				}
 
 				if ($row_ipsandports['specialsettings'] != '') {
 					$this->nginx_data[$vhost_filename].= $this->processSpecialConfigTemplate(
@@ -197,43 +231,45 @@ class nginx extends HttpConfigBase {
 				 * SSL config options
 				 */
 				if ($row_ipsandports['ssl'] == '1') {
-				    $row_ipsandports['domain'] = Settings::Get('system.hostname');
+					$row_ipsandports['domain'] = Settings::Get('system.hostname');
 					$this->nginx_data[$vhost_filename].=$this->composeSslSettings($row_ipsandports);
 				}
 
-				$this->nginx_data[$vhost_filename] .= "\tlocation ~ \.php {\n";
-				$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_split_path_info ^(.+\.php)(/.+)\$;\n";
-				$this->nginx_data[$vhost_filename] .= "\t\tinclude ".Settings::Get('nginx.fastcgiparams').";\n";
-				$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;\n";
-				$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_param PATH_INFO \$fastcgi_path_info;\n";
-				$this->nginx_data[$vhost_filename] .= "\t\ttry_files \$fastcgi_script_name =404;\n";
+				if (!$is_redirect) {
+					$this->nginx_data[$vhost_filename] .= "\tlocation ~ \.php {\n";
+					$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_split_path_info ^(.+\.php)(/.+)\$;\n";
+					$this->nginx_data[$vhost_filename] .= "\t\tinclude ".Settings::Get('nginx.fastcgiparams').";\n";
+					$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;\n";
+					$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_param PATH_INFO \$fastcgi_path_info;\n";
+					$this->nginx_data[$vhost_filename] .= "\t\ttry_files \$fastcgi_script_name =404;\n";
 
-				if ($row_ipsandports['ssl'] == '1') {
-					$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_param HTTPS on;\n";
+					if ($row_ipsandports['ssl'] == '1') {
+						$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_param HTTPS on;\n";
+					}
+
+					if ((int)Settings::Get('phpfpm.enabled') == 1 && (int)Settings::Get('phpfpm.enabled_ownvhost') == 1) {
+						$domain = array(
+							'id' => 'none',
+							'domain' => Settings::Get('system.hostname'),
+							'adminid' => 1, /* first admin-user (superadmin) */
+							'mod_fcgid_starter' => -1,
+							'mod_fcgid_maxrequests' => -1,
+							'guid' => Settings::Get('phpfpm.vhost_httpuser'),
+							'openbasedir' => 0,
+							'email' => Settings::Get('panel.adminmail'),
+							'loginname' => 'froxlor.panel',
+							'documentroot' => $mypath,
+						);
+
+						$php = new phpinterface($domain);
+						$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_pass unix:".$php->getInterface()->getSocketFile().";\n";
+					} else {
+						$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_pass ".Settings::Get('system.nginx_php_backend').";\n";
+					}
+
+					$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_index index.php;\n";
+					$this->nginx_data[$vhost_filename] .= "\t}\n";
 				}
-
-				if ((int)Settings::Get('phpfpm.enabled') == 1 && (int)Settings::Get('phpfpm.enabled_ownvhost') == 1) {
-					$domain = array(
-						'id' => 'none',
-						'domain' => Settings::Get('system.hostname'),
-						'adminid' => 1, /* first admin-user (superadmin) */
-						'mod_fcgid_starter' => -1,
-						'mod_fcgid_maxrequests' => -1,
-						'guid' => Settings::Get('phpfpm.vhost_httpuser'),
-						'openbasedir' => 0,
-						'email' => Settings::Get('panel.adminmail'),
-						'loginname' => 'froxlor.panel',
-						'documentroot' => $mypath,
-					);
-
-					$php = new phpinterface($domain);
-					$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_pass unix:".$php->getInterface()->getSocketFile().";\n";
-				} else {
-					$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_pass ".Settings::Get('system.nginx_php_backend').";\n";
-				}
-
-				$this->nginx_data[$vhost_filename] .= "\t\tfastcgi_index index.php;\n";
-				$this->nginx_data[$vhost_filename] .= "\t}\n";
 
 				$this->nginx_data[$vhost_filename] .= "}\n\n";
 				// End of Froxlor server{}-part
@@ -415,6 +451,9 @@ class nginx extends HttpConfigBase {
 			$domain['documentroot'] = 'https://' . $domain['domain'] . $_sslport . '/';
 		}
 
+		// avoid using any whitespaces
+		$domain['documentroot'] = trim($domain['documentroot']);
+
 		// create ssl settings first since they are required for normal and redirect vhosts
 		if ($ssl_vhost === true
 			&& $domain['ssl'] == '1'
@@ -425,12 +464,13 @@ class nginx extends HttpConfigBase {
 
 		if (Settings::Get('system.use_ssl') == '1' && Settings::Get('system.leenabled') == '1')
 		{
-			$vhost_content.= "\t".'include /etc/nginx/acme.conf;'."\n";
+			$acmeConfFilename = Settings::Get('system.letsencryptacmeconf');
+			$vhost_content.= "\t".'include '.$acmeConfFilename.';'."\n";
 		}
 
 		// if the documentroot is an URL we just redirect
 		if (preg_match('/^https?\:\/\//', $domain['documentroot'])) {
-			$uri = $this->idnaConvert->encode($domain['documentroot']);
+			$uri = $this->idnaConvert->encode_uri($domain['documentroot']);
 			if (substr($uri, -1) == '/') {
 				$uri = substr($uri, 0, -1);
 			}
@@ -570,7 +610,6 @@ class nginx extends HttpConfigBase {
 		    // check for existence, #1485
 		    if (!file_exists($domain_or_ip['ssl_cert_file'])) {
 		        $this->logger->logAction(CRON_ACTION, LOG_ERR, $domain_or_ip['domain'] . ' :: certificate file "'.$domain_or_ip['ssl_cert_file'].'" does not exist! Cannot create ssl-directives');
-		        echo $domain_or_ip['domain'] . ' :: certificate file "'.$domain_or_ip['ssl_cert_file'].'" does not exist! Cannot create SSL-directives'."\n";
 		    } else {
 			// obsolete: ssl on now belongs to the listen block as 'ssl' at the end
     			//$sslsettings .= "\t" . 'ssl on;' . "\n";
@@ -584,33 +623,21 @@ class nginx extends HttpConfigBase {
     			    // check for existence, #1485
     			    if (!file_exists($domain_or_ip['ssl_key_file'])) {
     			        $this->logger->logAction(CRON_ACTION, LOG_ERR, $domain_or_ip['domain'] . ' :: certificate key file "'.$domain_or_ip['ssl_key_file'].'" does not exist! Cannot create ssl-directives');
-    			        echo $domain_or_ip['domain'] . ' :: certificate key file "'.$domain_or_ip['ssl_key_file'].'" does not exist! SSL-directives might not be working'."\n";
     			    } else {
     				    $sslsettings .= "\t" . 'ssl_certificate_key ' .makeCorrectFile($domain_or_ip['ssl_key_file']) . ';' .  "\n";
     			    }
     			}
 
-    			if ($domain_or_ip['ssl_ca_file'] != '') {
-    			    // check for existence, #1485
-    			    if (!file_exists($domain_or_ip['ssl_ca_file'])) {
-    			        $this->logger->logAction(CRON_ACTION, LOG_ERR, $domain_or_ip['domain'] . ' :: certificate CA file "'.$domain_or_ip['ssl_ca_file'].'" does not exist! Cannot create ssl-directives');
-    			        echo $domain_or_ip['domain'] . ' :: certificate CA file "'.$domain_or_ip['ssl_ca_file'].'" does not exist! SSL-directives might not be working'."\n";
-    			    } else {
-    				    $sslsettings.= "\t" . 'ssl_client_certificate ' . makeCorrectFile($domain_or_ip['ssl_ca_file']) . ';' . "\n";
+			if (isset($domain_or_ip['hsts']) && $domain_or_ip['hsts'] > 0) {
+    			    $vhost_content .= 'add_header Strict-Transport-Security "max-age=' . $domain_or_ip['hsts'];
+    			    if ($domain_or_ip['hsts_sub'] == 1) {
+    				    $vhost_content .= '; includeSubDomains';
     			    }
-    			}
-
-				if (isset($domain_or_ip['hsts']) && $domain_or_ip['hsts'] > 0) {
-
-					$vhost_content .= 'add_header Strict-Transport-Security "max-age=' . $domain_or_ip['hsts'];
-					if ($domain_or_ip['hsts_sub'] == 1) {
-						$vhost_content .= '; includeSubdomains';
-					}
-					if ($domain_or_ip['hsts_preload'] == 1) {
-						$vhost_content .= '; preload';
-					}
-					$vhost_content .= '";' . "\n";
-				}
+    			    if ($domain_or_ip['hsts_preload'] == 1) {
+    				    $vhost_content .= '; preload';
+    			    }
+    			    $vhost_content .= '";' . "\n";
+			}
 		    }
 		}
 

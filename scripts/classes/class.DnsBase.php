@@ -1,10 +1,24 @@
 <?php
 
-/***
+/**
+ * This file is part of the Froxlor project.
+ * Copyright (c) 2016 the Froxlor Team (see authors).
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code. You can also view the
+ * COPYING file online at http://files.froxlor.org/misc/COPYING.txt
+ *
+ * @copyright  (c) the authors
+ * @author     Froxlor team <team@froxlor.org> (2016-)
+ * @license    GPLv2 http://files.froxlor.org/misc/COPYING.txt
+ * @package    Cron
+ *
+ */
+
+/**
  * Class DnsBase
  *
  * Base class for all DNS server configs
- *
  */
 abstract class DnsBase
 {
@@ -69,11 +83,29 @@ abstract class DnsBase
 
 	protected function getDomainList()
 	{
-		// get all Domains
 		$result_domains_stmt = Database::query("
-			SELECT `d`.`id`, `d`.`domain`, `d`.`customerid`, `d`.`zonefile`, `c`.`loginname`, `c`.`guid`
-			FROM `" . TABLE_PANEL_DOMAINS . "` `d` LEFT JOIN `" . TABLE_PANEL_CUSTOMERS . "` `c` USING(`customerid`)
-			WHERE `d`.`isbinddomain` = '1' ORDER BY `d`.`domain` ASC
+			SELECT
+				`d`.`id`,
+				`d`.`domain`,
+				`d`.`isemaildomain`,
+				`d`.`iswildcarddomain`,
+				`d`.`wwwserveralias`,
+				`d`.`customerid`,
+				`d`.`zonefile`,
+				`d`.`bindserial`,
+				`d`.`dkim`,
+				`d`.`dkim_id`,
+				`d`.`dkim_pubkey`,
+				`d`.`ismainbutsubto`,
+				`c`.`loginname`,
+				`c`.`guid`
+			FROM
+				`" . TABLE_PANEL_DOMAINS . "` `d`
+			LEFT JOIN `" . TABLE_PANEL_CUSTOMERS . "` `c` USING(`customerid`)
+			WHERE
+				`d`.`isbinddomain` = '1'
+			ORDER BY
+				`d`.`domain` ASC
 		");
 
 		$domains = $result_domains_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -102,7 +134,40 @@ abstract class DnsBase
 			return null;
 		}
 
+		// collect domain IDs of direct child domains as arrays in ['children'] column
+		foreach (array_keys($domains) as $key) {
+			if (! isset($domains[$key]['children'])) {
+				$domains[$key]['children'] = array();
+			}
+			if ($domains[$key]['ismainbutsubto'] > 0) {
+				if (isset($domains[$domains[$key]['ismainbutsubto']])) {
+					$domains[$domains[$key]['ismainbutsubto']]['children'][] = $domains[$key]['id'];
+				} else {
+					$this->_logger->logAction(CRON_ACTION, LOG_ERR, 'Database inconsistency: domain ' . $domain['domain'] . ' (ID #' . $key . ') is set to to be subdomain to non-existent domain ID #' . $domains[$key]['ismainbutsubto'] . '. No DNS record(s) will be created for this domain.');
+				}
+			}
+		}
+
+		$this->_logger->logAction(CRON_ACTION, LOG_DEBUG, str_pad('domId', 9, ' ') . str_pad('domain', 40, ' ') . 'ismainbutsubto ' . str_pad('parent domain', 40, ' ') . "list of child domain ids");
+		foreach ($domains as $domain) {
+			$logLine = str_pad($domain['id'], 9, ' ') . str_pad($domain['domain'], 40, ' ') . str_pad($domain['ismainbutsubto'], 15, ' ') . str_pad(((isset($domains[$domain['ismainbutsubto']])) ? $domains[$domain['ismainbutsubto']]['domain'] : '-'), 40, ' ') . join(', ', $domain['children']);
+			$this->_logger->logAction(CRON_ACTION, LOG_DEBUG, $logLine);
+		}
+
 		return $domains;
+	}
+
+	public function reloadDaemon()
+	{
+		// reload DNS daemon
+		$cmd = Settings::Get('system.bindreload_command');
+		$cmdStatus = 1;
+		safe_exec(escapeshellcmd($cmd), $cmdStatus);
+		if ($cmdStatus === 0) {
+			$this->_logger->logAction(CRON_ACTION, LOG_INFO, Settings::Get('system.dns_server') . ' daemon reloaded');
+		} else {
+			$this->_logger->logAction(CRON_ACTION, LOG_ERR, 'Error while running `' . $cmd . '`: exit code (' . $cmdStatus . ') - please check your system logs');
+		}
 	}
 
 	public function writeDKIMconfigs()
