@@ -140,11 +140,23 @@ abstract class DnsBase
 				$domains[$key]['children'] = array();
 			}
 			if ($domains[$key]['ismainbutsubto'] > 0) {
-				if (isset($domains[$domains[$key]['ismainbutsubto']])) {
-					$domains[$domains[$key]['ismainbutsubto']]['children'][] = $domains[$key]['id'];
-				} else {
-					$this->_logger->logAction(CRON_ACTION, LOG_ERR, 'Database inconsistency: domain ' . $domain['domain'] . ' (ID #' . $key . ') is set to to be subdomain to non-existent domain ID #' . $domains[$key]['ismainbutsubto'] . '. No DNS record(s) will be created for this domain.');
-				}
+                            foreach(array_keys($domains) as $tmpkey)
+                            {
+                                if($domains[$tmpkey]['id'] == $domains[$key]['ismainbutsubto'])
+                                {
+                                    if (! isset($domains[$tmpkey]['children'])) {
+                                        $domains[$tmpkey]['children'] = array();
+                                    }
+                                    
+                                    if (isset($domains[$tmpkey])) {
+                                            $domains[$tmpkey]['children'][] = $domains[$key]['id'];
+                                    } else {
+                                            $this->_logger->logAction(CRON_ACTION, LOG_ERR, 'Database inconsistency: domain ' . $domains[$key]['domain'] . ' (ID #' . $key . ') is set to to be subdomain to non-existent domain ID #' . $domains[$key]['ismainbutsubto'] . '. No DNS record(s) will be created for this domain.');
+                                    }
+                                   
+                                    break;
+                                }
+                            }
 			}
 		}
 
