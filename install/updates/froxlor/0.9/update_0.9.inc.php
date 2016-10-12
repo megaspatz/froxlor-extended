@@ -3587,11 +3587,13 @@ if (isDatabaseVersion('201609120')) {
 if (isDatabaseVersion('201609200')) {
 
 	showUpdateStep("Changing tables to be more mysql strict-mode compatible");
-	Database::query("ALTER TABLE `".TABLE_MAIL_VIRTUAL."` CHANGE `destination` `destination` TEXT NOT NULL DEFAULT '';");
 	Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` CHANGE `registration_date` `registration_date` DATE NULL DEFAULT NULL;");
-	Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` CHANGE `termination_date` `termination_date` DATE NULL DEFAULT NULL;");
-	lastStepStatus(0);
+        Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` CHANGE `termination_date` `termination_date` DATE NULL DEFAULT NULL;");
 
+        Database::query("update `".TABLE_PANEL_DOMAINS."` set `registration_date`  = null where `registration_date`  = '0000-00-00';");
+        Database::query("update `".TABLE_PANEL_DOMAINS."` set `termination_date`  = null where `termination_date`  = '0000-00-00';");
+
+        lastStepStatus(0);
 	updateToDbVersion('201609240');
 }
 
@@ -3606,16 +3608,10 @@ if (isDatabaseVersion('201609240')) {
 	showUpdateStep("Settings HSTS default values for all domains (deactivated)");
 	Database::query("UPDATE `".TABLE_PANEL_DOMAINS."` SET `hsts_sub` = '0', `hsts_preload` = '0';");
 	lastStepStatus(0);
-    showUpdateStep("Changing tables to be more mysql strict-mode compatible");
     
-    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` CHANGE `registration_date` `registration_date` DATE NULL DEFAULT NULL;");
-    Database::query("ALTER TABLE `".TABLE_PANEL_DOMAINS."` CHANGE `termination_date` `termination_date` DATE NULL DEFAULT NULL;");
     
-    Database::query("update `".TABLE_PANEL_DOMAINS."` set `registration_date`  = null where `registration_date`  = '0000-00-00';");
-    Database::query("update `".TABLE_PANEL_DOMAINS."` set `termination_date`  = null where `termination_date`  = '0000-00-00';");
-    
-    lastStepStatus(0);
+        updateToDbVersion('201610071');
 
-	updateToDbVersion('201610070');
+	
 }
 
