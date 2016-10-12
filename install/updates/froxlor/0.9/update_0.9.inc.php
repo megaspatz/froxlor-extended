@@ -3615,3 +3615,8 @@ if (isDatabaseVersion('201609240')) {
 	
 }
 
+if (isFroxlorVersion('0.9.37')) {
+
+	showUpdateStep("Updating from 0.9.37 to 0.9.38-rc1", false);
+	updateToVersion('0.9.38-rc1');
+}
