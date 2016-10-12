@@ -256,7 +256,7 @@ CREATE TABLE `panel_domains` (
   `letsencrypt` tinyint(1) NOT NULL default '0',
   `hsts` varchar(10) NOT NULL default '0',
   `hsts_sub` tinyint(1) NOT NULL default '0',
-  `hsts_preload` tinyint(1) NOT NULL default '1',
+  `hsts_preload` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `customerid` (`customerid`),
   KEY `parentdomain` (`parentdomainid`),
@@ -550,6 +550,10 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'mail_smtp_auth', '1'),
 	('system', 'mail_smtp_user', ''),
 	('system', 'mail_smtp_passwd', ''),
+	('system', 'hsts_maxage', '0'),
+	('system', 'hsts_sub', '0'),
+	('system', 'hsts_preload', '0'),
+	('panel', 'decimal_places', '4'),
 	
         ('system', 'default_soa_refresh','3600'),
         ('system', 'default_soa_retry','900'),
@@ -588,7 +592,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
 	('panel', 'version', '0.9.37'),
-	('panel', 'db_version', '201609240');
+	('panel', 'db_version', '201610070');
 
 
 
