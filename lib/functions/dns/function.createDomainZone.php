@@ -302,6 +302,11 @@ function createDomainZone($domain_id, $froxlorhostname = false, $isMainButSubTo 
 			Database::pexecute($upd_stmt, array('serial' => $domain['bindserial'], 'id' => $domain['id']));
 		}
 
+		// PowerDNS does not like multi-line-format
+		$soa_content = $primary_ns . " " . escapeSoaAdminMail(Settings::Get('panel.adminmail')) . " ";
+		$soa_content .= _getSerial(). " ";
+		// TODO for now, dummy time-periods
+//		$soa_content .= "$default_soa_refresh $default_soa_retry $default_soa_expire $default_soa_minimum";
 		//$soa_content = $primary_ns . " " . escapeSoaAdminMail(Settings::Get('panel.adminmail')) . " (" . PHP_EOL;
 		//$soa_content .= $domain['bindserial'] . "\t; serial" . PHP_EOL;
                 // TODO for now, dummy time-periods

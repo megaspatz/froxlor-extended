@@ -456,7 +456,7 @@ class nginx extends HttpConfigBase
 
 		// if the documentroot is an URL we just redirect
 		if (preg_match('/^https?\:\/\//', $domain['documentroot'])) {
-			$uri = $this->idnaConvert->encode_uri($domain['documentroot']);
+			$uri = $domain['documentroot'];
 			if (substr($uri, - 1) == '/') {
 				$uri = substr($uri, 0, - 1);
 			}
@@ -601,7 +601,7 @@ class nginx extends HttpConfigBase
 			} else {
 				// obsolete: ssl on now belongs to the listen block as 'ssl' at the end
 				// $sslsettings .= "\t" . 'ssl on;' . "\n";
-				$sslsettings .= "\t" . 'ssl_protocols TLSv1 TLSv1.1 TLSv1.2;' . "\n";
+				$sslsettings .= "\t" . 'ssl_protocols TLSv1 TLSv1.2;' . "\n";
 				$sslsettings .= "\t" . 'ssl_ciphers ' . Settings::Get('system.ssl_cipher_list') . ';' . "\n";
 				$sslsettings .= "\t" . 'ssl_ecdh_curve secp384r1;' . "\n";
 				$sslsettings .= "\t" . 'ssl_prefer_server_ciphers on;' . "\n";
