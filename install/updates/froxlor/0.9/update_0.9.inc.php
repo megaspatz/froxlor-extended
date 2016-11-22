@@ -3629,8 +3629,8 @@ if (isFroxlorVersion('0.9.38-rc1')) {
 
 if (isFroxlorVersion('0.9.38-rc2')) {
 
-        showUpdateStep("Updating from 0.9.38-rc2 to 0.9.38 final", false);
-        updateToVersion('0.9.38');
+	showUpdateStep("Updating from 0.9.38-rc2 to 0.9.38 final", false);
+	updateToVersion('0.9.38');
 }
 
 if (isDatabaseVersion('201610071')) {
@@ -3640,4 +3640,22 @@ if (isDatabaseVersion('201610071')) {
 	lastStepStatus(0);
 
 	updateToDbVersion('201611180');
+}
+
+if (isFroxlorVersion('0.9.38')) {
+
+	showUpdateStep("Updating from 0.9.38 to 0.9.38.1", false);
+	updateToVersion('0.9.38.1');
+}
+
+if (isFroxlorVersion('0.9.38.1')) {
+
+	showUpdateStep("Updating from 0.9.38.1 to 0.9.38.2", false);
+	updateToVersion('0.9.38.2');
+}
+
+if (isFroxlorVersion('0.9.38.2')) {
+
+	showUpdateStep("Updating from 0.9.38.2 to 0.9.38.3", false);
+	updateToVersion('0.9.38.3');
 }
