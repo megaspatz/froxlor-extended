@@ -552,7 +552,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'mail_smtp_user', ''),
 	('system', 'mail_smtp_passwd', ''),
 	('system', 'hsts_maxage', '0'),
-	('system', 'hsts_sub', '0'),
+	('system', 'hsts_incsub', '0'),
 	('system', 'hsts_preload', '0'),
 	('panel', 'decimal_places', '4'),
 	
@@ -593,7 +593,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
 	('panel', 'customer_hide_options', ''),
-	('panel', 'version', '0.9.38.3'),
+	('panel', 'version', '0.9.38.4'),
 	('panel', 'db_version', '201611180');
 
 
