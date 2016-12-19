@@ -196,8 +196,9 @@ CREATE TABLE `panel_customers` (
   `theme` varchar(255) NOT NULL default 'Sparkle',
   `custom_notes` text,
   `custom_notes_show` tinyint(1) NOT NULL default '0',
-  `lepublickey` mediumtext DEFAULT NULL,
-  `leprivatekey` mediumtext DEFAULT NULL,
+  `lepublickey` mediumtext default NULL,
+  `leprivatekey` mediumtext default NULL,
+  `leregistered` tinyint(1) NOT NULL default '0',
    PRIMARY KEY  (`customerid`),
    UNIQUE KEY `loginname` (`loginname`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -238,6 +239,7 @@ CREATE TABLE `panel_domains` (
   `dkim_pubkey` text,
   `wwwserveralias` tinyint(1) NOT NULL default '1',
   `parentdomainid` int(11) NOT NULL default '0',
+  `phpenabled` tinyint(1) NOT NULL default '0',
   `openbasedir` tinyint(1) NOT NULL default '0',
   `openbasedir_path` tinyint(1) NOT NULL default '0',
   `speciallogfile` tinyint(1) NOT NULL default '0',
@@ -282,7 +284,8 @@ CREATE TABLE `panel_ipsandports` (
   `default_vhostconf_domain` text,
   `ssl_cert_chainfile` varchar(255) NOT NULL,
   `docroot` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `ip_port` (`ip`,`port`)
 ) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
@@ -498,6 +501,7 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'ssl_cert_chainfile', ''),
 	('system', 'ssl_cipher_list', 'ECDH+AESGCM:ECDH+AES256:!aNULL:!MD5:!DSS:!DH:!AES128'),
 	('system', 'nginx_php_backend', '127.0.0.1:8888'),
+	('system', 'nginx_http2_support', '0'),
 	('system', 'perl_server', 'unix:/var/run/nginx/cgiwrap-dispatch.sock'),
 	('system', 'phpreload_command', ''),
 	('system', 'apache24', '0'),
@@ -551,8 +555,9 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('system', 'mail_smtp_user', ''),
 	('system', 'mail_smtp_passwd', ''),
 	('system', 'hsts_maxage', '0'),
-	('system', 'hsts_sub', '0'),
+	('system', 'hsts_incsub', '0'),
 	('system', 'hsts_preload', '0'),
+	('system', 'leregistered', '0'),
 	('panel', 'decimal_places', '4'),
 	
         ('system', 'default_soa_refresh','3600'),
@@ -592,8 +597,8 @@ INSERT INTO `panel_settings` (`settinggroup`, `varname`, `value`) VALUES
 	('panel', 'password_special_char_required', '0'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
 	('panel', 'customer_hide_options', ''),
-	('panel', 'version', '0.9.38-rc1'),
-	('panel', 'db_version', '201610070');
+	('panel', 'version', '0.9.38.4'),
+	('panel', 'db_version', '201612110');
 
 
 

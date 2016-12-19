@@ -86,6 +86,13 @@ if (count($all_certs) == 0) {
 	foreach ($all_certs as $idx => $cert) {
 		if ($paging->checkDisplay($idx)) {
 
+			// respect froxlor-hostname
+			if ($cert['domainid'] == 0) {
+				$cert['domain'] = Settings::Get('system.hostname');
+				$cert['letsencrypt'] = Settings::Get('system.le_froxlor_enabled');
+				$cert['loginname'] = 'froxlor.panel';
+			}
+
 			if (empty($cert['domain']) || empty($cert['ssl_cert_file'])) {
 				// no domain found to the entry or empty entry - safely delete it from the DB
 				Database::pexecute($del_stmt, array(
@@ -96,10 +103,10 @@ if (count($all_certs) == 0) {
 
 			$cert_data = openssl_x509_parse($cert['ssl_cert_file']);
 
-			$cert['domain'] = $idna_convert->encode($cert['domain']);
+			$cert['domain'] = $idna_convert->decode($cert['domain']);
 
 			$adminCustomerLink = "";
-			if (AREA == 'admin') {
+			if (AREA == 'admin' && $cert['domainid'] > 0) {
 				if (! empty($cert['loginname'])) {
 					$adminCustomerLink = '&nbsp;(<a href="' . $linker->getLink(array(
 						'section' => 'customers',

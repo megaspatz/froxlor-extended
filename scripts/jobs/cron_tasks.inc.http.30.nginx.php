@@ -196,14 +196,21 @@ class nginx extends HttpConfigBase
 					}
 				}
 
+				$http2 = $ssl_vhost == true && Settings::Get('system.nginx_http2_support') == '1';
+
 				/**
 				 * this HAS to be set for the default host in nginx or else no vhost will work
 				 */
-				$this->nginx_data[$vhost_filename] .= "\t" . 'listen    ' . $ip . ':' . $port . ' default_server' . ($ssl_vhost == true ? ' ssl' : '') . ';' . "\n";
+				$this->nginx_data[$vhost_filename] .= "\t" . 'listen    ' . $ip . ':' . $port . ' default_server' . ($ssl_vhost == true ? ' ssl' : '') . ($http2 == true ? ' http2' : '') . ';' . "\n";
 
 				$this->nginx_data[$vhost_filename] .= "\t" . '# Froxlor default vhost' . "\n";
 				$this->nginx_data[$vhost_filename] .= "\t" . 'server_name    ' . Settings::Get('system.hostname') . ';' . "\n";
 				$this->nginx_data[$vhost_filename] .= "\t" . 'access_log      /var/log/nginx/access.log;' . "\n";
+
+				if (Settings::Get('system.use_ssl') == '1' && Settings::Get('system.leenabled') == '1' && Settings::Get('system.le_froxlor_enabled') == '1') {
+					$acmeConfFilename = Settings::Get('system.letsencryptacmeconf');
+					$this->nginx_data[$vhost_filename] .= "\t" . 'include ' . $acmeConfFilename . ';' . "\n";
+				}
 
 				$is_redirect = false;
 				// check for SSL redirect
@@ -217,7 +224,7 @@ class nginx extends HttpConfigBase
 					} else {
 						$_sslport = $this->checkAlternativeSslPort();
 						$mypath = 'https://' . Settings::Get('system.hostname') . $_sslport . '/';
-						$this->nginx_data[$vhost_filename] .= "\t" . 'if ($request_uri !~ "^/\.well-known/acme-challenge/\w+$") {' . "\n";
+						$this->nginx_data[$vhost_filename] .= "\t" . 'if ($request_uri !~ ^/.well-known/acme-challenge/\w+$) {' . "\n";
 						$this->nginx_data[$vhost_filename] .= "\t\t" . 'return 301 ' . $mypath . '$request_uri;' . "\n";
 						$this->nginx_data[$vhost_filename] .= "\t" . '}' . "\n";
 					}
@@ -411,7 +418,9 @@ class nginx extends HttpConfigBase
 				$_vhost_content .= $this->processSpecialConfigTemplate($ipandport['default_vhostconf_domain'], $domain, $domain['ip'], $domain['port'], $ssl_vhost) . "\n";
 			}
 
-			$vhost_content .= "\t" . 'listen ' . $ipport . ($ssl_vhost == true ? ' ssl' : '') . ';' . "\n";
+            $http2 = $ssl_vhost == true && Settings::Get('system.nginx_http2_support') == '1';
+
+            $vhost_content .= "\t" . 'listen ' . $ipport . ($ssl_vhost == true ? ' ssl' : '') . ($http2 == true ? ' http2' : '') . ';' . "\n";
 		}
 
 		// get all server-names
@@ -438,7 +447,7 @@ class nginx extends HttpConfigBase
 				$_sslport = ":" . $ssldestport['port'];
 			}
 
-			$domain['documentroot'] = 'https://' . $domain['domain'] . $_sslport . '/';
+			$domain['documentroot'] = 'https://$host' . $_sslport . '/';
 		}
 
 		// avoid using any whitespaces
@@ -456,16 +465,15 @@ class nginx extends HttpConfigBase
 
 		// if the documentroot is an URL we just redirect
 		if (preg_match('/^https?\:\/\//', $domain['documentroot'])) {
-			$uri = $this->idnaConvert->encode_uri($domain['documentroot']);
+			$uri = $domain['documentroot'];
 			if (substr($uri, - 1) == '/') {
 				$uri = substr($uri, 0, - 1);
 			}
-			// prevent empty return-cde
-			$code = "301";
-			// Get domain's redirect code
-			$code = getDomainRedirectCode($domain['id']);
 
-			$vhost_content .= "\t" . 'if ($request_uri !~ "^/\.well-known/acme-challenge/\w+$") {' . "\n";
+			// Get domain's redirect code
+			$code = getDomainRedirectCode($domain['id'], '301');
+
+			$vhost_content .= "\t" . 'if ($request_uri !~ ^/.well-known/acme-challenge/\w+$) {' . "\n";
 			$vhost_content .= "\t\t" . 'return ' . $code .' ' . $uri . '$request_uri;' . "\n";
 			$vhost_content .= "\t" . '}' . "\n";
 		} else {
@@ -601,7 +609,7 @@ class nginx extends HttpConfigBase
 			} else {
 				// obsolete: ssl on now belongs to the listen block as 'ssl' at the end
 				// $sslsettings .= "\t" . 'ssl on;' . "\n";
-				$sslsettings .= "\t" . 'ssl_protocols TLSv1 TLSv1.1 TLSv1.2;' . "\n";
+				$sslsettings .= "\t" . 'ssl_protocols TLSv1 TLSv1.2;' . "\n";
 				$sslsettings .= "\t" . 'ssl_ciphers ' . Settings::Get('system.ssl_cipher_list') . ';' . "\n";
 				$sslsettings .= "\t" . 'ssl_ecdh_curve secp384r1;' . "\n";
 				$sslsettings .= "\t" . 'ssl_prefer_server_ciphers on;' . "\n";
@@ -838,7 +846,7 @@ class nginx extends HttpConfigBase
 	protected function composePhpOptions($domain, $ssl_vhost = false)
 	{
 		$phpopts = '';
-		if ($domain['phpenabled'] == '1') {
+		if ($domain['phpenabled_customer'] == 1 && $domain['phpenabled_vhost'] == '1') {
 			$phpopts = "\tlocation ~ \.php {\n";
 			$phpopts .= "\t\t" . 'try_files ' . $domain['nonexistinguri'] . ' @php;' . "\n";
 			$phpopts .= "\t" . '}' . "\n\n";
@@ -874,7 +882,7 @@ class nginx extends HttpConfigBase
 
 		$webroot_text .= "\n\t" . 'location / {' . "\n";
 
-		if ($domain['phpenabled'] == '1') {
+		if ($domain['phpenabled_customer'] == 1 && $domain['phpenabled_vhost'] == '1') {
 			$webroot_text .= "\t" . 'index    index.php index.html index.htm;' . "\n";
 			$webroot_text .= "\t\t" . 'try_files $uri $uri/ @rewrites;' . "\n";
 		} else {
@@ -897,7 +905,7 @@ class nginx extends HttpConfigBase
 		}
 
 		$webroot_text .= "\t" . '}' . "\n\n";
-		if ($domain['phpenabled'] == '1') {
+		if ($domain['phpenabled_customer'] == 1 && $domain['phpenabled_vhost'] == '1') {
 			$webroot_text .= "\tlocation @rewrites {\n";
 			$webroot_text .= "\t\trewrite ^ /index.php last;\n";
 			$webroot_text .= "\t}\n\n";

@@ -210,6 +210,8 @@ if ($page == 'domains' || $page == 'overview') {
 					'id' => $id
 				));
 
+				$deleted_domains = $del_stmt->rowCount();
+
 				$upd_stmt = Database::prepare("
 					UPDATE `" . TABLE_PANEL_CUSTOMERS . "` SET
 					`subdomains_used` = `subdomains_used` - :domaincount
@@ -454,6 +456,7 @@ if ($page == 'domains' || $page == 'overview') {
 
 				if ($userinfo['caneditphpsettings'] == '1' || $userinfo['change_serversettings'] == '1') {
 
+                                        $phpenabled  = isset($POST_['phpenabled']) ? intval($_POST['phpenabled']) : 0;
 					$openbasedir = isset($_POST['openbasedir']) ? intval($_POST['openbasedir']) : 0;
 
 					if ((int) Settings::Get('system.mod_fcgid') == 1 || (int) Settings::Get('phpfpm.enabled') == 1) {
@@ -494,7 +497,9 @@ if ($page == 'domains' || $page == 'overview') {
 					}
 				} else {
 
+                                        $phpenabled = '1';
 					$openbasedir = '1';
+
 					if ((int) Settings::Get('phpfpm.enabled') == 1) {
 						$phpsettingid = Settings::Get('phpfpm.defaultini');
 					} else {
@@ -689,6 +694,10 @@ if ($page == 'domains' || $page == 'overview') {
 				if (count($ipandports) == 0) {
 					standard_error('noipportgiven');
 				}
+				
+				if($phpenabled != '1') {
+					$phpenabled = '0';
+				}
 
 				if ($openbasedir != '1') {
 					$openbasedir = '0';
@@ -769,6 +778,7 @@ if ($page == 'domains' || $page == 'overview') {
 						'ipandport' => serialize($ipandports),
 						'ssl_redirect' => $ssl_redirect,
 						'ssl_ipandport' => serialize($ssl_ipandports),
+						'phpenabled' => $phpenabled,
 						'openbasedir' => $openbasedir,
 						'phpsettingid' => $phpsettingid,
 						'mod_fcgid_starter' => $mod_fcgid_starter,
@@ -779,7 +789,7 @@ if ($page == 'domains' || $page == 'overview') {
                                                 'authcode' => $authcode,
 						'issubof' => $issubof,
 						'letsencrypt' => $letsencrypt,
-						'hsts' => $hsts_maxage,
+						'hsts_maxage' => $hsts_maxage,
 						'hsts_sub' => $hsts_sub,
 						'hsts_preload' => $hsts_preload
 					);
@@ -818,6 +828,7 @@ if ($page == 'domains' || $page == 'overview') {
 						'email_only' => $email_only,
 						'subcanemaildomain' => $subcanemaildomain,
 						'caneditdomain' => $caneditdomain,
+						'phpenabled' => $phpenabled,
 						'openbasedir' => $openbasedir,
 						'speciallogfile' => $speciallogfile,
 						'specialsettings' => $specialsettings,
@@ -855,6 +866,7 @@ if ($page == 'domains' || $page == 'overview') {
 						`email_only` = :email_only,
 						`subcanemaildomain` = :subcanemaildomain,
 						`caneditdomain` = :caneditdomain,
+						`phpenabled` = :phpenabled,
 						`openbasedir` = :openbasedir,
 						`speciallogfile` = :speciallogfile,
 						`specialsettings` = :specialsettings,
@@ -1085,8 +1097,12 @@ if ($page == 'domains' || $page == 'overview') {
 	} elseif ($action == 'edit' && $id != 0) {
 
 		$result_stmt = Database::prepare("
-			SELECT `d`.*, `c`.`customerid` FROM `" . TABLE_PANEL_DOMAINS . "` `d` LEFT JOIN `" . TABLE_PANEL_CUSTOMERS . "` `c` USING(`customerid`)
-			WHERE `d`.`parentdomainid` = '0' AND `d`.`id` = :id" . ($userinfo['customers_see_all'] ? '' : " AND `d`.`adminid` = :adminid"));
+			SELECT `d`.*, `c`.`customerid`
+			FROM `" . TABLE_PANEL_DOMAINS . "` `d`
+			LEFT JOIN `" . TABLE_PANEL_CUSTOMERS . "` `c` USING(`customerid`)
+			WHERE `d`.`parentdomainid` = '0'
+			AND `d`.`id` = :id" . ($userinfo['customers_see_all'] ? '' : " AND `d`.`adminid` = :adminid")
+		);
 		$params = array(
 			'id' => $id
 		);
@@ -1231,7 +1247,7 @@ if ($page == 'domains' || $page == 'overview') {
 					$adminid = $result['adminid'];
 				}
 
-				$aliasdomain = intval($_POST['alias']);
+				$aliasdomain = isset($_POST['alias']) ? intval($_POST['alias']) : 0;
 				$issubof = intval($_POST['issubof']);
 				$subcanemaildomain = intval($_POST['subcanemaildomain']);
 				$caneditdomain = isset($_POST['caneditdomain']) ? intval($_POST['caneditdomain']) : 0;
@@ -1328,6 +1344,7 @@ if ($page == 'domains' || $page == 'overview') {
 
 				if ($userinfo['caneditphpsettings'] == '1' || $userinfo['change_serversettings'] == '1') {
 
+					$phpenabled  = isset($_POST['phpenabled']) ? intval($_POST['phpenabled']) : 0;
 					$openbasedir = isset($_POST['openbasedir']) ? intval($_POST['openbasedir']) : 0;
 
 					if ((int) Settings::Get('system.mod_fcgid') == 1 || (int) Settings::Get('phpfpm.enabled') == 1) {
@@ -1362,6 +1379,7 @@ if ($page == 'domains' || $page == 'overview') {
 						$mod_fcgid_maxrequests = $result['mod_fcgid_maxrequests'];
 					}
 				} else {
+					$phpenabled = $result['phpenabled'];
 					$openbasedir = $result['openbasedir'];
 					$phpsettingid = $result['phpsettingid'];
 					$mod_fcgid_starter = $result['mod_fcgid_starter'];
@@ -1404,6 +1422,11 @@ if ($page == 'domains' || $page == 'overview') {
 						$letsencrypt = (int) $_POST['letsencrypt'];
 					}
 
+					// HSTS
+					$hsts_maxage = isset($_POST['hsts_maxage']) ? (int)$_POST['hsts_maxage'] : 0;
+					$hsts_sub = isset($_POST['hsts_sub']) && (int)$_POST['hsts_sub'] == 1 ? 1 : 0;
+					$hsts_preload = isset($_POST['hsts_preload']) && (int)$_POST['hsts_preload'] == 1 ? 1 : 0;
+
 					$ssl_ipandports = array();
 					if (isset($_POST['ssl_ipandport']) && ! is_array($_POST['ssl_ipandport'])) {
 						$_POST['ssl_ipandport'] = unserialize($_POST['ssl_ipandport']);
@@ -1429,11 +1452,6 @@ if ($page == 'domains' || $page == 'overview') {
 								$ssl_ipandports[] = $ssl_ipandport;
 							}
 						}
-
-						// HSTS
-						$hsts_maxage = isset($_POST['hsts_maxage']) ? (int)$_POST['hsts_maxage'] : 0;
-						$hsts_sub = isset($_POST['hsts_sub']) && (int)$_POST['hsts_sub'] == 1 ? 1 : 0;
-						$hsts_preload = isset($_POST['hsts_preload']) && (int)$_POST['hsts_preload'] == 1 ? 1 : 0;
 
 					} else {
 						$ssl_redirect = 0;
@@ -1472,6 +1490,10 @@ if ($page == 'domains' || $page == 'overview') {
 
 				if (! preg_match('/^https?\:\/\//', $documentroot)) {
 					$documentroot = makeCorrectDir($documentroot);
+				}
+				
+				if ($phpenabled != '1') {
+					$phpenabled = '0';
 				}
 
 				if ($openbasedir != '1') {
@@ -1582,6 +1604,7 @@ if ($page == 'domains' || $page == 'overview') {
 					'dkim' => $dkim,
 					'selectserveralias' => $serveraliasoption,
 					'ssl_redirect' => $ssl_redirect,
+					'phpenabled' => $phpenabled,
 					'openbasedir' => $openbasedir,
 					'phpsettingid' => $phpsettingid,
 					'mod_fcgid_starter' => $mod_fcgid_starter,
@@ -1597,7 +1620,7 @@ if ($page == 'domains' || $page == 'overview') {
 					'ipandport' => serialize($ipandports),
 					'ssl_ipandport' => serialize($ssl_ipandports),
 					'letsencrypt' => $letsencrypt,
-					'hsts' => $hsts_maxage,
+					'hsts_maxage' => $hsts_maxage,
 					'hsts_sub' => $hsts_sub,
 					'hsts_preload' => $hsts_preload
 				);
@@ -1618,7 +1641,7 @@ if ($page == 'domains' || $page == 'overview') {
 				$wwwserveralias = ($serveraliasoption == '1') ? '1' : '0';
 				$iswildcarddomain = ($serveraliasoption == '0') ? '1' : '0';
 
-				if ($documentroot != $result['documentroot'] || $ssl_redirect != $result['ssl_redirect'] || $wwwserveralias != $result['wwwserveralias'] || $iswildcarddomain != $result['iswildcarddomain'] || $openbasedir != $result['openbasedir'] || $phpsettingid != $result['phpsettingid'] || $mod_fcgid_starter != $result['mod_fcgid_starter'] || $mod_fcgid_maxrequests != $result['mod_fcgid_maxrequests'] || $specialsettings != $result['specialsettings'] || $aliasdomain != $result['aliasdomain'] || $issubof != $result['ismainbutsubto'] || $email_only != $result['email_only'] || ($speciallogfile != $result['speciallogfile'] && $speciallogverified == '1') || $letsencrypt != $result['letsencrypt']) {
+				if ($documentroot != $result['documentroot'] || $ssl_redirect != $result['ssl_redirect'] || $wwwserveralias != $result['wwwserveralias'] || $iswildcarddomain != $result['iswildcarddomain'] || $phpenabled != $result['phpenabled'] || $openbasedir != $result['openbasedir'] || $phpsettingid != $result['phpsettingid'] || $mod_fcgid_starter != $result['mod_fcgid_starter'] || $mod_fcgid_maxrequests != $result['mod_fcgid_maxrequests'] || $specialsettings != $result['specialsettings'] || $aliasdomain != $result['aliasdomain'] || $issubof != $result['ismainbutsubto'] || $email_only != $result['email_only'] || ($speciallogfile != $result['speciallogfile'] && $speciallogverified == '1') || $letsencrypt != $result['letsencrypt'] || $hsts_maxage != $result['hsts'] || $hsts_sub != $result['hsts_sub'] || $hsts_preload != $result['hsts_preload']) {
 					inserttask('1');
 				}
 
@@ -1645,6 +1668,16 @@ if ($page == 'domains' || $page == 'overview') {
 						'id' => $id
 					));
 					$log->logAction(ADM_ACTION, LOG_NOTICE, "deleted domain #" . $id . " from mail-tables");
+				}
+
+				// check whether LE has been disabled, so we remove the certificate
+				if ($letsencrypt == '0' && $result['letsencrypt'] == '1')  {
+					$del_stmt = Database::prepare("
+						DELETE FROM `" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "` WHERE `domainid` = :id
+					");
+					Database::pexecute($del_stmt, array(
+						'id' => $id
+					));
 				}
 
 				$updatechildren = '';
@@ -1749,6 +1782,7 @@ if ($page == 'domains' || $page == 'overview') {
 				$update_data['zonefile'] = $zonefile;
 				$update_data['wwwserveralias'] = $wwwserveralias;
 				$update_data['iswildcarddomain'] = $iswildcarddomain;
+				$update_data['phpenabled'] = $phpenabled;
 				$update_data['openbasedir'] = $openbasedir;
 				$update_data['speciallogfile'] = $speciallogfile;
 				$update_data['phpsettingid'] = $phpsettingid;
@@ -1781,6 +1815,7 @@ if ($page == 'domains' || $page == 'overview') {
 					`zonefile` = :zonefile,
 					`wwwserveralias` = :wwwserveralias,
 					`iswildcarddomain` = :iswildcarddomain,
+					`phpenabled` = :phpenabled,
 					`openbasedir` = :openbasedir,
 					`speciallogfile` = :speciallogfile,
 					`phpsettingid` = :phpsettingid,
@@ -1801,6 +1836,7 @@ if ($page == 'domains' || $page == 'overview') {
 
 				$_update_data['customerid'] = $customerid;
 				$_update_data['adminid'] = $adminid;
+				$_update_data['phpenabled'] = $phpenabled;
 				$_update_data['openbasedir'] = $openbasedir;
 				$_update_data['phpsettingid'] = $phpsettingid;
 				$_update_data['mod_fcgid_starter'] = $mod_fcgid_starter;
@@ -1819,6 +1855,7 @@ if ($page == 'domains' || $page == 'overview') {
 					UPDATE `" . TABLE_PANEL_DOMAINS . "` SET
 					`customerid` = :customerid,
 					`adminid` = :adminid,
+					`phpenabled` = :phpenabled,
 					`openbasedir` = :openbasedir,
 					`phpsettingid` = :phpsettingid,
 					`mod_fcgid_starter` = :mod_fcgid_starter,
