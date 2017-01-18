@@ -3692,3 +3692,9 @@ if (isFroxlorVersion('0.9.38.4')) {
 	showUpdateStep("Updating from 0.9.38.4 to 0.9.38.5", false);
 	updateToVersion('0.9.38.5');
 }
+
+if (isFroxlorVersion('0.9.38.5')) {
+
+	showUpdateStep("Updating from 0.9.38.5 to 0.9.38.6", false);
+	updateToVersion('0.9.38.6');
+}
