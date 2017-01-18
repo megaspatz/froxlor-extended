@@ -432,7 +432,7 @@ if ($page == 'overview') {
 						"documentroot" => $path,
 						"aliasdomain" => $aliasdomain != 0 ? $aliasdomain : null,
 						"parentdomainid" => $domain_check['id'],
-						"wwwserveralias" => Settings::Get('system.wwwaliassubdomains') == '0' ? ($domain_check['wwwserveralias'] == '1' ? '1' : '0') : '0',
+						"wwwserveralias" => $domain_check['wwwserveralias'] == '1' ? '1' : '0',
 						"iswildcarddomain" => $domain_check['iswildcarddomain'] == '1' ? '1' : '0',
 						"isemaildomain" => $domain_check['subcanemaildomain'] == '3' ? '1' : '0',
 						"openbasedir" => $domain_check['openbasedir'],
@@ -543,8 +543,7 @@ if ($page == 'overview') {
 		}
 	} elseif ($action == 'edit' && $id != 0) {
 
-		$stmt = Database::prepare("SELECT `d`.`id`, `d`.`customerid`, `d`.`domain`, `d`.`documentroot`, `d`.`isemaildomain`,`d`.`isbinddomain`, `d`.`wwwserveralias`, `d`.`iswildcarddomain`,
-			`d`.`parentdomainid`, `d`.`ssl_redirect`, `d`.`aliasdomain`, `d`.`openbasedir`, `d`.`openbasedir_path`, `d`.`authcode`, `d`.`letsencrypt`, `pd`.`subcanemaildomain`
+		$stmt = Database::prepare("SELECT `d`.*, `pd`.`subcanemaildomain`
 			FROM `" . TABLE_PANEL_DOMAINS . "` `d`, `" . TABLE_PANEL_DOMAINS . "` `pd`
 			WHERE `d`.`customerid` = :customerid
 			AND `d`.`id` = :id
