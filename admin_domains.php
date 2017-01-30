@@ -456,7 +456,7 @@ if ($page == 'domains' || $page == 'overview') {
 
 				if ($userinfo['caneditphpsettings'] == '1' || $userinfo['change_serversettings'] == '1') {
 
-                                        $phpenabled  = isset($POST_['phpenabled']) ? intval($_POST['phpenabled']) : 0;
+					$phpenabled  = isset($_POST['phpenabled']) ? intval($_POST['phpenabled']) : 0;
 					$openbasedir = isset($_POST['openbasedir']) ? intval($_POST['openbasedir']) : 0;
 
 					if ((int) Settings::Get('system.mod_fcgid') == 1 || (int) Settings::Get('phpfpm.enabled') == 1) {
@@ -497,7 +497,7 @@ if ($page == 'domains' || $page == 'overview') {
 					}
 				} else {
 
-                                        $phpenabled = '1';
+					$phpenabled = '1';
 					$openbasedir = '1';
 
 					if ((int) Settings::Get('phpfpm.enabled') == 1) {
@@ -694,8 +694,8 @@ if ($page == 'domains' || $page == 'overview') {
 				if (count($ipandports) == 0) {
 					standard_error('noipportgiven');
 				}
-				
-				if($phpenabled != '1') {
+
+				if ($phpenabled != '1') {
 					$phpenabled = '0';
 				}
 
@@ -1491,7 +1491,7 @@ if ($page == 'domains' || $page == 'overview') {
 				if (! preg_match('/^https?\:\/\//', $documentroot)) {
 					$documentroot = makeCorrectDir($documentroot);
 				}
-				
+
 				if ($phpenabled != '1') {
 					$phpenabled = '0';
 				}

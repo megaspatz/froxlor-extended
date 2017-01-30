@@ -422,6 +422,9 @@ class apache extends HttpConfigBase
 
 							$this->virtualhosts_data[$vhosts_filename] .= ' SSLEngine On' . "\n";
 							$this->virtualhosts_data[$vhosts_filename] .= ' SSLProtocol -ALL +TLSv1 +TLSv1.2' . "\n";
+							if (Settings::Get('system.apache24') == '1') {
+								$this->virtualhosts_data[$vhosts_filename] .= ' SSLCompression Off' . "\n";
+							}
 							// this makes it more secure, thx to Marcel (08/2013)
 							$this->virtualhosts_data[$vhosts_filename] .= ' SSLHonorCipherOrder On' . "\n";
 							$this->virtualhosts_data[$vhosts_filename] .= ' SSLCipherSuite ' . Settings::Get('system.ssl_cipher_list') . "\n";
@@ -499,7 +502,9 @@ class apache extends HttpConfigBase
 
 		if ($domain['phpenabled_customer'] == 1 && $domain['phpenabled_vhost'] == '1') {
 			// This vHost has PHP enabled and we are using the regular mod_php
-
+			$cmail = getCustomerDetail($domain['customerid'], 'email');
+			$php_options_text .= '  php_admin_value sendmail_path "/usr/sbin/sendmail -t -f '.$cmail.'"' . PHP_EOL;
+			
 			if ($domain['openbasedir'] == '1') {
 				if ($domain['openbasedir_path'] == '1' || strstr($domain['documentroot'], ":") !== false) {
 					$_phpappendopenbasedir = appendOpenBasedirPath($domain['customerroot'], true);
@@ -592,6 +597,16 @@ class apache extends HttpConfigBase
 		if ($domain['deactivated'] == '1' && Settings::Get('system.deactivateddocroot') != '') {
 			$webroot_text .= '  # Using docroot for deactivated users...' . "\n";
 			$webroot_text .= '  DocumentRoot "' . makeCorrectDir(Settings::Get('system.deactivateddocroot')) . "\"\n";
+			$webroot_text .= '  <Directory "' . makeCorrectDir(Settings::Get('system.deactivateddocroot')) . '">' . "\n";
+			// >=apache-2.4 enabled?
+			if (Settings::Get('system.apache24') == '1') {
+				$webroot_text .= '    Require all granted' . "\n";
+				$webroot_text .= '    AllowOverride All' . "\n";
+			} else {
+				$webroot_text .= '    Order allow,deny' . "\n";
+				$webroot_text .= '    allow from all' . "\n";
+			}
+			$webroot_text .= '  </Directory>' . "\n";
 			$this->_deactivated = true;
 		} else {
 			$webroot_text .= '  DocumentRoot "' . $domain['documentroot'] . "\"\n";
@@ -795,6 +810,7 @@ class apache extends HttpConfigBase
 		$vhost_content .= '<VirtualHost ' . trim($ipportlist) . '>' . "\n";
 		$vhost_content .= $this->getServerNames($domain);
 
+		$domain['documentroot_norewrite'] = $domain['documentroot'];
 		if (($ssl_vhost == false && $domain['ssl'] == '1' && $domain['ssl_redirect'] == '1')) {
 			// We must not check if our port differs from port 443,
 			// but if there is a destination-port != 443
@@ -818,6 +834,7 @@ class apache extends HttpConfigBase
 			}
 
 			$domain['documentroot'] = 'https://%{HTTP_HOST}' . $_sslport . '/';
+			$domain['documentroot_norewrite'] = 'https://' . $domain['domain'] . $_sslport . '/';
 		}
 
 		if ($ssl_vhost === true && $domain['ssl'] == '1' && Settings::Get('system.use_ssl') == '1') {
@@ -840,6 +857,9 @@ class apache extends HttpConfigBase
 			if ($domain['ssl_cert_file'] != '') {
 				$vhost_content .= '  SSLEngine On' . "\n";
 				$vhost_content .= '  SSLProtocol -ALL +TLSv1 +TLSv1.2' . "\n";
+				if (Settings::Get('system.apache24') == '1') {
+					$vhost_content .= ' SSLCompression Off' . "\n";
+				}
 				// this makes it more secure, thx to Marcel (08/2013)
 				$vhost_content .= '  SSLHonorCipherOrder On' . "\n";
 				$vhost_content .= '  SSLCipherSuite ' . Settings::Get('system.ssl_cipher_list') . "\n";
@@ -903,7 +923,7 @@ class apache extends HttpConfigBase
 			$vhost_content .= '    RewriteRule ^/(.*) ' . $corrected_docroot . '$1' . $modrew_red . "\n";
 			$vhost_content .= '  </IfModule>' . "\n";
 			$vhost_content .= '  <IfModule !mod_rewrite.c>' . "\n";
-			$vhost_content .= '    Redirect ' . $code . ' / ' . $corrected_docroot . "\n";
+			$vhost_content .= '    Redirect ' . $code . ' / ' . $domain['documentroot_norewrite'] . "\n";
 			$vhost_content .= '  </IfModule>' . "\n";
 		} else {
 
