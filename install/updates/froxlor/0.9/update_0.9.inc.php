@@ -14,9 +14,11 @@
  * @package    Install
  *
  */
-if (! defined('AREA') || (defined('AREA') && AREA != 'admin') || ! isset($userinfo['loginname']) || (isset($userinfo['loginname']) && $userinfo['loginname'] == '')) {
-	header('Location: ../../../../index.php');
-	exit();
+if (!defined('_CRON_UPDATE')) {
+	if (! defined('AREA') || (defined('AREA') && AREA != 'admin') || ! isset($userinfo['loginname']) || (isset($userinfo['loginname']) && $userinfo['loginname'] == '')) {
+		header('Location: ../../../../index.php');
+		exit();
+	}
 }
 
 if (isFroxlorVersion('0.9-r0')) {
@@ -3697,4 +3699,10 @@ if (isFroxlorVersion('0.9.38.5')) {
 
 	showUpdateStep("Updating from 0.9.38.5 to 0.9.38.6", false);
 	updateToVersion('0.9.38.6');
+}
+
+if (isFroxlorVersion('0.9.38.6')) {
+
+	showUpdateStep("Updating from 0.9.38.6 to 0.9.38.7", false);
+	updateToVersion('0.9.38.7');
 }
