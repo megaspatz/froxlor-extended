@@ -72,3 +72,6 @@ This has 2 known side-effects at the moment:
 
 It may be possible to fix these issues, but they are not a priority at the moment
 
+## Contributing
+
+[see here](.github/CONTRIBUTING.md)

@@ -536,7 +536,7 @@ $lng['panel']['back'] = 'Back';
 // ADDED IN 1.2.16-svn12
 
 $lng['serversettings']['mod_fcgid']['title'] = 'Enable FCGID';
-$lng['serversettings']['mod_fcgid']['description'] = 'Use this to run PHP with the corresponding useraccount.<br /><br /><b>This needs a special webserver configuration for Apache, see <a target="blank" href="http://redmine.froxlor.org/projects/froxlor/wiki/HandbookApache2_fcgid">FCGID - handbook</a></b>';
+$lng['serversettings']['mod_fcgid']['description'] = 'Use this to run PHP with the corresponding useraccount.<br /><br /><b>This needs a special webserver configuration for Apache, see <a target="blank" href="https://github.com/Froxlor/Froxlor/wiki/apache2-with-fcgid">FCGID - handbook</a></b>';
 $lng['serversettings']['sendalternativemail']['title'] = 'Use alternative email-address';
 $lng['serversettings']['sendalternativemail']['description'] = 'Send the password-email to a different address during email-account-creation';
 $lng['emails']['alternative_emailaddress'] = 'Alternative e-mail-address';
@@ -1104,7 +1104,7 @@ $lng['dkim']['dkim_notes']['description'] = 'Notes that might be of interest to 
 $lng['dkim']['dkim_add_adsp']['title'] = 'Add DKIM ADSP entry';
 $lng['dkim']['dkim_add_adsp']['description'] = 'If you don\'t know what this is, leave it "enabled"';
 $lng['dkim']['dkim_add_adsppolicy']['title'] = 'ADSP policy';
-$lng['dkim']['dkim_add_adsppolicy']['description'] = 'For more information about this setting see <a target="blank" href="http://redmine.froxlor.org/projects/froxlor/wiki/En-dkim-adsp-policies">DKIM ADSP policies</a>';
+$lng['dkim']['dkim_add_adsppolicy']['description'] = 'For more information about this setting see <a target="blank" href="https://en.wikipedia.org/wiki/Author_Domain_Signing_Practices">DKIM ADSP policies</a>';
 
 $lng['admin']['cron']['cronsettings'] = 'Cronjob settings';
 $lng['cron']['cronname'] = 'cronjob-name';
@@ -1296,7 +1296,7 @@ $lng['error']['intvaluetoolow'] = 'The given number is too low (field %s)';
 $lng['error']['intvaluetoohigh'] = 'The given number is too high (field %s)';
 $lng['admin']['phpfpm_settings'] = 'PHP-FPM';
 $lng['serversettings']['phpfpm']['title'] = 'Enable php-fpm';
-$lng['serversettings']['phpfpm']['description'] = '<b>This needs a special webserver configuration see FPM-handbook for <a target="blank" href="http://redmine.froxlor.org/projects/froxlor/wiki/HandbookApache2_phpfpm">Apache2</a> or <a target="blank" href="http://redmine.froxlor.org/projects/froxlor/wiki/HandbookNginx_phpfpm">nginx</a></b>';
+$lng['serversettings']['phpfpm']['description'] = '<b>This needs a special webserver configuration see FPM-handbook for <a target="blank" href="https://github.com/Froxlor/Froxlor/wiki/apache2-with-php-fpm">Apache2</a> or <a target="blank" href="https://github.com/Froxlor/Froxlor/wiki/nginx-with-php-fpm">nginx</a></b>';
 $lng['serversettings']['phpfpm_settings']['configdir'] = 'Configuration directory of php-fpm';
 $lng['serversettings']['phpfpm_settings']['aliasconfigdir'] = 'Configuration Alias-directory of php-fpm';
 $lng['serversettings']['phpfpm_settings']['reload'] = 'php-fpm restart command';
@@ -1843,7 +1843,7 @@ $lng['domains']['import_file'] = 'CSV-File';
 $lng['success']['domain_import_successfully'] = 'Successfully imported %s domains.';
 $lng['error']['domain_import_error'] = 'Following error occurred while importing domains: %s';
 $lng['admin']['note'] = 'Note';
-$lng['domains']['import_description'] = 'Detailed information about the structure of the import-file and how to import successfully, please visit <a href="http://redmine.froxlor.org/projects/froxlor/wiki/DomainBulkActionDoc" target="_blank">http://redmine.froxlor.org/projects/froxlor/wiki/DomainBulkActionDoc</a>';
+$lng['domains']['import_description'] = 'Detailed information about the structure of the import-file and how to import successfully, please visit <a href="https://github.com/Froxlor/Froxlor/wiki/Domain-import-documenation" target="_blank">https://github.com/Froxlor/Froxlor/wiki/Domain-import-documenation</a>';
 $lng['usersettings']['custom_notes']['title'] = 'Custom notes';
 $lng['usersettings']['custom_notes']['description'] = 'Feel free to put any notes you want/need in here. They will show up in the admin/customer overview for the corresponding user.';
 $lng['usersettings']['custom_notes']['show'] = 'Show your notes on the dashboard of the user';
@@ -2070,3 +2070,10 @@ $lng['serversettings']['nginx_http2_support']['title'] = 'Nginx HTTP2 Support';
 $lng['serversettings']['nginx_http2_support']['description'] = 'enable http2 support for ssl. ENABLE ONLY IF YOUR Nginx SUPPORT THIS FEATURE. (version 1.9.5+)';
 
 $lng['error']['noipportgiven'] = 'No IP/port given';
+
+// Added in froxlor 0.9.38.8
+$lng['admin']['domain_ocsp_stapling']['title'] = 'OCSP stapling';
+$lng['admin']['domain_ocsp_stapling']['description'] = 'See <a target="_blank" href="https://en.wikipedia.org/wiki/OCSP_stapling">Wikipedia</a> for a detailed explanation of OCSP stapling';
+$lng['admin']['domain_ocsp_stapling']['nginx_version_warning'] = '<br /><strong class="red">WARNING:</strong> Nginx version 1.3.7 or above is required for OCSP stapling. If your version is older, the webserver will NOT start correctly while OCSP stapling is enabled!';
+$lng['serversettings']['ssl']['apache24_ocsp_cache_path']['title'] = 'Apache 2.4: path to the OCSP stapling cache';
+$lng['serversettings']['ssl']['apache24_ocsp_cache_path']['description'] = 'Configures the cache used to store OCSP responses which get included in TLS handshakes.';
