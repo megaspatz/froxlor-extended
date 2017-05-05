@@ -77,29 +77,34 @@ class DomainBulkAction
     private $_required_fields = array (
 /*  1 */	'domain',
 /*  2 */	'documentroot',
-/*  3 */        'aliasdomain',
+/*  3 */    'aliasdomain',
 /*  4 */	'isbinddomain',
 /*  5 */	'isemaildomain',
 /*  6 */	'email_only',
 /*  7 */	'iswildcarddomain',
 /*  8 */	'subcanemaildomain',
 /*  9 */	'caneditdomain',
-/* 10 */        'zonefile',
+/* 10 */    'zonefile',
 /* 11 */	'wwwserveralias',
-/* 12 */        'openbasedir',
-/* 13 */        'speciallogfile',
+/* 12 */    'openbasedir',
+/* 13 */    'speciallogfile',
 /* 14 */	'specialsettings',
 /* 15 */	'ssl_redirect',
-/* 16 */        'use_ssl',
+/* 16 */    'use_ssl',
 /* 17 */	'registration_date',
 /* 18 */	'ips',
-/* 19 */        'termination_date',
-/* 20 */        'authcode',
-                /* automatically added */
-                'adminid',
-                'customerid',
-                'add_date'
-                
+/* 19 */    'termination_date',
+/* 20 */    'authcode',
+/* 21 */	'letsencrypt',
+/* 22 */	'hsts',
+/* 23 */	'hsts_sub',
+/* 24 */	'hsts_preload',
+/* 25 */	'ocsp_stapling',
+/* 26 */	'phpenabled',
+	        /* automatically added */
+		    'adminid',
+            'customerid',
+            'add_date'
     );
 
     /**
@@ -189,23 +194,29 @@ class DomainBulkAction
 				`adminid` = :adminid,
 				`customerid` = :customerid,
 				`documentroot` = :documentroot,
-                                `aliasdomain` = :aliasdomain,
+                `aliasdomain` = :aliasdomain,
 				`isbinddomain` = :isbinddomain,
 				`isemaildomain` = :isemaildomain,
 				`email_only` = :email_only,
 				`iswildcarddomain` = :iswildcarddomain,
 				`subcanemaildomain` = :subcanemaildomain,
 				`caneditdomain` = :caneditdomain,
-                                `zonefile` = :zonefile,
+                `zonefile` = :zonefile,
 				`wwwserveralias` = :wwwserveralias,
-                                `openbasedir` = :openbasedir,
-                                `speciallogfile` = :speciallogfile,
+                `openbasedir` = :openbasedir,
+                `speciallogfile` = :speciallogfile,
 				`specialsettings` = :specialsettings,
 				`ssl_redirect` = :ssl_redirect,
 				`registration_date` = :registration_date,
 				`add_date` = :add_date,
-                                `termination_date` = :termination_date,
-                                `authcode` = :authcode
+                `termination_date` = :termination_date,
+                `authcode` = :authcode,
+				`letsencrypt` = :letsencrypt,
+				`hsts` = :hsts,
+				`hsts_sub` = :hsts_sub,
+				`hsts_preload` = :hsts_preload,
+				`ocsp_stapling` = :ocsp_stapling,
+				`phpenabled` = :phpenabled
 		");
         
         // prepare insert statement for ip/port <> domain
@@ -340,6 +351,30 @@ class DomainBulkAction
             $domain_data['ssl_redirect'] = 0;
         }
         
+        // only check for letsencrypt, hsts and oscp-stapling if ssl is enabled
+        if ($domain_data['use_ssl'] == 1) {
+			//lets encrypt
+			if ($domain_data['letsencrypt'] != 1 || $domain_data['iswildcarddomain'] == 1) {
+				$domain_data['letsencrypt'] = 0;
+			}
+		} else {
+			$domain_data['letsencrypt'] = 0;
+		}
+
+		// hsts
+		if ($domain_data['hsts'] != 1) {
+			$domain_data['hsts'] = 0;
+		}
+		if ($domain_data['hsts_sub'] != 1) {
+			$domain_data['hsts_sub'] = 0;
+		}
+		if ($domain_data['hsts_preload'] != 1) {
+			$domain_data['hsts_preload'] = 0;
+		}
+		if ($domain_data['ocsp_stapling'] != 1) {
+			$domain_data['ocsp_stapling'] = 0;
+		}
+
         // add to known domains
         $this->_knownDomains[] = $domain_data['domain'];
         
