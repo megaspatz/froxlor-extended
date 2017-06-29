@@ -253,7 +253,7 @@ class apache extends HttpConfigBase
 								'adminid' => 1, /* first admin-user (superadmin) */
 								'mod_fcgid_starter' => - 1,
 								'mod_fcgid_maxrequests' => - 1,
-								'guid' => Settings::Get('phpfpm.vhost_httpuser'),
+								'guid' => Settings::Get('system.mod_fcgid_httpuser'),
 								'openbasedir' => 0,
 								'email' => Settings::Get('panel.adminmail'),
 								'loginname' => 'froxlor.panel',
@@ -869,7 +869,7 @@ class apache extends HttpConfigBase
 				$vhost_content .= '  SSLEngine On' . "\n";
 				$vhost_content .= '  SSLProtocol -ALL +TLSv1 +TLSv1.2' . "\n";
 				if (Settings::Get('system.apache24') == '1') {
-					$vhost_content .= ' SSLCompression Off' . "\n";
+					$vhost_content .= '  SSLCompression Off' . "\n";
 				}
 				// this makes it more secure, thx to Marcel (08/2013)
 				$vhost_content .= '  SSLHonorCipherOrder On' . "\n";
