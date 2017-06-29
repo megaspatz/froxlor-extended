@@ -93,18 +93,21 @@ class DomainBulkAction
 /* 16 */    'use_ssl',
 /* 17 */	'registration_date',
 /* 18 */	'ips',
-/* 19 */    'termination_date',
-/* 20 */    'authcode',
+
+/* 19 */        'termination_date',
+/* 20 */        'authcode',
+
 /* 21 */	'letsencrypt',
 /* 22 */	'hsts',
 /* 23 */	'hsts_sub',
 /* 24 */	'hsts_preload',
 /* 25 */	'ocsp_stapling',
 /* 26 */	'phpenabled',
-	        /* automatically added */
-		    'adminid',
-            'customerid',
-            'add_date'
+	    /* automatically added */
+		'adminid',
+                'customerid',
+                'add_date'
+
     );
 
     /**
@@ -209,14 +212,17 @@ class DomainBulkAction
 				`ssl_redirect` = :ssl_redirect,
 				`registration_date` = :registration_date,
 				`add_date` = :add_date,
-                `termination_date` = :termination_date,
-                `authcode` = :authcode,
+
+                                `termination_date` = :termination_date,
+                                `authcode` = :authcode
+
 				`letsencrypt` = :letsencrypt,
 				`hsts` = :hsts,
 				`hsts_sub` = :hsts_sub,
 				`hsts_preload` = :hsts_preload,
 				`ocsp_stapling` = :ocsp_stapling,
 				`phpenabled` = :phpenabled
+
 		");
         
         // prepare insert statement for ip/port <> domain
