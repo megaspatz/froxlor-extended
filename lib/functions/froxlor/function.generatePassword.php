@@ -37,7 +37,7 @@ function generatePassword($isSalt = false)
     }
     
     if (Settings::Get('panel.password_numeric')) {
-        $pw .= mb_substr(special_shuffle($numeric), 0, $n);
+        $pw .= mb_substr(special_shuffle($numeric), 0, $n); 
     }
     
     if (Settings::Get('panel.password_special_char_required') && !$isSalt) {

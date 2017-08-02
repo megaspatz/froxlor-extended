@@ -3730,3 +3730,11 @@ if (isDatabaseVersion('201704100')) {
 
 	updateToDbVersion('201705050');
 }
+
+if (isDatabaseVersion('201705050')) {
+	showUpdateStep("Adding new setting for bindextended");
+	Settings::AddNew('system.bindconf_slave_file', 'froxlor-slave.conf');
+	lastStepStatus(0);
+
+	updateToDbVersion('201708020');
+}

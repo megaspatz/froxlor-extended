@@ -19,6 +19,7 @@
 
 // necessary includes
 require_once makeCorrectFile(dirname(__FILE__) . '/cron_tasks.inc.dns.10.bind.php');
+require_once makeCorrectFile(dirname(__FILE__) . '/cron_tasks.inc.dns.11.bind.php');
 require_once makeCorrectFile(dirname(__FILE__) . '/cron_tasks.inc.dns.20.pdns.php');
 require_once makeCorrectFile(dirname(__FILE__) . '/cron_tasks.inc.http.10.apache.php');
 require_once makeCorrectFile(dirname(__FILE__) . '/cron_tasks.inc.http.15.apache_fcgid.php');

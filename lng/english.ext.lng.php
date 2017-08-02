@@ -39,8 +39,9 @@ $lng['serversettings']['default_soa_minimum']['title'] = 'Minimum';
 $lng['serversettings']['default_soa_minimum']['description'] = 'SOA minimum';
 $lng['serversettings']['bindconf_zonefiles_directory']['title']= 'Zonefile Direktory';
 $lng['serversettings']['bindconf_zonefiles_directory']['description']= 'Where Froxlor stores the Zonefiles';
-$lng['serversettings']['bindconf_file']['title'] = 'Nameserverconfig file';
+$lng['serversettings']['bindconf_file']['title'] = 'Master-Nameserverconfig file';
 $lng['serversettings']['bindconf_file']['description'] = 'This configfile will be created by Froxlor';
 
-        
+$lng['serversettings']['bindconf_slave_file']['title'] = 'Slave-Nameserverconfig file';
+$lng['serversettings']['bindconf_slave_file']['description'] = 'This configfile will be created by Froxlor';       
 

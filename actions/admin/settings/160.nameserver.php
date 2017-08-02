@@ -46,7 +46,7 @@ return array(
 					'type' => 'option',
 					'default' => 'bind',
 					'option_mode' => 'one',
-					'option_options' => array('bind' => 'Bind9', 'pdns' => 'PowerDNS'),
+					'option_options' => array('bind' => 'Bind9', 'pdns' => 'PowerDNS', 'bindextended' => 'Bind9 Extended'),
 					'save_method' => 'storeSettingField'
 				),
 				'system_bindconf_directory' => array(
@@ -58,7 +58,7 @@ return array(
 					'default' => '/etc/bind/',
 					'save_method' => 'storeSettingField',
 					),
-                                'system_bindconf_zonefiles_directory' => array(
+				'system_bindconf_zonefiles_directory' => array(
 					'label' => $lng['serversettings']['bindconf_zonefiles_directory'],
 					'settinggroup' => 'system',
 					'varname' => 'bindconf_zonefiles_directory',
@@ -67,13 +67,22 @@ return array(
 					'default' => '/etc/bind/domains',
 					'save_method' => 'storeSettingField',
 					),
-                                'system_bindconf_file' => array(
+				'system_bindconf_file' => array(
 					'label' => $lng['serversettings']['bindconf_file'],
 					'settinggroup' => 'system',
 					'varname' => 'bindconf_file',
 					'type' => 'string',
 					'string_type' => 'dir',
-					'default' => 'froxlor.conf',
+					'default' => 'froxlor-master.conf',
+					'save_method' => 'storeSettingField',
+					),
+				'system_bindconf_slave_file' => array(
+					'label' => $lng['serversettings']['bindconf_slave_file'],
+					'settinggroup' => 'system',
+					'varname' => 'bindconf_slave_file',
+					'type' => 'string',
+					'string_type' => 'dir',
+					'default' => 'froxlor-slave.conf',
 					'save_method' => 'storeSettingField',
 					),
 				'system_bindreload_command' => array(
@@ -129,7 +138,7 @@ return array(
 					'varname' => 'defaultttl',
 					'type' => 'int',
 					'default' => 604800, /* 1 week */
-					'int_min' => 180, /* 1 hour */
+					'int_min' => 180, /* 3 Min */
 					'int_max' => 2147483647, /* integer max */
 					'save_method' => 'storeSettingField',
 					),

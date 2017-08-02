@@ -26,5 +26,7 @@ $lng['domains']['authcode_desc'] = 'AuthCode oft auch AuthInfo genannt';
 
 $lng['serversettings']['bindconf_zonefiles_directory']['title']= 'Zonefile Verzeichnis';
 $lng['serversettings']['bindconf_zonefiles_directory']['description']= 'hier werden die Zone-Dateien gespeichert';
-$lng['serversettings']['bindconf_file']['title'] = 'Bind Konfigurations-Datei';
+$lng['serversettings']['bindconf_file']['title'] = 'Bind Konfigurations-Datei (DNS-Master)';
 $lng['serversettings']['bindconf_file']['description'] = 'Diese Datei wird von Froxlor generiert und muss in der named.options.local includiert werden';
+$lng['serversettings']['bindconf_slave_file']['title'] = 'Bind Konfigurations-Datei (DNS-Slave)';
+$lng['serversettings']['bindconf_slave_file']['description'] = 'Diese Datei wird von Froxlor generiert und muss in der named.options.local includiert werden';

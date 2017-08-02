@@ -58,7 +58,7 @@ class bind extends DnsBase
 				$this->_logger->logAction(CRON_ACTION, LOG_INFO, '`' . $zonefile_name . '` zone written');
 
 				// generate config
-				$bindconf_file .= $this->_generateDomainConfig($domain);
+				$bindconf_file .= $this->_generateDomainConfig($domain); 
 			}
 
 			// write config
