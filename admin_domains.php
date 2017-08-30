@@ -591,6 +591,8 @@ if ($page == 'domains' || $page == 'overview') {
 							}
 						}
 
+						$http2 = isset($_POST['http2']) && (int)$_POST['http2'] == 1 ? 1 : 0;
+
 						// HSTS
 						$hsts_maxage = isset($_POST['hsts_maxage']) ? (int)$_POST['hsts_maxage'] : 0;
 						$hsts_sub = isset($_POST['hsts_sub']) && (int)$_POST['hsts_sub'] == 1 ? 1 : 0;
@@ -602,6 +604,7 @@ if ($page == 'domains' || $page == 'overview') {
 					} else {
 						$ssl_redirect = 0;
 						$letsencrypt = 0;
+						$http2 = 0;
 						// we need this for the serialize
 						// if ssl is disabled or no ssl-ip/port exists
 						$ssl_ipandports[] = - 1;
@@ -617,6 +620,7 @@ if ($page == 'domains' || $page == 'overview') {
 				} else {
 					$ssl_redirect = 0;
 					$letsencrypt = 0;
+					$http2 = 0;
 					// we need this for the serialize
 					// if ssl is disabled or no ssl-ip/port exists
 					$ssl_ipandports[] = - 1;
@@ -798,10 +802,11 @@ if ($page == 'domains' || $page == 'overview') {
                                                 'authcode' => $authcode,
 						'issubof' => $issubof,
 						'letsencrypt' => $letsencrypt,
+						'http2' => $http2,
 						'hsts_maxage' => $hsts_maxage,
 						'hsts_sub' => $hsts_sub,
 						'hsts_preload' => $hsts_preload,
-						'ocsp_stapling' => $ocsp_stapling,
+						'ocsp_stapling' => $ocsp_stapling
 					);
 
 					$security_questions = array(
@@ -852,10 +857,11 @@ if ($page == 'domains' || $page == 'overview') {
 						'mod_fcgid_maxrequests' => $mod_fcgid_maxrequests,
 						'ismainbutsubto' => $issubof,
 						'letsencrypt' => $letsencrypt,
+						'http2' => $http2,
 						'hsts' => $hsts_maxage,
 						'hsts_sub' => $hsts_sub,
 						'hsts_preload' => $hsts_preload,
-						'ocsp_stapling' => $ocsp_stapling,
+						'ocsp_stapling' => $ocsp_stapling
 					);
 
 					$ins_stmt = Database::prepare("
@@ -891,6 +897,7 @@ if ($page == 'domains' || $page == 'overview') {
 						`mod_fcgid_maxrequests` = :mod_fcgid_maxrequests,
 						`ismainbutsubto` = :ismainbutsubto,
 						`letsencrypt` = :letsencrypt,
+						`http2` = :http2,
 						`hsts` = :hsts,
 						`hsts_sub` = :hsts_sub,
 						`hsts_preload` = :hsts_preload,
@@ -1434,6 +1441,8 @@ if ($page == 'domains' || $page == 'overview') {
 						$letsencrypt = (int) $_POST['letsencrypt'];
 					}
 
+					$http2 = isset($_POST['http2']) && (int)$_POST['http2'] == 1 ? 1 : 0;
+
 					// HSTS
 					$hsts_maxage = isset($_POST['hsts_maxage']) ? (int)$_POST['hsts_maxage'] : 0;
 					$hsts_sub = isset($_POST['hsts_sub']) && (int)$_POST['hsts_sub'] == 1 ? 1 : 0;
@@ -1471,6 +1480,7 @@ if ($page == 'domains' || $page == 'overview') {
 					} else {
 						$ssl_redirect = 0;
 						$letsencrypt = 0;
+						$http2 = 0;
 						// we need this for the serialize
 						// if ssl is disabled or no ssl-ip/port exists
 						$ssl_ipandports[] = - 1;
@@ -1486,6 +1496,7 @@ if ($page == 'domains' || $page == 'overview') {
 				} else {
 					$ssl_redirect = 0;
 					$letsencrypt = 0;
+					$http2 = 0;
 					// we need this for the serialize
 					// if ssl is disabled or no ssl-ip/port exists
 					$ssl_ipandports[] = - 1;
@@ -1641,10 +1652,11 @@ if ($page == 'domains' || $page == 'overview') {
 					'ipandport' => serialize($ipandports),
 					'ssl_ipandport' => serialize($ssl_ipandports),
 					'letsencrypt' => $letsencrypt,
+					'http2' => $http2,
 					'hsts_maxage' => $hsts_maxage,
 					'hsts_sub' => $hsts_sub,
 					'hsts_preload' => $hsts_preload,
-					'ocsp_stapling' => $ocsp_stapling,
+					'ocsp_stapling' => $ocsp_stapling
 				);
 
 				$security_questions = array(
@@ -1679,6 +1691,7 @@ if ($page == 'domains' || $page == 'overview') {
 					$email_only != $result['email_only'] ||
 					($speciallogfile != $result['speciallogfile'] && $speciallogverified == '1') ||
 					$letsencrypt != $result['letsencrypt'] ||
+					$http2 != $result['http2'] ||
 					$hsts_maxage != $result['hsts'] ||
 					$hsts_sub != $result['hsts_sub'] ||
 					$hsts_preload != $result['hsts_preload'] ||
@@ -1836,6 +1849,7 @@ if ($page == 'domains' || $page == 'overview') {
                                 $update_data['authcode'] = $authcode;
 				$update_data['ismainbutsubto'] = $issubof;
 				$update_data['letsencrypt'] = $letsencrypt;
+				$update_data['http2'] = $http2;
 				$update_data['hsts'] = $hsts_maxage;
 				$update_data['hsts_sub'] = $hsts_sub;
 				$update_data['hsts_preload'] = $hsts_preload;
@@ -1870,6 +1884,7 @@ if ($page == 'domains' || $page == 'overview') {
                                         `authcode`= :authcode,
 					`ismainbutsubto` = :ismainbutsubto,
 					`letsencrypt` = :letsencrypt,
+					`http2` = :http2,
 					`hsts` = :hsts,
 					`hsts_sub` = :hsts_sub,
 					`hsts_preload` = :hsts_preload,

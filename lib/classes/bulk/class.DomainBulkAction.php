@@ -93,21 +93,19 @@ class DomainBulkAction
 /* 16 */    'use_ssl',
 /* 17 */	'registration_date',
 /* 18 */	'ips',
-
-/* 19 */        'termination_date',
-/* 20 */        'authcode',
-
+/* 19 */    'termination_date',
+/* 20 */    'authcode',
 /* 21 */	'letsencrypt',
 /* 22 */	'hsts',
 /* 23 */	'hsts_sub',
 /* 24 */	'hsts_preload',
 /* 25 */	'ocsp_stapling',
 /* 26 */	'phpenabled',
+/* 27 */	'http2',
 	    /* automatically added */
-		'adminid',
-                'customerid',
-                'add_date'
-
+	    	'adminid',
+            'customerid',
+            'add_date'
     );
 
     /**
@@ -213,16 +211,16 @@ class DomainBulkAction
 				`registration_date` = :registration_date,
 				`add_date` = :add_date,
 
-                                `termination_date` = :termination_date,
-                                `authcode` = :authcode
+                `termination_date` = :termination_date,
+                `authcode` = :authcode
 
 				`letsencrypt` = :letsencrypt,
 				`hsts` = :hsts,
 				`hsts_sub` = :hsts_sub,
 				`hsts_preload` = :hsts_preload,
 				`ocsp_stapling` = :ocsp_stapling,
-				`phpenabled` = :phpenabled
-
+				`phpenabled` = :phpenabled,
+				`http2` = :http2
 		");
         
         // prepare insert statement for ip/port <> domain
@@ -379,6 +377,14 @@ class DomainBulkAction
 		}
 		if ($domain_data['ocsp_stapling'] != 1) {
 			$domain_data['ocsp_stapling'] = 0;
+		}
+
+		if ($domain_data['phpenabled'] != 1) {
+			$domain_data['phpenabled'] = 0;
+		}
+
+		if ($domain_data['http2'] != 1) {
+			$domain_data['http2'] = 0;
 		}
 
         // add to known domains
