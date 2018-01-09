@@ -638,6 +638,11 @@ if ($page == 'domains' || $page == 'overview') {
 				if ($serveraliasoption == '0' && $letsencrypt == '1' && Settings::Get('system.leapiversion') == '1') {
 					standard_error('nowildcardwithletsencrypt');
 				}
+				// if using acme-v2 we cannot issue wildcard-certificates
+				// because they currently only support the dns-01 challenge
+				if ($serveraliasoption == '0' && $letsencrypt == '1' && Settings::Get('system.leapiversion') == '2') {
+					standard_error('nowildcardwithletsencryptv2');
+				}
 
 				// Temporarily deactivate ssl_redirect until Let's Encrypt certificate was generated
 				if ($ssl_redirect > 0 && $letsencrypt == 1) {
@@ -1520,6 +1525,11 @@ if ($page == 'domains' || $page == 'overview') {
 				// We can't enable let's encrypt for wildcard domains when using acme-v1
 				if ($serveraliasoption == '0' && $letsencrypt == '1' && Settings::Get('system.leapiversion') == '1') {
 					standard_error('nowildcardwithletsencrypt');
+				}
+				// if using acme-v2 we cannot issue wildcard-certificates
+				// because they currently only support the dns-01 challenge
+				if ($serveraliasoption == '0' && $letsencrypt == '1' && Settings::Get('system.leapiversion') == '2') {
+					standard_error('nowildcardwithletsencryptv2');
 				}
 
 				// Temporarily deactivate ssl_redirect until Let's Encrypt certificate was generated
