@@ -3845,3 +3845,12 @@ if (isDatabaseVersion('201801070')) {
 
 	updateToDbVersion('201801080');
 }
+
+if (isDatabaseVersion('201801080')) {
+
+	showUpdateStep("Adding new setting for Let's Encrypt ACME version");
+	Settings::AddNew('system.leapiversion', '1');
+	lastStepStatus(0);
+
+	updateToDbVersion('201801090');
+}
