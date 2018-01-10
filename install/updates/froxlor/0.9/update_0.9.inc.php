@@ -3863,3 +3863,12 @@ if (isDatabaseVersion('201801090')) {
 
 	updateToDbVersion('201801091');
 }
+
+if (isDatabaseVersion('201801091')) {
+
+	showUpdateStep("Adding new setting for SSL protocols");
+	Settings::AddNew('system.ssl_protocols', 'TLSv1,TLSv1.2');
+	lastStepStatus(0);
+
+	updateToDbVersion('201801100');
+}
