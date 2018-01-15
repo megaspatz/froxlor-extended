@@ -3753,3 +3753,16 @@ if (isDatabaseVersion('201708020')) {
 
 	updateToDbVersion('201708240');
 }
+
+if (isDatabaseVersion('201708240')) {
+	
+	showUpdateStep("Adding new 'disable LE self-check' setting");
+	$system_disable_le_selfcheck = isset($_POST['system_disable_le_selfcheck']) ? (int) $_POST['system_disable_le_selfcheck'] : 0;
+	Settings::AddNew('system.disable_le_selfcheck', $system_disable_le_selfcheck);
+	lastStepStatus(0);
+
+	updateToDbVersion('201712310');
+
+	showUpdateStep("Updating from 0.9.38.7 to 0.9.38.8", false);
+	updateToVersion('0.9.38.8');
+}
