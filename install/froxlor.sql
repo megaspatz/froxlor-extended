@@ -698,7 +698,6 @@ opcache.interned_strings_buffer'),
 	('panel', 'db_version', '201801110');
 
 
-
 DROP TABLE IF EXISTS `panel_tasks`;
 CREATE TABLE `panel_tasks` (
   `id` int(11) unsigned NOT NULL auto_increment,
@@ -876,7 +875,10 @@ CREATE TABLE `panel_fpmdaemons` (
   `max_spare_servers` int(4) NOT NULL DEFAULT '35',
   `max_requests` int(4) NOT NULL DEFAULT '0',
   `idle_timeout` int(4) NOT NULL DEFAULT '30',
+<<<<<<< HEAD
   `limit_extensions` varchar(255) NOT NULL default '.php',
+=======
+>>>>>>> 2ab027dd9551bda70b7d0fbaea5daecc02d420a8
   PRIMARY KEY  (`id`),
   UNIQUE KEY `reload` (`reload_cmd`),
   UNIQUE KEY `config` (`config_dir`)

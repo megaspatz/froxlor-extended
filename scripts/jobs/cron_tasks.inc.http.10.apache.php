@@ -469,11 +469,7 @@ class apache extends HttpConfigBase
 						} else {
 							
 							$this->virtualhosts_data[$vhosts_filename] .= ' SSLEngine On' . "\n";
-<<<<<<< HEAD
-							$this->virtualhosts_data[$vhosts_filename] .= ' SSLProtocol -ALL ' . str_replace(","," +", Settings::Get('system.ssl_protocols')) . "\n";
-=======
 							$this->virtualhosts_data[$vhosts_filename] .= ' SSLProtocol -ALL +' . str_replace(","," +", Settings::Get('system.ssl_protocols')) . "\n";
->>>>>>> bba87261... fix ssl-procotols in apache-cron; fix files-match regex in apache-cron
 							if (Settings::Get('system.apache24') == '1') {
 								if (Settings::Get('system.http2_support') == '1') {
 									$this->virtualhosts_data[$vhosts_filename] .= ' Protocols h2 http/1.1' . "\n";
@@ -911,11 +907,9 @@ class apache extends HttpConfigBase
 			
 			if ($domain['ssl_cert_file'] != '') {
 				$vhost_content .= '  SSLEngine On' . "\n";
-<<<<<<< HEAD
-				$vhost_content .= '  SSLProtocol -ALL ' . str_replace(","," +", Settings::Get('system.ssl_protocols')) . "\n";
-=======
+
 				$vhost_content .= '  SSLProtocol -ALL +' . str_replace(","," +", Settings::Get('system.ssl_protocols')) . "\n";
->>>>>>> bba87261... fix ssl-procotols in apache-cron; fix files-match regex in apache-cron
+
 				if (Settings::Get('system.apache24') == '1') {
 					if (isset($domain['http2']) && $domain['http2'] == '1') {
 						$vhost_content .= ' Protocols h2 http/1.1' . "\n";

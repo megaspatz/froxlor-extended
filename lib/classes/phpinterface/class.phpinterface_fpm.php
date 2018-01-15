@@ -48,6 +48,7 @@ class phpinterface_fpm
 	 *
 	 * @var array
 	 */
+	
 	private $_ini = array();
 
 	/**

@@ -15,6 +15,7 @@
  *
  */
 
+
 return array(
 	'groups' => array(
 		'phpfpm' => array(

@@ -2103,3 +2103,4 @@ $lng['phpfpm']['ini_flags'] = 'Enter possible <strong>php_flag</strong>s for php
 $lng['phpfpm']['ini_values'] = 'Enter possible <strong>php_value</strong>s for php.ini. One entry per line';
 $lng['phpfpm']['ini_admin_flags'] = 'Enter possible <strong>php_admin_flag</strong>s for php.ini. One entry per line';
 $lng['phpfpm']['ini_admin_values'] = 'Enter possible <strong>php_admin_value</strong>s for php.ini. One entry per line';
+

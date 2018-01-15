@@ -23,3 +23,4 @@ $dbversion = '201801110';
 
 // Distribution branding-tag (used for Debian etc.)
 $branding = '';
+
