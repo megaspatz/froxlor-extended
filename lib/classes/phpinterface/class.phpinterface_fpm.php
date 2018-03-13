@@ -48,7 +48,6 @@ class phpinterface_fpm
 	 *
 	 * @var array
 	 */
-	
 	private $_ini = array();
 
 	/**
@@ -170,6 +169,10 @@ class phpinterface_fpm
 				$this->getTempDir();
 			}
 			
+			$env_path = Settings::Get('phpfpm.envpath');
+			if (!empty($env_path)) {
+				$fpm_config .= 'env[PATH] = ' . $env_path . "\n";
+			}
 			$fpm_config .= 'env[TMP] = ' . $tmpdir . "\n";
 			$fpm_config .= 'env[TMPDIR] = ' . $tmpdir . "\n";
 			$fpm_config .= 'env[TEMP] = ' . $tmpdir . "\n";
@@ -358,7 +361,7 @@ class phpinterface_fpm
 		$config = makeCorrectFile($configdir . '/dummy.conf');
 		$dummy = "[dummy]
 user = ".Settings::Get('system.httpuser')."
-listen = /run/" . base64_encode($configdir) . "-fpm.sock
+listen = /run/" . md5($configdir) . "-fpm.sock
 pm = static
 pm.max_children = 1
 ";

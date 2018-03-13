@@ -3986,3 +3986,86 @@ opcache.interned_strings_buffer');
 
 	updateToDbVersion('201801110');
 }
+
+if (isDatabaseVersion('201801110')) {
+
+	showUpdateStep("Adding php-fpm php PATH setting for envrironment");
+	Settings::AddNew("phpfpm.envpath",  '/usr/local/bin:/usr/bin:/bin');
+	lastStepStatus(0);
+
+	updateToDbVersion('201801260');
+}
+
+if (isFroxlorVersion('0.9.38.8')) {
+
+	showUpdateStep("Updating from 0.9.38.8 to 0.9.39 final", false);
+	updateToVersion('0.9.39');
+}
+
+if (isFroxlorVersion('0.9.39')) {
+
+	showUpdateStep("Updating from 0.9.39 to 0.9.39.1", false);
+	updateToVersion('0.9.39.1');
+}
+
+if (isFroxlorVersion('0.9.39.1')) {
+
+	showUpdateStep("Updating from 0.9.39.1 to 0.9.39.2", false);
+	updateToVersion('0.9.39.2');
+}
+
+if (isDatabaseVersion('201801260')) {
+
+	showUpdateStep("Adding new plans table");
+	Database::query("DROP TABLE IF EXISTS `panel_plans`;");
+	$sql = "CREATE TABLE `panel_plans` (
+	  `id` int(11) NOT NULL auto_increment,
+	  `adminid` int(11) NOT NULL default '0',
+	  `name` varchar(255) NOT NULL default '',
+	  `description` text NOT NULL,
+	  `value` longtext NOT NULL,
+	  `ts` int(15) NOT NULL default '0',
+	  PRIMARY KEY  (id),
+	  KEY adminid (adminid)
+	) ENGINE=MyISAM CHARSET=utf8 COLLATE=utf8_general_ci;";
+	Database::query($sql);
+	lastStepStatus(0);
+
+	updateToDbVersion('201802120');
+}
+
+if (isDatabaseVersion('201802120')) {
+
+	showUpdateStep("Adding domain field for try_files flag");
+	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS . "` ADD `notryfiles` tinyint(1) DEFAULT '0';");
+	lastStepStatus(0);
+
+	updateToDbVersion('201802130');
+}
+
+if (isFroxlorVersion('0.9.39.2')) {
+
+	showUpdateStep("Updating from 0.9.39.2 to 0.9.39.3", false);
+	updateToVersion('0.9.39.3');
+}
+
+if (isFroxlorVersion('0.9.39.3')) {
+
+	showUpdateStep("Updating from 0.9.39.3 to 0.9.39.4", false);
+	updateToVersion('0.9.39.4');
+}
+
+if (isFroxlorVersion('0.9.39.4')) {
+
+	showUpdateStep("Updating from 0.9.39.4 to 0.9.39.5", false);
+	updateToVersion('0.9.39.5');
+}
+
+if (isDatabaseVersion('201802130')) {
+
+	showUpdateStep("Adding fullchain field to ssl certificates");
+	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "` ADD `ssl_fullchain_file` mediumtext AFTER `ssl_csr_file`;");
+	lastStepStatus(0);
+
+	updateToDbVersion('201802250');
+}

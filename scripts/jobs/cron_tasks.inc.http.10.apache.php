@@ -66,7 +66,8 @@ class apache extends HttpConfigBase
 			foreach ($restart_cmds as $restart_cmd) {
 				// check whether the config dir is empty (no domains uses this daemon)
 				// so we need to create a dummy
-				$isDirEmpty = !(new \FilesystemIterator($restart_cmd['config_dir']))->valid();
+				$fsi = new \FilesystemIterator($restart_cmd['config_dir']);
+				$isDirEmpty = !$fsi->valid();
 				if ($isDirEmpty) {
 					$this->logger->logAction(CRON_ACTION, LOG_INFO, 'apache::reload: fpm config directory "' . $restart_cmd['config_dir'] . '" is empty. Creating dummy.');
 					phpinterface_fpm::createDummyPool($restart_cmd['config_dir']);
@@ -907,11 +908,9 @@ class apache extends HttpConfigBase
 			
 			if ($domain['ssl_cert_file'] != '') {
 				$vhost_content .= '  SSLEngine On' . "\n";
-
 				$vhost_content .= '  SSLProtocol -ALL +' . str_replace(","," +", Settings::Get('system.ssl_protocols')) . "\n";
-
 				if (Settings::Get('system.apache24') == '1') {
-					if (isset($domain['http2']) && $domain['http2'] == '1') {
+					if (isset($domain['http2']) && $domain['http2'] == '1' && Settings::Get('system.http2_support') == '1') {
 						$vhost_content .= ' Protocols h2 http/1.1' . "\n";
 					}
 					$vhost_content .= '  SSLCompression Off' . "\n";

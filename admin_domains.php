@@ -55,7 +55,7 @@ if ($page == 'domains' || $page == 'overview') {
 			$syshostname = "AND `d`.`id` <> " . Settings::Get('system.hostname_id');
 		}
 		$result_stmt = Database::prepare("
-			SELECT `d`.*, `c`.`loginname`, `c`.`name`, `c`.`firstname`, `c`.`company`, `c`.`standardsubdomain`, `ad`.`id` AS `aliasdomainid`, `ad`.`domain` AS `aliasdomain`
+			SELECT `d`.*, `c`.`loginname`, `c`.`deactivated`, `c`.`name`, `c`.`firstname`, `c`.`company`, `c`.`standardsubdomain`, `ad`.`id` AS `aliasdomainid`, `ad`.`domain` AS `aliasdomain`
 			FROM `" . TABLE_PANEL_DOMAINS . "` `d`
 			LEFT JOIN `" . TABLE_PANEL_CUSTOMERS . "` `c` USING(`customerid`)
 			LEFT JOIN `" . TABLE_PANEL_DOMAINS . "` `ad` ON `d`.`aliasdomain`=`ad`.`id`
@@ -430,6 +430,7 @@ if ($page == 'domains' || $page == 'overview') {
 					}
 
 					$specialsettings = validate(str_replace("\r\n", "\n", $_POST['specialsettings']), 'specialsettings', '/^[^\0]*$/');
+					$notryfiles = isset($_POST['notryfiles']) && (int)$_POST['notryfiles'] == 1 ? 1 : 0;
 					validate($_POST['documentroot'], 'documentroot');
 
 					// If path is empty and 'Use domain name as default value for DocumentRoot path' is enabled in settings,
@@ -452,6 +453,7 @@ if ($page == 'domains' || $page == 'overview') {
 					$zonefile = '';
 					$dkim = '1';
 					$specialsettings = '';
+					$notryfiles = '0';
 				}
 
 				if ($userinfo['caneditphpsettings'] == '1' || $userinfo['change_serversettings'] == '1') {
@@ -802,6 +804,7 @@ if ($page == 'domains' || $page == 'overview') {
 						'mod_fcgid_starter' => $mod_fcgid_starter,
 						'mod_fcgid_maxrequests' => $mod_fcgid_maxrequests,
 						'specialsettings' => $specialsettings,
+						'notryfiles' => $notryfiles,
 						'registration_date' => $registration_date,
                                                 'termination_date' => $termination_date,
                                                 'authcode' => $authcode,
@@ -852,6 +855,7 @@ if ($page == 'domains' || $page == 'overview') {
 						'openbasedir' => $openbasedir,
 						'speciallogfile' => $speciallogfile,
 						'specialsettings' => $specialsettings,
+						'notryfiles' => $notryfiles,
 						'ssl_redirect' => $ssl_redirect,
 						'add_date' => time(),
 						'registration_date' => $registration_date,
@@ -892,6 +896,7 @@ if ($page == 'domains' || $page == 'overview') {
 						`openbasedir` = :openbasedir,
 						`speciallogfile` = :speciallogfile,
 						`specialsettings` = :specialsettings,
+						`notryfiles` = :notryfiles,
 						`ssl_redirect` = :ssl_redirect,
 						`add_date` = :add_date,
 						`registration_date` = :registration_date,
@@ -1344,6 +1349,7 @@ if ($page == 'domains' || $page == 'overview') {
 
 					$specialsettings = validate(str_replace("\r\n", "\n", $_POST['specialsettings']), 'specialsettings', '/^[^\0]*$/');
 					$ssfs = (isset($_POST['specialsettingsforsubdomains']) && intval($_POST['specialsettingsforsubdomains']) == 1) ? 1 : 0;
+					$notryfiles = isset($_POST['notryfiles']) && (int)$_POST['notryfiles'] == 1 ? 1 : 0;
 					$documentroot = validate($_POST['documentroot'], 'documentroot');
 
 					if ($documentroot == '') {
@@ -1365,6 +1371,7 @@ if ($page == 'domains' || $page == 'overview') {
 					$dkim = $result['dkim'];
 					$specialsettings = $result['specialsettings'];
 					$ssfs = (empty($specialsettings) ? 0 : 1);
+					$notryfiles = $result['notryfiles'];
 					$documentroot = $result['documentroot'];
 				}
 
@@ -1661,6 +1668,7 @@ if ($page == 'domains' || $page == 'overview') {
 					'mod_fcgid_maxrequests' => $mod_fcgid_maxrequests,
 					'specialsettings' => $specialsettings,
 					'specialsettingsforsubdomains' => $ssfs,
+					'notryfiles' => $notryfiles,
 					'registration_date' => $registration_date,
 					'termination_date' => $termination_date,
                                         'authcode' => $authcode,
@@ -1704,6 +1712,7 @@ if ($page == 'domains' || $page == 'overview') {
 					$mod_fcgid_starter != $result['mod_fcgid_starter'] ||
 					$mod_fcgid_maxrequests != $result['mod_fcgid_maxrequests'] ||
 					$specialsettings != $result['specialsettings'] ||
+					$notryfiles != $result['notryfiles'] ||
 					$aliasdomain != $result['aliasdomain'] ||
 					$issubof != $result['ismainbutsubto'] ||
 					$email_only != $result['email_only'] ||
@@ -1862,6 +1871,7 @@ if ($page == 'domains' || $page == 'overview') {
 				$update_data['mod_fcgid_starter'] = $mod_fcgid_starter;
 				$update_data['mod_fcgid_maxrequests'] = $mod_fcgid_maxrequests;
 				$update_data['specialsettings'] = $specialsettings;
+				$update_data['notryfiles'] = $notryfiles;
 				$update_data['registration_date'] = $registration_date;
 				$update_data['termination_date'] = $termination_date;
                                 $update_data['authcode'] = $authcode;
@@ -1897,6 +1907,7 @@ if ($page == 'domains' || $page == 'overview') {
 					`mod_fcgid_starter` = :mod_fcgid_starter,
 					`mod_fcgid_maxrequests` = :mod_fcgid_maxrequests,
 					`specialsettings` = :specialsettings,
+					`notryfiles` = :notryfiles,
 					`registration_date` = :registration_date,
 					`termination_date` = :termination_date,
                                         `authcode`= :authcode,
@@ -2218,12 +2229,19 @@ if ($page == 'domains' || $page == 'overview') {
 					FROM `" . TABLE_PANEL_PHPCONFIGS . "` c
 					LEFT JOIN `" . TABLE_PANEL_FPMDAEMONS . "` fc ON fc.id = c.fpmsettingid
 				");
+				$c_allowed_configs = getCustomerDetail($result['customerid'], 'allowed_phpconfigs');
+				if (!empty($c_allowed_configs)) {
+					$c_allowed_configs = json_decode($c_allowed_configs, true);
+				} else {
+					$c_allowed_configs = array();
+				}
 
 				while ($phpconfigs_row = $phpconfigs_result_stmt->fetch(PDO::FETCH_ASSOC)) {
+					$disabled = !empty($c_allowed_configs) && !in_array($phpconfigs_row['id'], $c_allowed_configs);
 					if ((int) Settings::Get('phpfpm.enabled') == 1) {
-						$phpconfigs .= makeoption($phpconfigs_row['description'] . " [".$phpconfigs_row['interpreter']."]", $phpconfigs_row['id'], $result['phpsettingid'], true, true);
+						$phpconfigs .= makeoption($phpconfigs_row['description'] . " [".$phpconfigs_row['interpreter']."]", $phpconfigs_row['id'], $result['phpsettingid'], true, true, null, $disabled);
 					} else {
-						$phpconfigs .= makeoption($phpconfigs_row['description'], $phpconfigs_row['id'], $result['phpsettingid'], true, true);
+						$phpconfigs .= makeoption($phpconfigs_row['description'], $phpconfigs_row['id'], $result['phpsettingid'], true, true, null, $disabled);
 					}
 				}
 
@@ -2240,6 +2258,13 @@ if ($page == 'domains' || $page == 'overview') {
 				eval("echo \"" . getTemplate("domains/domains_edit") . "\";");
 			}
 		}
+	} elseif ($action == 'jqGetCustomerPHPConfigs') {
+		
+		$customerid = intval($_POST['customerid']);
+		$allowed_phpconfigs = getCustomerDetail($customerid, 'allowed_phpconfigs');
+		echo !empty($allowed_phpconfigs) ? $allowed_phpconfigs : json_encode(array());
+		exit;
+		
 	} elseif ($action == 'import') {
 
 		if (isset($_POST['send']) && $_POST['send'] == 'send') {

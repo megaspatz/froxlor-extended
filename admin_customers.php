@@ -307,6 +307,8 @@ if ($page == 'customers'
 				Database::pexecute($stmt, array('id' => $id));
 				$stmt = Database::prepare("DELETE FROM `" . TABLE_PANEL_TRAFFIC . "` WHERE `customerid` = :id");
 				Database::pexecute($stmt, array('id' => $id));
+				$stmt = Database::prepare("DELETE FROM `" . TABLE_PANEL_DISKSPACE . "` WHERE `customerid` = :id");
+				Database::pexecute($stmt, array('id' => $id));
 				$stmt = Database::prepare("DELETE FROM `" . TABLE_MAIL_USERS . "` WHERE `customerid` = :id");
 				Database::pexecute($stmt, array('id' => $id));
 				$stmt = Database::prepare("DELETE FROM `" . TABLE_MAIL_VIRTUAL . "` WHERE `customerid` = :id");
@@ -1073,6 +1075,20 @@ if ($page == 'customers'
 					}
 				}
 
+				// hosting plans
+				$hosting_plans = "";
+				$plans = Database::query("
+					SELECT *
+					FROM `" . TABLE_PANEL_PLANS . "`
+					ORDER BY name ASC
+				");
+				if (Database::num_rows() > 0){
+					$hosting_plans .= makeoption("---", 0, 0, true, true);
+				}
+				while ($row = $plans->fetch(PDO::FETCH_ASSOC)) {
+					$hosting_plans .= makeoption($row['name'], $row['id'], 0, true, true);
+				}
+
 				$customer_add_data = include_once dirname(__FILE__).'/lib/formfields/admin/customer/formfield.customer_add.php';
 				$customer_add_form = htmlform::genHTMLForm($customer_add_data);
 
@@ -1753,6 +1769,20 @@ if ($page == 'customers'
 							'value' => $row['id']
 						);
 					}
+				}
+
+				// hosting plans
+				$hosting_plans = "";
+				$plans = Database::query("
+					SELECT *
+					FROM `" . TABLE_PANEL_PLANS . "`
+					ORDER BY name ASC
+				");
+				if (Database::num_rows() > 0){
+					$hosting_plans .= makeoption("---", 0, 0, true, true);
+				}
+				while ($row = $plans->fetch(PDO::FETCH_ASSOC)) {
+					$hosting_plans .= makeoption($row['name'], $row['id'], 0, true, true);
 				}
 
 				$customer_edit_data = include_once dirname(__FILE__).'/lib/formfields/admin/customer/formfield.customer_edit.php';

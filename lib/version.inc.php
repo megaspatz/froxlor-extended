@@ -16,10 +16,10 @@
  */
 
 // Main version variable
-$version = '0.9.38.8';
+$version = '0.9.39.5';
 
 // Database version (YYYYMMDDC where C is a daily counter)
-$dbversion = '201801110';
+$dbversion = '201802250';
 
 // Distribution branding-tag (used for Debian etc.)
 $branding = '';

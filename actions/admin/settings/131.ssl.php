@@ -135,6 +135,19 @@ return array(
 					'default' => '/etc/apache2/conf-enabled/acme.conf',
 					'save_method' => 'storeSettingField'
 				),
+				'system_leapiversion' => array(
+					'label' => $lng['serversettings']['leapiversion'],
+					'settinggroup' => 'system',
+					'varname' => 'leapiversion',
+					'type' => 'option',
+					'default' => '1',
+					'option_mode' => 'one',
+					'option_options' => array(
+						'1' => 'ACME v1',
+						'2' => 'ACME v2'
+					),
+					'save_method' => 'storeSettingField'
+				),
 				'system_letsencryptca' => array(
 					'label' => $lng['serversettings']['letsencryptca'],
 					'settinggroup' => 'system',

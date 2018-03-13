@@ -81,7 +81,8 @@ class nginx extends HttpConfigBase
 			foreach ($restart_cmds as $restart_cmd) {
 				// check whether the config dir is empty (no domains uses this daemon)
 				// so we need to create a dummy
-				$isDirEmpty = !(new \FilesystemIterator($restart_cmd['config_dir']))->valid();
+				$fsi = new \FilesystemIterator($restart_cmd['config_dir']);
+				$isDirEmpty = !$fsi->valid();
 				if ($isDirEmpty) {
 					$this->logger->logAction(CRON_ACTION, LOG_INFO, 'nginx::reload: fpm config directory "' . $restart_cmd['config_dir'] . '" is empty. Creating dummy.');
 					phpinterface_fpm::createDummyPool($restart_cmd['config_dir']);
@@ -432,7 +433,7 @@ class nginx extends HttpConfigBase
 				$_vhost_content .= $this->processSpecialConfigTemplate($ipandport['default_vhostconf_domain'], $domain, $domain['ip'], $domain['port'], $ssl_vhost) . "\n";
 			}
 
-			$http2 = $ssl_vhost == true && (isset($domain['http2']) && $domain['http2'] == '1');
+			$http2 = $ssl_vhost == true && (isset($domain['http2']) && $domain['http2'] == '1' && Settings::Get('system.http2_support') == '1');
 
             $vhost_content .= "\t" . 'listen ' . $ipport . ($ssl_vhost == true ? ' ssl' : '') . ($http2 == true ? ' http2' : '') . ';' . "\n";
 		}
@@ -916,7 +917,9 @@ class nginx extends HttpConfigBase
 
 		if ($domain['phpenabled_customer'] == 1 && $domain['phpenabled_vhost'] == '1') {
 			$webroot_text .= "\t" . 'index    index.php index.html index.htm;' . "\n";
-			$webroot_text .= "\t\t" . 'try_files $uri $uri/ @rewrites;' . "\n";
+			if ($domain['notryfiles'] != 1) {
+				$webroot_text .= "\t\t" . 'try_files $uri $uri/ @rewrites;' . "\n";
+			}
 		} else {
 			$webroot_text .= "\t" . 'index    index.html index.htm;' . "\n";
 		}
@@ -937,7 +940,7 @@ class nginx extends HttpConfigBase
 		}
 
 		$webroot_text .= "\t" . '}' . "\n\n";
-		if ($domain['phpenabled_customer'] == 1 && $domain['phpenabled_vhost'] == '1') {
+		if ($domain['phpenabled_customer'] == 1 && $domain['phpenabled_vhost'] == '1' && $domain['notryfiles'] != 1) {
 			$webroot_text .= "\tlocation @rewrites {\n";
 			$webroot_text .= "\t\trewrite ^ /index.php last;\n";
 			$webroot_text .= "\t}\n\n";
