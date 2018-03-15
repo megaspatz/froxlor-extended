@@ -61,6 +61,7 @@ class bindextended extends DnsBase
 
 				// generate config
 				$bindconf_file .= $this->_generateDomainConfig($domain); 
+				$bindconf_slave_file .= $this->_generateDomainSlaveConfig($domain);
 			}
 
 			// write config
@@ -69,6 +70,10 @@ class bindextended extends DnsBase
 			fclose($bindconf_file_handler);
 			$this->_logger->logAction(CRON_ACTION, LOG_INFO, $system_bindconf_file . ' written');
 
+			$bindconf_slave_file_handler = fopen(makeCorrectFile( $system_bindconf_slave_file), 'w');
+			fwrite($bindconf_slave_file_handler, $bindconf_slave_file);
+			fclose($bindconf_slave_file_handler);
+			$this->_logger->logAction(CRON_ACTION, LOG_INFO, $system_bindconf_slave_file . ' written');
 			// reload Bind
 			safe_exec(escapeshellcmd(Settings::Get('system.bindreload_command')));
 			$this->_logger->logAction(CRON_ACTION, LOG_INFO, 'Bind9 reloaded');
