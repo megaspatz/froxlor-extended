@@ -3332,7 +3332,7 @@ if (isFroxlorVersion('0.9.35')) {
 }
 
 
-if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201603151')) {
+if (isFroxlorVersion('0.9.35.1') && isDatabaseVersion('201603150')) {
 
 	showUpdateStep("Adding Default Values to Table " . TABLE_PANEL_DOMAINS);
 	Database::query("alter table " . TABLE_PANEL_DOMAINS . " modify `dkim_id` int(11) unsigned NOT NULL default '0';");
