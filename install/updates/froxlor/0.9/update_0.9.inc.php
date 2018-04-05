@@ -4079,4 +4079,3 @@ if (isDatabaseVersion('201802250')) {
 
 	updateToDbVersion('201804050');
 }
-
