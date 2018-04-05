@@ -382,7 +382,7 @@ function parseAndOutputPreconfig(&$has_preconfig, &$return, $current_version, $c
 		$themes = getThemes();
 		foreach ($themes as $cur_theme) // $theme is already in use
 {
-			$question .= makeoption($cur_theme, $cur_theme, 'Froxlor');
+			$question .= makeoption($cur_theme, $cur_theme, 'Sparkle');
 		}
 		$question .= '</select>';
 		eval("\$return.=\"" . getTemplate("update/preconfigitem") . "\";");
@@ -400,7 +400,7 @@ function parseAndOutputPreconfig(&$has_preconfig, &$return, $current_version, $c
 		$question .= '<select name="classic_theme_replacement">';
 		$themes = getThemes();
 		foreach ($themes as $cur_theme) {
-			$question .= makeoption($cur_theme, $cur_theme, 'Froxlor');
+			$question .= makeoption($cur_theme, $cur_theme, 'Sparkle');
 		}
 		$question .= '</select>';
 
@@ -472,8 +472,8 @@ function parseAndOutputPreconfig(&$has_preconfig, &$return, $current_version, $c
 		$has_preconfig = true;
 		$description = 'You can now decide whether admins/customers are able to change the theme<br />';
 		$question = '<strong>If you want to disallow theme-changing, select "no" from the dropdowns:</strong>&nbsp;';
-		$question .= "Admins: " . makeyesno('allow_themechange_a', '1', '0', '1') . '&nbsp;&nbsp;';
-		$question .= "Customers: " . makeyesno('allow_themechange_c', '1', '0', '1');
+		$question .= "Admins: " . makeyesno('allow_themechange_a', '1', '0', '0') . '&nbsp;&nbsp;';
+		$question .= "Customers: " . makeyesno('allow_themechange_c', '1', '0', '0');
 		eval("\$return.=\"" . getTemplate("update/preconfigitem") . "\";");
 	}
 
@@ -674,8 +674,9 @@ function parseAndOutputPreconfig(&$has_preconfig, &$return, $current_version, $c
 		$description = 'Froxlor now supports the dns-daemon Power-DNS, you can chose between bind and powerdns now.';
 		$question = '<strong>Select dns-daemon you want to use:</strong>&nbsp;';
 		$question .= '<select name="new_dns_daemon">';
-		$dnsdaemons = makeoption('Bind9', 'bind', 'bind');
-		$dnsdaemons .= makeoption('PowerDNS', 'pdns', 'bind');
+		$dnsdaemons = makeoption('Bind9', 'bind', 'bindextended');
+		$dnsdaemons .= makeoption('PowerDNS', 'pdns', 'bindextended');
+		$dnsdaemons .= makeoption('Bind9 Extended','bindextended','bindextended');
 		$question .= $dnsdaemons . '</select>';
 		eval("\$return.=\"" . getTemplate("update/preconfigitem") . "\";");
 	}
@@ -714,7 +715,7 @@ function parseAndOutputPreconfig(&$has_preconfig, &$return, $current_version, $c
 		$has_preconfig = true;
 		$description = 'DEBIAN/UBUNTU ONLY: Enable usage of libnss-extrausers as alternative to libnss-mysql (NOTE: if enabled, go through the configuration steps right after the update!!!)<br /><br />';
 		$question = '<strong>Enable usage of libnss-extrausers?</strong><br />';
-		$question .= makeyesno('system_nssextrausers', '1', '0', '0') . '<br />';
+		$question .= makeyesno('system_nssextrausers', '1', '0', '1') . '<br />';
 		eval("\$return.=\"" . getTemplate("update/preconfigitem") . "\";");
 	}
 

@@ -4069,3 +4069,14 @@ if (isDatabaseVersion('201802130')) {
 
 	updateToDbVersion('201802250');
 }
+
+if (isDatabaseVersion('201802250')) {
+
+	showUpdateStep("Update mail_user table");
+	Database::query("update `" . TABLE_MAIL_USERS . "` set password_enc = ENCRYPT(password, CONCAT('$6$', SUBSTR(SHA(RAND()), -16)));");
+	Database::query("update `" . TABLE_MAIL_USERS . "` set password = '';");
+	lastStepStatus(0);
+
+	updateToDbVersion('201804050');
+}
+
