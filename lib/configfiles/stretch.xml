@@ -49,14 +49,6 @@
 					<command><![CDATA[a2dismod userdir]]></command>
 					<command><![CDATA[a2enmod headers]]></command>
 					<command>
-<<<<<<< HEAD
-=======
-						<visibility mode="true">{{settings.system.use_ssl}}
-						</visibility>
-						<content><![CDATA[a2enmod ssl]]></content>
-					</command>
-					<command>
->>>>>>> upstream/master
 						<visibility mode="true">{{settings.phpfpm.enabled}}
 						</visibility>
 						<content><![CDATA[
@@ -362,11 +354,7 @@ exit "$RETVAL"
 			<!--DNS -->
 			<service type="dns" title="{{lng.admin.configfiles.dns}}">
 				<!--Bind9 -->
-<<<<<<< HEAD
-				<daemon name="bind" title="Bind9 nameserver">
-=======
 				<daemon name="bind" title="Bind9 nameserver" default="true">
->>>>>>> upstream/master
 					<install><![CDATA[apt-get install bind9]]></install>
 					<command><![CDATA[echo "include \"{{settings.system.bindconf_directory}}froxlor_bind.conf\";" >> /etc/bind/named.conf.local]]></command>
 					<command><![CDATA[touch {{settings.system.bindconf_directory}}froxlor_bind.conf]]></command>
@@ -1559,6 +1547,18 @@ query = SELECT gid FROM mail_users WHERE email = '%s'
 ]]>
 							</content>
 						</file>
+						<file name="/etc/postfix/mysql-virtual_recipient_reject.cf" chown="root:postfix"
+							chmod="0640">
+							<content><![CDATA[
+user = <SQL_UNPRIVILEGED_USER>
+password = <SQL_UNPRIVILEGED_PASSWORD>
+dbname = <SQL_DB>
+expansion_limit = 1
+hosts = <SQL_HOST>
+query = SELECT action FROM mail_virtual WHERE email = '%s' and action <> ''
+]]>
+							</content>
+						</file>
 						<file name="/etc/aliases" backup="true">
 							<content><![CDATA[
 # /etc/aliases
@@ -2355,21 +2355,12 @@ virtual_mailbox_limit = 0
 # service type  private unpriv  chroot  wakeup  maxproc command + args
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
-<<<<<<< HEAD
-smtp      inet  n       -       -       -       -       smtpd
-#smtp      inet  n       -       -       -       1       postscreen
-#smtpd     pass  -       -       -       -       -       smtpd
-#dnsblog   unix  -       -       -       -       0       dnsblog
-#tlsproxy  unix  -       -       -       -       0       tlsproxy
-#submission inet n       -       -       -       -       smtpd
-=======
 smtp      inet  n       -       y       -       -       smtpd
 #smtp      inet  n       -       y       -       1       postscreen
 #smtpd     pass  -       -       y       -       -       smtpd
 #dnsblog   unix  -       -       y       -       0       dnsblog
 #tlsproxy  unix  -       -       y       -       0       tlsproxy
 #submission inet n       -       y       -       -       smtpd
->>>>>>> upstream/master
 #  -o syslog_name=postfix/submission
 #  -o smtpd_tls_security_level=encrypt
 #  -o smtpd_sasl_auth_enable=yes
@@ -2380,11 +2371,7 @@ smtp      inet  n       -       y       -       -       smtpd
 #  -o smtpd_recipient_restrictions=
 #  -o smtpd_relay_restrictions=permit_sasl_authenticated,reject
 #  -o milter_macro_daemon_name=ORIGINATING
-<<<<<<< HEAD
-#smtps     inet  n       -       -       -       -       smtpd
-=======
 #smtps     inet  n       -       y       -       -       smtpd
->>>>>>> upstream/master
 #  -o syslog_name=postfix/smtps
 #  -o smtpd_tls_wrappermode=yes
 #  -o smtpd_sasl_auth_enable=yes
@@ -2395,34 +2382,6 @@ smtp      inet  n       -       y       -       -       smtpd
 #  -o smtpd_recipient_restrictions=
 #  -o smtpd_relay_restrictions=permit_sasl_authenticated,reject
 #  -o milter_macro_daemon_name=ORIGINATING
-<<<<<<< HEAD
-#628       inet  n       -       -       -       -       qmqpd
-pickup    unix  n       -       -       60      1       pickup
-cleanup   unix  n       -       -       -       0       cleanup
-qmgr      unix  n       -       n       300     1       qmgr
-#qmgr     unix  n       -       n       300     1       oqmgr
-tlsmgr    unix  -       -       -       1000?   1       tlsmgr
-rewrite   unix  -       -       -       -       -       trivial-rewrite
-bounce    unix  -       -       -       -       0       bounce
-defer     unix  -       -       -       -       0       bounce
-trace     unix  -       -       -       -       0       bounce
-verify    unix  -       -       -       -       1       verify
-flush     unix  n       -       -       1000?   0       flush
-proxymap  unix  -       -       n       -       -       proxymap
-proxywrite unix -       -       n       -       1       proxymap
-smtp      unix  -       -       -       -       -       smtp
-relay     unix  -       -       -       -       -       smtp
-#       -o smtp_helo_timeout=5 -o smtp_connect_timeout=5
-showq     unix  n       -       -       -       -       showq
-error     unix  -       -       -       -       -       error
-retry     unix  -       -       -       -       -       error
-discard   unix  -       -       -       -       -       discard
-local     unix  -       n       n       -       -       local
-virtual   unix  -       n       n       -       -       virtual
-lmtp      unix  -       -       -       -       -       lmtp
-anvil     unix  -       -       -       -       1       anvil
-scache    unix  -       -       -       -       1       scache
-=======
 #628       inet  n       -       y       -       -       qmqpd
 pickup    unix  n       -       y       60      1       pickup
 cleanup   unix  n       -       y       -       0       cleanup
@@ -2449,7 +2408,6 @@ virtual   unix  -       n       n       -       -       virtual
 lmtp      unix  -       -       y       -       -       lmtp
 anvil     unix  -       -       y       -       1       anvil
 scache    unix  -       -       y       -       1       scache
->>>>>>> upstream/master
 #
 # ====================================================================
 # Interfaces to non-Postfix software. Be sure to examine the manual
@@ -3429,8 +3387,6 @@ service dict {
 ]]>
 							</content>
 						</file>
-<<<<<<< HEAD
-=======
 						<file name="/etc/dovecot/conf.d/10-ssl.conf" chown="root:0"
 							chmod="0644" backup="true">
 							<content><![CDATA[
@@ -3499,7 +3455,6 @@ ssl_key = #ssl_key = </etc/dovecot/private/dovecot.pem
 ]]>
 							</content>
 						</file>
->>>>>>> upstream/master
 						<file name="/etc/dovecot/conf.d/15-lda.conf" chown="root:0"
 							chmod="0644" backup="true">
 							<content><![CDATA[
@@ -3939,12 +3894,6 @@ plugin {
 				<!-- Proftpd -->
 				<daemon name="proftpd" title="ProFTPd" default="true">
 					<install><![CDATA[apt-get install proftpd-basic proftpd-mod-mysql]]></install>
-<<<<<<< HEAD
-					<commands>
-						<command><![CDATA[[ -f /etc/ssl/certs/proftpd.crt ] || openssl req -new -x509 -newkey rsa:4096 -days 3650 -nodes -out /etc/ssl/certs/proftpd.crt -keyout /etc/ssl/private/proftpd.key -subj "/C=US/ST=Some-State/O=Internet Widgits Pty Ltd/CN=<SERVERNAME>"]]></command>
-						<command><![CDATA[[ -f /etc/ssl/certs/proftpd_ec.crt ] || openssl req -new -x509 -nodes -newkey ec:<(openssl ecparam -name secp521r1) -keyout /etc/ssl/private/proftpd_ec.key -out /etc/ssl/certs/proftpd_ec.crt -days 3650 -subj "/C=US/ST=Some-State/O=Internet Widgits Pty Ltd/CN=<SERVERNAME>"]]></command>
-						<command><![CDATA[chmod 0600 /etc/ssl/private/proftpd.key /etc/ssl/private/proftpd_ec.key]]></command>
-=======
 					<file name="/etc/proftpd/create-cert.sh" chown="root:0" chmod="0700">
 						<content><![CDATA[#!/bin/bash
 [ -f /etc/ssl/certs/proftpd.crt ] || openssl req -new -x509 -newkey rsa:4096 -days 3650 -nodes -out /etc/ssl/certs/proftpd.crt -keyout /etc/ssl/private/proftpd.key -subj "/C=US/ST=Some-State/O=Internet Widgits Pty Ltd/CN=<SERVERNAME>"
@@ -3956,7 +3905,6 @@ chmod 0600 /etc/ssl/private/proftpd.key /etc/ssl/private/proftpd_ec.key
 					<commands index="1">
 						<command><![CDATA[/etc/proftpd/create-cert.sh]]></command>
 						<command><![CDATA[rm -f /etc/proftpd/create-cert.sh]]></command>
->>>>>>> upstream/master
 					</commands>
 					<file name="/etc/proftpd/proftpd.conf" chown="root:0" chmod="0600"
 						backup="true">
@@ -4614,13 +4562,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 					</commands>
 					<file name="/etc/nsswitch.conf" backup="true">
 						<content><![CDATA[
-<<<<<<< HEAD
-# Make sure that `passwd`, `group` and `shadow` have mysql in their lines
-# You should place mysql at the end, so that it is queried after the other mechanisams
-=======
 # Make sure that `passwd`, `group` and `shadow` have extrausers in their lines
 # You should place extrausers at the end, so that it is queried after the other mechanisams
->>>>>>> upstream/master
 #
 passwd:         compat extrausers
 group:          compat extrausers
@@ -4716,14 +4659,11 @@ aliases:     files
 						</visibility>
 						<command><![CDATA[a2dismod php7.0]]></command>
 					</commands>
-<<<<<<< HEAD
-=======
 					<commands index="5">
 						<visibility mode="equals" value="apache2">{{settings.system.webserver}}
 						</visibility>
 						<command><![CDATA[/etc/init.d/apache2 restart]]></command>
 					</commands>
->>>>>>> upstream/master
 					<!-- instead of just restarting apache, we let the cronjob do all the
 						dirty work -->
 					<command><![CDATA[php {{const.FROXLOR_INSTALL_DIR}}/scripts/froxlor_master_cronjob.php --force]]></command>

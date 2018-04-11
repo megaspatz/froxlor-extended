@@ -17,3 +17,4 @@ logs/*
 templates/Froxlor/assets/img/logo_custom.png
 shsh-docs/
 shsh-docs/*
+.sql/syscp-20180405.sql

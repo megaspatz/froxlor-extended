@@ -877,14 +877,7 @@ CREATE TABLE `panel_fpmdaemons` (
   `max_spare_servers` int(4) NOT NULL DEFAULT '35',
   `max_requests` int(4) NOT NULL DEFAULT '0',
   `idle_timeout` int(4) NOT NULL DEFAULT '30',
-<<<<<<< HEAD
-<<<<<<< HEAD
   `limit_extensions` varchar(255) NOT NULL default '.php',
-=======
->>>>>>> 2ab027dd9551bda70b7d0fbaea5daecc02d420a8
-=======
-  `limit_extensions` varchar(255) NOT NULL default '.php',
->>>>>>> upstream/master
   PRIMARY KEY  (`id`),
   UNIQUE KEY `reload` (`reload_cmd`),
   UNIQUE KEY `config` (`config_dir`)
