@@ -665,6 +665,10 @@ opcache.interned_strings_buffer'),
 	('system', 'nssextrausers', '0'),
 	('system', 'disable_le_selfcheck', '0'),
 	('system', 'ssl_protocols', 'TLSv1,TLSv1.2'),
+	('system', 'logfiles_format', ''),
+	('system', 'logfiles_type', '1'),
+	('system', 'logfiles_piped', '0'),
+	('system', 'logfiles_script', ''),
 	('panel', 'decimal_places', '4'),
 	('panel', 'adminmail', 'admin@SERVERNAME'),
 	('panel', 'phpmyadmin_url', ''),
@@ -697,7 +701,7 @@ opcache.interned_strings_buffer'),
 	('panel', 'password_special_char', '!?<>§$%+#=@'),
 	('panel', 'customer_hide_options', ''),
 	('panel', 'version', '0.9.39.5'),
-	('panel', 'db_version', '201804050');
+	('panel', 'db_version', '201805290');
 
 
 DROP TABLE IF EXISTS `panel_tasks`;
