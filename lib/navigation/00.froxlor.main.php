@@ -266,6 +266,18 @@ return array(
 					'url' => 'admin_settings.php?page=rebuildconfigs',
 					'label' => $lng['admin']['rebuildconf'],
 					'required_resources' => 'change_serversettings'
+				),
+				array(
+					'url' => 'admin_autoupdate.php?page=overview',
+					'label' => $lng['admin']['autoupdate'],
+					'required_resources' => 'change_serversettings',
+					'show_element' => extension_loaded('zip')
+				),
+				array(
+					'url' => 'admin_settings.php?page=wipecleartextmailpws',
+					'label' => $lng['admin']['wipecleartextmailpwd'],
+					'required_resources' => 'change_serversettings',
+					'show_element' => (Settings::Get('system.mailpwcleartext') == true)
 				)
 			)
 		),
