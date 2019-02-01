@@ -3152,7 +3152,7 @@ if (isFroxlorVersion('0.9.34.2')) {
 	showUpdateStep("Updating from 0.9.34.2 to 0.9.35-dev1", false);
 
 	showUpdateStep("Adding Let's Encrypt - certificate fields");
-	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "` ADD `expirationdate` DATETIME NULL AFTER `ssl_cert_chainfile`;");
+
 	Database::query("ALTER TABLE `" . TABLE_PANEL_CUSTOMERS . "` ADD `lepublickey` MEDIUMTEXT DEFAULT NULL AFTER `custom_notes_show`");
 	Database::query("ALTER TABLE `" . TABLE_PANEL_CUSTOMERS . "` ADD `leprivatekey` MEDIUMTEXT DEFAULT NULL AFTER `lepublickey`;");
 	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS . "` ADD `letsencrypt` TINYINT(1) NOT NULL DEFAULT '0' AFTER `ismainbutsubto`;");
@@ -3243,7 +3243,7 @@ if (isFroxlorVersion('0.9.35-dev4')) {
 	Settings::AddNew("system.letsencryptchallengepath", FROXLOR_INSTALL_DIR);
 	Settings::AddNew("system.letsencryptkeysize", '4096');
 	Settings::AddNew("system.letsencryptreuseold", 0);
-	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "` ADD `ssl_csr_file` MEDIUMTEXT AFTER `ssl_cert_chainfile`;");
+
 	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS . "` ADD `hsts` VARCHAR(10) NOT NULL DEFAULT '0' AFTER `letsencrypt`");
 	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS . "` ADD `hsts_sub` TINYINT(1) NOT NULL DEFAULT '0' AFTER `hsts`");
 	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAINS . "` ADD `hsts_preload` TINYINT(1) NOT NULL DEFAULT '1' AFTER `hsts_sub`");
@@ -4063,14 +4063,6 @@ if (isFroxlorVersion('0.9.39.4')) {
 
 if (isDatabaseVersion('201802130')) {
 
-	showUpdateStep("Adding fullchain field to ssl certificates");
-	Database::query("ALTER TABLE `" . TABLE_PANEL_DOMAIN_SSL_SETTINGS . "` ADD `ssl_fullchain_file` mediumtext AFTER `ssl_csr_file`;");
-	lastStepStatus(0);
-
-	updateToDbVersion('201802250');
-}
-
-if (isDatabaseVersion('201802250')) {
 
 	showUpdateStep("Update mail_user table");
 	Database::query("update `" . TABLE_MAIL_USERS . "` set password_enc = ENCRYPT(password, CONCAT('$6$', SUBSTR(SHA(RAND()), -16)));");
